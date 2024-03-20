@@ -36,6 +36,8 @@ namespace KVA.Cinema.Models
 
         public virtual DbSet<Tag> Tags { get; set; }
 
+        public virtual DbSet<FileModel> FileModels { get; set; }
+
         //public override DbSet<Entities.User> Users { get; set; }
 
         public virtual DbSet<Entities.UserSubscription> UserSubscriptions { get; set; }
