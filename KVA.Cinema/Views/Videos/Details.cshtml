@@ -7,79 +7,88 @@
 
 <!DOCTYPE html>
 
-<h1>Details</h1>
-
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true)
 
+    <p>
+        @Html.ActionLink("Back to List", "Index")
+    </p>
+
     <fieldset>
-        <legend>Video</legend>
         <div style="display:flex">
             <div>
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Name)
-                    @Html.DisplayFor(model => model.Name, additionalViewData: new { @class = "form-control" })
+                <div id="video-container" style="display: flex; width: 1280px; height: 720px; border-color: black; border: solid; border-width: 1px; margin: auto; justify-content: center; align-items: center">
+                    Video will be here
                 </div>
-                <div class="form-group">
-                    @Html.LabelFor(model => model.ReleasedIn)
-                    @Html.DisplayFor(model => model.ReleasedIn, additionalViewData: new { @class = "form-control" })
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(model => model.CountryName)
-                    @Html.DisplayFor(model => model.CountryName, additionalViewData: new { @class = "form-control" })
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(model => model.GenreNames)
-                    @Html.DisplayFor(model => model.GenreNames, additionalViewData: new { @class = "form-control" })
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(model => model.DirectorName)
-                    @Html.DisplayFor(model => model.DirectorName, additionalViewData: new { @class = "form-control" })
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(model => model.PegiName)
-                    @Html.DisplayFor(model => model.PegiName, additionalViewData: new { @class = "form-control" })
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Length)
-                    @Html.DisplayFor(model => model.Length, additionalViewData: new { @class = "form-control" })
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(model => model.LanguageName)
-                    @Html.DisplayFor(model => model.LanguageName, additionalViewData: new { @class = "form-control" })
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Description)
-                    @Html.DisplayFor(model => model.Description, additionalViewData: new { @class = "form-control" })
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(model => model.TagViewModels)
-                    @foreach (var tagDisplayViewModel in Model.TagViewModels)
-                    {
-                        @Html.DisplayFor(model => tagDisplayViewModel, "_TagColor")
-                    }
+
+                <div id="video-description-container">
+                    <div class="form-group">
+                        <h2>@Html.DisplayFor(model => model.Name, additionalViewData: new { @class = "form-control" })</h2>
+                    </div>
+                    <div id="up-info" style="display: flex; justify-content: space-between">
+                        <div id="up-left-info">
+                            <div class="form-group">
+                                <b>@Html.LabelFor(model => model.CountryName)</b>
+                                @Html.DisplayFor(model => model.CountryName, additionalViewData: new { @class = "form-control" })
+                            </div>
+
+                            <div class="form-group">
+                                <b>@Html.LabelFor(model => model.DirectorName)</b>
+                                @Html.DisplayFor(model => model.DirectorName, additionalViewData: new { @class = "form-control" })
+                            </div>
+
+                            <div class="form-group">
+                                <b>@Html.LabelFor(model => model.Length)</b>
+                                @Html.DisplayFor(model => model.Length, additionalViewData: new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                <b>@Html.LabelFor(model => model.LanguageName)</b>
+                                @Html.DisplayFor(model => model.LanguageName, additionalViewData: new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div id="up-right-info" style="width: 30rem">
+                            <div class="form-group">
+                                <b>@Html.LabelFor(model => model.ReleasedIn)</b>
+                                @Html.DisplayFor(model => model.ReleasedIn, additionalViewData: new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.PegiName)
+                                @Html.DisplayFor(model => model.PegiName, additionalViewData: new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                <b>@Html.LabelFor(model => model.GenreNames)</b>
+                                <p>@Html.DisplayFor(model => model.GenreNames, additionalViewData: new { @class = "form-control" })</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="bottom-info">
+                        <div class="form-group">
+                            <b>@Html.LabelFor(model => model.Description)</b>
+                            @Html.DisplayFor(model => model.Description, additionalViewData: new { @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <b>@Html.LabelFor(model => model.TagViewModels)</b>
+                            <div style="margin:10px">
+                                @foreach (var tagDisplayViewModel in Model.TagViewModels)
+                                {
+                                    <p>
+                                        @Html.DisplayFor(model => tagDisplayViewModel, "_TagColor")
+                                    </p>
+                                }
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div>
-                @if (Model.PreviewFileName != null)
-                {
-                <img src="~/upload/videoPreview/@Model.PreviewFileName" alt="@Model.Name preview" style="max-width:20rem; margin-left:10rem">
-                }
-                else
-                {
-                    <img src="~/lib/other-icons/No-Image-Placeholder.svg" alt="No image" style="max-width:20rem; margin-left:10rem">
-                }
-                @Html.ValidationMessageFor(model => model.Preview)
-            </div>
         </div>
 
     </fieldset>
 
     <p>
-        @Html.ActionLink("Edit", "Edit", "Videos", new { Id = Model.Id }) | @Html.ActionLink("Back to List", "Index")
+        @Html.ActionLink("Edit", "Edit", "Videos", new { Id = Model.Id })
     </p>
 }
 
