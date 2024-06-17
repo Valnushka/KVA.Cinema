@@ -12,7 +12,7 @@
 @if (User.Identity.IsAuthenticated)
 {
     <p>
-        @Html.ActionLink("Create New", "Create")
+        @Html.ActionLink("Create New", "Create", "SubscriptionLevels", null, new { @class = "btn btn-primary" })
     </p>
 }
 
