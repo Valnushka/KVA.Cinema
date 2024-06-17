@@ -23,8 +23,9 @@
         </div>
         <div class="form-group">
             @Html.LabelFor(model => model.Password)
-            @Html.EditorFor(model => model.Password, additionalViewData: new { @class = "form-control" })
+            @Html.TextBoxFor(model => model.Password, new { @class = "form-control", @type = "password", id = "password" })
             @Html.ValidationMessageFor(model => model.Password)
+            <input type="checkbox" onclick="togglePassword()">Show Password
         </div>
         <div class="form-group">
             @Html.LabelFor(model => model.RememberMe)
@@ -45,4 +46,17 @@
 @section Scripts
 {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        function togglePassword() {
+            var passwordFields = document.querySelectorAll('#password');
+            passwordFields.forEach(function (field) {
+                if (field.type === "password") {
+                    field.type = "text";
+                } else {
+                    field.type = "password";
+                }
+            });
+        }
+    </script>
 }
