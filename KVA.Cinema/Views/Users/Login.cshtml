@@ -41,6 +41,8 @@
     <p>
         Don't have an account? @Html.ActionLink("Register", "Create", "Users")
     </p>
+
+    @Html.ActionLink("Back to Main page", "Index", "Home", null, new { @class = "btn btn-primary" })
 }
 
 @section Scripts
