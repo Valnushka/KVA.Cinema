@@ -7,8 +7,6 @@
 
 <!DOCTYPE html>
 
-<h1>Delete</h1>
-
 <h3>Are you sure you want to delete this subscription level?</h3>
 
 @using (Html.BeginForm())
@@ -17,8 +15,6 @@
     @Html.ValidationSummary(true)
 
     <fieldset>
-        <legend>SubscriptionLevel</legend>
-
         <div class="form-group">
             @Html.DisplayNameFor(model => model.Title)
             @Html.DisplayFor(model => model.Title, additionalViewData: new { @class = "form-control" })

@@ -7,8 +7,6 @@
 
 <!DOCTYPE html>
 
-<h1>Delete</h1>
-
 <h3>Are you sure you want to delete this user?</h3>
 
 @using (Html.BeginForm())
@@ -17,27 +15,9 @@
     @Html.ValidationSummary(true)
 
     <fieldset>
-        <legend>User</legend>
-
-        <div class="form-group">
-            @Html.DisplayNameFor(model => model.FirstName)
-            @Html.DisplayFor(model => model.FirstName, additionalViewData: new { @class = "form-control" })
-        </div>
-        <div class="form-group">
-            @Html.DisplayNameFor(model => model.LastName)
-            @Html.DisplayFor(model => model.LastName, additionalViewData: new { @class = "form-control" })
-        </div>
         <div class="form-group">
             @Html.DisplayNameFor(model => model.Nickname)
             @Html.DisplayFor(model => model.Nickname, additionalViewData: new { @class = "form-control" })
-        </div>
-        <div class="form-group">
-            @Html.DisplayNameFor(model => model.Email)
-            @Html.DisplayFor(model => model.Email, additionalViewData: new { @class = "form-control" })
-        </div>
-        <div class="form-group">
-            @Html.DisplayNameFor(model => model.BirthDate)
-            @Html.DisplayFor(model => model.BirthDate, additionalViewData: new { @class = "form-control" })
         </div>
     </fieldset>
 

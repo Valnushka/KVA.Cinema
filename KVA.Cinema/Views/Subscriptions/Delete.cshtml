@@ -7,8 +7,6 @@
 
 <!DOCTYPE html>
 
-<h1>Delete</h1>
-
 <h3>Are you sure you want to delete this subscription?</h3>
 
 @using (Html.BeginForm())
@@ -17,35 +15,9 @@
     @Html.ValidationSummary(true)
 
     <fieldset>
-        <legend>Subscription</legend>
-
         <div class="form-group">
             @Html.DisplayNameFor(model => model.Title)
             @Html.DisplayFor(model => model.Title, additionalViewData: new { @class = "form-control" })
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.Description)
-            @Html.DisplayFor(model => model.Description, additionalViewData: new { @class = "form-control" })
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.Cost)
-            @Html.DisplayFor(model => model.Cost, additionalViewData: new { @class = "form-control" })
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.LevelName)
-            @Html.DisplayFor(model => model.LevelName, additionalViewData: new { @class = "form-control" })
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.ReleasedIn)
-            @Html.DisplayFor(model => model.ReleasedIn, additionalViewData: new { @class = "form-control" })
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.Duration)
-            @Html.DisplayFor(model => model.Duration, additionalViewData: new { @class = "form-control" })
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.AvailableUntil)
-            @Html.DisplayFor(model => model.AvailableUntil, additionalViewData: new { @class = "form-control" })
         </div>
     </fieldset>
 
