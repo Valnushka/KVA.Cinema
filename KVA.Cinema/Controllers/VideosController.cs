@@ -41,11 +41,33 @@ namespace KVA.Cinema.Controllers
         }
 
         // GET: Videos
-        public IActionResult Index()
+        public IActionResult Index(VideoSort sortingField = VideoSort.Name, bool isSortDescending = false)
         {
+            ViewBag.SortingField = sortingField;
+            ViewBag.SortDescending = isSortDescending;
 
-            var data = VideoService.ReadAll();
-            return View(data);
+            var videos = VideoService.ReadAll();
+
+            switch (sortingField)
+            {
+                case VideoSort.Name:
+                    videos = isSortDescending ? videos.OrderByDescending(s => s.Name) : videos.OrderBy(s => s.Name);
+                    break;
+                case VideoSort.ReleasedIn:
+                    videos = isSortDescending ? videos.OrderByDescending(s => s.ReleasedIn) : videos.OrderBy(s => s.ReleasedIn);
+                    break;
+                case VideoSort.Language:
+                    videos = isSortDescending ? videos.OrderByDescending(s => s.LanguageName) : videos.OrderBy(s => s.LanguageName);
+                    break;
+                case VideoSort.Genre:
+                    videos = isSortDescending ? videos.OrderByDescending(s => s.GenreNames) : videos.OrderBy(s => s.GenreNames);
+                    break;
+                default:
+                    videos = videos.OrderBy(s => s.Name);
+                    break;
+            }
+
+            return View(videos.ToList());
         }
 
         // GET: Videos/Details/5
