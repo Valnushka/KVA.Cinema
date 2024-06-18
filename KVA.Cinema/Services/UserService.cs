@@ -31,14 +31,24 @@
         private const string EMAIL_PATTERN = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
 
         /// <summary>
-        /// Minimum length allowed for Last Name, First Name and Nickname
+        /// Minimum length allowed for Last Name and First Name
         /// </summary>
         private const int NAME_LENGHT_MIN = 2;
 
         /// <summary>
-        /// Maximum length allowed for Last Name, First Name and Nickname
+        /// Maximum length allowed for Last Name and First Name
         /// </summary>
-        private const int NAME_LENGHT_MAX = 20;
+        private const int NAME_LENGHT_MAX = 30;
+
+        /// <summary>
+        /// Maximum length allowed for Nickname
+        /// </summary>
+        private const int NICKNAME_LENGHT_MIN = 3;
+
+        /// <summary>
+        /// Maximum length allowed for Nickname
+        /// </summary>
+        private const int NICKNAME_LENGHT_MAX = 20;
 
         /// <summary>
         /// Minimum password length
@@ -157,7 +167,7 @@
                 throw new ArgumentException("Incorrect email format");
             }
 
-            names = new string[] { userData.FirstName, userData.LastName, userData.Nickname };
+            names = new string[] { userData.FirstName, userData.LastName };
 
             foreach (var item in names)
             {
@@ -170,6 +180,16 @@
                 {
                     throw new ArgumentException($"Length cannot be more than {NAME_LENGHT_MAX} symbols");
                 }
+            }
+
+            if (userData.Nickname.Length < NICKNAME_LENGHT_MIN)
+            {
+                throw new ArgumentException($"Length cannot be less than {NICKNAME_LENGHT_MIN}");
+            }
+
+            if (userData.Nickname.Length > NICKNAME_LENGHT_MAX)
+            {
+                throw new ArgumentException($"Length cannot be more than {NICKNAME_LENGHT_MAX} symbols");
             }
 
             if (userData.Password.Length is < PASSWORD_LENGHT_MIN or > PASSWORD_LENGHT_MAX)
