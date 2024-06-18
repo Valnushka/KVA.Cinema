@@ -44,17 +44,20 @@ namespace KVA.Cinema.Controllers
                 case SubscriptionSort.Title:
                     subscriptions = isSortDescending ? subscriptions.OrderByDescending(s => s.Title) : subscriptions.OrderBy(s => s.Title);
                     break;
-                case SubscriptionSort.ReleasedIn:
-                    subscriptions = isSortDescending ? subscriptions.OrderByDescending(s => s.ReleasedIn) : subscriptions.OrderBy(s => s.ReleasedIn);
-                    break;
                 case SubscriptionSort.Cost:
                     subscriptions = isSortDescending ? subscriptions.OrderByDescending(s => s.Cost) : subscriptions.OrderBy(s => s.Cost);
+                    break;
+                case SubscriptionSort.ReleasedIn:
+                    subscriptions = isSortDescending ? subscriptions.OrderByDescending(s => s.ReleasedIn) : subscriptions.OrderBy(s => s.ReleasedIn);
                     break;
                 case SubscriptionSort.Duration:
                     subscriptions = isSortDescending ? subscriptions.OrderByDescending(s => s.Duration) : subscriptions.OrderBy(s => s.Duration);
                     break;
                 case SubscriptionSort.AvailableUntil:
                     subscriptions = isSortDescending ? subscriptions.OrderByDescending(s => s.AvailableUntil) : subscriptions.OrderBy(s => s.AvailableUntil);
+                    break;
+                case SubscriptionSort.Level:
+                    subscriptions = isSortDescending ? subscriptions.OrderByDescending(s => s.LevelName) : subscriptions.OrderBy(s => s.LevelName);
                     break;
                 default:
                     subscriptions = subscriptions.OrderBy(s => s.Title);

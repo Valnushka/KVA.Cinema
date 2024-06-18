@@ -63,7 +63,11 @@
                     "Index", new { sortingField = SubscriptionSort.AvailableUntil, isSortDescending = (ViewBag.SortingField == SubscriptionSort.AvailableUntil && !ViewBag.SortDescending) })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LevelName)
+                @Html.ActionLink(
+                    ViewBag.SortingField == SubscriptionSort.Level
+                    ? $"Level {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    : "Level",
+                    "Index", new { sortingField = SubscriptionSort.Level, isSortDescending = (ViewBag.SortingField == SubscriptionSort.Level && !ViewBag.SortDescending) })
             </th>
             @if (User.Identity.IsAuthenticated)
             {
@@ -79,7 +83,7 @@
                 @if (User.Identity.IsAuthenticated)
                 {
                     <td>
-                        if (item.IsPurchasedByCurrentUser)
+                        @if (item.IsPurchasedByCurrentUser)
                         {
                         @Html.ActionLink("Cancel", "CancelSubscription", "Users", new { subscriptionId = item.Id }, new { @class = "btn btn-primary", @title = "Cancel subscription" })
                         @Html.ActionLink("Buy", "", new { subscriptionId = item.Id }, new { @class = "btn btn-secondary disabled", @title = "You are already have this subscription" })

@@ -11,6 +11,7 @@
         Cost,
         ReleasedIn,
         Duration,
-        AvailableUntil
+        AvailableUntil,
+        Level
     }
 }
