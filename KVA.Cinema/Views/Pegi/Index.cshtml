@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<KVA.Cinema.Models.ViewModels.Pegi.PegiDisplayViewModel>
+@using KVA.Cinema.Models.ViewModels.Pegi;
 
 @{
     ViewData["Title"] = "Index";
@@ -20,9 +21,16 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Type)
+                @Html.ActionLink(
+                    ViewBag.SortingField == PegiSort.Type
+                    ? $"Type {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    : "Type",
+                    "Index", new { sortingField = PegiSort.Type, isSortDescending = (ViewBag.SortingField == PegiSort.Type && !ViewBag.SortDescending) })
             </th>
-            <th></th>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <th><!--Header for Action links--></th>
+            }
         </tr>
     </thead>
     <tbody>

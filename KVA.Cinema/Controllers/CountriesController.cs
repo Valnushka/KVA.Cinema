@@ -23,10 +23,23 @@ namespace KVA.Cinema.Controllers
         }
 
         // GET: Countries
-        public IActionResult Index()
+        public IActionResult Index(CountrySort sortingField = CountrySort.Name, bool isSortDescending = false)
         {
-            var data = CountryService.ReadAll();
-            return View(data);
+            ViewBag.SortingField = sortingField;
+            ViewBag.SortDescending = isSortDescending;
+
+            var countries = CountryService.ReadAll();
+
+            if (sortingField == CountrySort.Name && isSortDescending)
+            {
+                countries = countries.OrderByDescending(s => s.Name);
+            }
+            else
+            {
+                countries = countries.OrderBy(s => s.Name);
+            }
+
+            return View(countries.ToList());
         }
 
         // GET: Countries/Details/5

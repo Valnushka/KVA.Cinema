@@ -32,28 +32,36 @@ namespace KVA.Cinema.Controllers
         }
 
         // GET: Subscriptions
-        public IActionResult Index()
+        public IActionResult Index(SubscriptionSort sortingField = SubscriptionSort.Title, bool isSortDescending = false)
         {
-            var subscriptions = SubscriptionService.ReadAll()/*.Where(x => x.VideosInSubscription.Count() != 0)*/; //TODO: обычным юзерам показывать только подписки с видео, админам - все
+            ViewBag.SortingField = sortingField;
+            ViewBag.SortDescending = isSortDescending;
 
-            if (!User.Identity.IsAuthenticated)
+            var subscriptions = SubscriptionService.ReadAll();
+
+            switch (sortingField)
             {
-                return View(subscriptions);
+                case SubscriptionSort.Title:
+                    subscriptions = isSortDescending ? subscriptions.OrderByDescending(s => s.Title) : subscriptions.OrderBy(s => s.Title);
+                    break;
+                case SubscriptionSort.ReleasedIn:
+                    subscriptions = isSortDescending ? subscriptions.OrderByDescending(s => s.ReleasedIn) : subscriptions.OrderBy(s => s.ReleasedIn);
+                    break;
+                case SubscriptionSort.Cost:
+                    subscriptions = isSortDescending ? subscriptions.OrderByDescending(s => s.Cost) : subscriptions.OrderBy(s => s.Cost);
+                    break;
+                case SubscriptionSort.Duration:
+                    subscriptions = isSortDescending ? subscriptions.OrderByDescending(s => s.Duration) : subscriptions.OrderBy(s => s.Duration);
+                    break;
+                case SubscriptionSort.AvailableUntil:
+                    subscriptions = isSortDescending ? subscriptions.OrderByDescending(s => s.AvailableUntil) : subscriptions.OrderBy(s => s.AvailableUntil);
+                    break;
+                default:
+                    subscriptions = subscriptions.OrderBy(s => s.Title);
+                    break;
             }
 
-            var user = UserService.ReadAll().FirstOrDefault(m => m.Nickname == User.Identity.Name);
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            foreach (var subscription in subscriptions)
-            {
-                subscription.IsPurchasedByCurrentUser = user.SubscriptionIds.Any(m => m == subscription.Id);
-            }
-
-            return View(subscriptions);
+            return View(subscriptions.ToList());
         }
 
         // GET: Subscriptions/Details/5

@@ -22,10 +22,23 @@ namespace KVA.Cinema.Controllers
         }
 
         // GET: Tags
-        public IActionResult Index()
+        public IActionResult Index(TagSort sortingField = TagSort.Text, bool isSortDescending = false)
         {
-            var data = TagService.ReadAll();
-            return View(data);
+            ViewBag.SortingField = sortingField;
+            ViewBag.SortDescending = isSortDescending;
+
+            var tags = TagService.ReadAll();
+
+            if (sortingField == TagSort.Text && isSortDescending)
+            {
+                tags = tags.OrderByDescending(s => s.Text);
+            }
+            else
+            {
+                tags = tags.OrderBy(s => s.Text);
+            }
+
+            return View(tags.ToList());
         }
 
         // GET: Tags/Details/5

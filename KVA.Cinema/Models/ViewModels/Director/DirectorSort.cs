@@ -1,14 +1,12 @@
-﻿namespace KVA.Cinema.Models.ViewModels.Video
+﻿namespace KVA.Cinema.Models.ViewModels.Director
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
-    public enum VideoSort
+    public enum DirectorSort
     {
-        Name,
-        ReleasedIn,
-        Language
+        Name
     }
 }

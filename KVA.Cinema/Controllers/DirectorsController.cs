@@ -9,6 +9,7 @@ using KVA.Cinema.Models;
 using KVA.Cinema.Models.Entities;
 using KVA.Cinema.Services;
 using KVA.Cinema.Models.Director;
+using KVA.Cinema.Models.ViewModels.Director;
 
 namespace KVA.Cinema.Controllers
 {
@@ -22,10 +23,23 @@ namespace KVA.Cinema.Controllers
         }
 
         // GET: Directors
-        public IActionResult Index()
+        public IActionResult Index(DirectorSort sortingField = DirectorSort.Name, bool isSortDescending = false)
         {
-            var data = DirectorService.ReadAll();
-            return View(data);
+            ViewBag.SortingField = sortingField;
+            ViewBag.SortDescending = isSortDescending;
+
+            var directors = DirectorService.ReadAll();
+
+            if (sortingField == DirectorSort.Name && isSortDescending)
+            {
+                directors = directors.OrderByDescending(s => s.Name);
+            }
+            else
+            {
+                directors = directors.OrderBy(s => s.Name);
+            }
+
+            return View(directors.ToList());
         }
 
         // GET: Directors/Details/5

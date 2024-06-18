@@ -50,7 +50,10 @@
             <th>
                 @Html.DisplayNameFor(model => model.TagNames)
             </th>
-            <th></th>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <th><!--Header for Action links--></th>
+            }
         </tr>
     </thead>
     <tbody>

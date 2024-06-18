@@ -59,9 +59,6 @@ namespace KVA.Cinema.Controllers
                 case VideoSort.Language:
                     videos = isSortDescending ? videos.OrderByDescending(s => s.LanguageName) : videos.OrderBy(s => s.LanguageName);
                     break;
-                case VideoSort.Genre:
-                    videos = isSortDescending ? videos.OrderByDescending(s => s.GenreNames) : videos.OrderBy(s => s.GenreNames);
-                    break;
                 default:
                     videos = videos.OrderBy(s => s.Name);
                     break;

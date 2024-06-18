@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<KVA.Cinema.Models.ViewModels.SubscriptionLevel.SubscriptionLevelDisplayViewModel>
+@using KVA.Cinema.Models.ViewModels.SubscriptionLevel;
 
 @{
     ViewData["Title"] = "Index";
@@ -20,9 +21,16 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Title)
+                @Html.ActionLink(
+                    ViewBag.SortingField == SubscriptionLevelSort.Title
+                    ? $"Title {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    : "Title",
+                    "Index", new { sortingField = SubscriptionLevelSort.Title, isSortDescending = (ViewBag.SortingField == SubscriptionLevelSort.Title && !ViewBag.SortDescending) })
             </th>
-            <th></th>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <th><!--Header for Action links--></th>
+            }
         </tr>
     </thead>
     <tbody>

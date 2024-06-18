@@ -1,14 +1,12 @@
-﻿namespace KVA.Cinema.Models.ViewModels.Video
+﻿namespace KVA.Cinema.Models.ViewModels.Country
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
-    public enum VideoSort
+    public enum CountrySort
     {
-        Name,
-        ReleasedIn,
-        Language
+        Name
     }
 }

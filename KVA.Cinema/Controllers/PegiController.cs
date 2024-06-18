@@ -22,10 +22,23 @@ namespace KVA.Cinema.Controllers
         }
 
         // GET: Pegi
-        public IActionResult Index()
+        public IActionResult Index(PegiSort sortingField = PegiSort.Type, bool isSortDescending = false)
         {
-            var data = PegiService.ReadAll();
-            return View(data);
+            ViewBag.SortingField = sortingField;
+            ViewBag.SortDescending = isSortDescending;
+
+            var pegi = PegiService.ReadAll();
+
+            if (sortingField == PegiSort.Type && isSortDescending)
+            {
+                pegi = pegi.OrderByDescending(s => s.Type);
+            }
+            else
+            {
+                pegi = pegi.OrderBy(s => s.Type);
+            }
+
+            return View(pegi.ToList());
         }
 
         // GET: Pegi/Details/5

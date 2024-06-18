@@ -1,14 +1,12 @@
-﻿namespace KVA.Cinema.Models.ViewModels.Video
+﻿namespace KVA.Cinema.Models.ViewModels.Language
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
-    public enum VideoSort
+    public enum LanguageSort
     {
-        Name,
-        ReleasedIn,
-        Language
+        Name
     }
 }

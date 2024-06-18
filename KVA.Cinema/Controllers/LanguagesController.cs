@@ -22,10 +22,23 @@ namespace KVA.Cinema.Controllers
         }
 
         // GET: Languages
-        public IActionResult Index()
+        public IActionResult Index(LanguageSort sortingField = LanguageSort.Name, bool isSortDescending = false)
         {
-            var data = LanguageService.ReadAll();
-            return View(data);
+            ViewBag.SortingField = sortingField;
+            ViewBag.SortDescending = isSortDescending;
+
+            var languages = LanguageService.ReadAll();
+
+            if (sortingField == LanguageSort.Name && isSortDescending)
+            {
+                languages = languages.OrderByDescending(s => s.Name);
+            }
+            else
+            {
+                languages = languages.OrderBy(s => s.Name);
+            }
+
+            return View(languages.ToList());
         }
 
         // GET: Languages/Details/5
