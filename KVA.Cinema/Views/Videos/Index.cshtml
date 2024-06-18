@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<KVA.Cinema.Models.ViewModels.Video.VideoDisplayViewModel>
+@using KVA.Cinema.Models.ViewModels.Video;
 
 @{
     ViewData["Title"] = "Index";
@@ -23,13 +24,25 @@
                 @Html.DisplayNameFor(model => model.Preview)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                @Html.ActionLink(
+                    ViewBag.SortingField == VideoSort.Name
+                    ? $"Title {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    : "Title",
+                    "Index", new { sortingField = VideoSort.Name, isSortDescending = (ViewBag.SortingField == VideoSort.Name && !ViewBag.SortDescending) })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ReleasedIn)
+                @Html.ActionLink(
+                    ViewBag.SortingField == VideoSort.ReleasedIn
+                    ? $"Released in {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    : "Released in",
+                    "Index", new { sortingField = VideoSort.ReleasedIn, isSortDescending = (ViewBag.SortingField == VideoSort.ReleasedIn && !ViewBag.SortDescending) })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LanguageName)
+                @Html.ActionLink(
+                    ViewBag.SortingField == VideoSort.Language
+                    ? $"Language {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    : "Language",
+                    "Index", new { sortingField = VideoSort.Language, isSortDescending = (ViewBag.SortingField == VideoSort.Language && !ViewBag.SortDescending) })
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.GenreNames)
@@ -37,7 +50,10 @@
             <th>
                 @Html.DisplayNameFor(model => model.TagNames)
             </th>
-            <th></th>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <th><!--Header for Action links--></th>
+            }
         </tr>
     </thead>
     <tbody>

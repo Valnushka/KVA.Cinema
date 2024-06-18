@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<KVA.Cinema.Models.ViewModels.Subscription.SubscriptionDisplayViewModel>
+@using KVA.Cinema.Models.ViewModels.Subscription;
 
 @{
     ViewData["Title"] = "Index";
@@ -19,51 +20,81 @@
 <table class="table">
     <thead>
         <tr>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <th><!--Header for "Buy" button--></th>
+            }
             <th>
-
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
+                @Html.ActionLink(
+                    ViewBag.SortingField == SubscriptionSort.Title
+                    ? $"Title {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    : "Title",
+                    "Index", new { sortingField = SubscriptionSort.Title, isSortDescending = (ViewBag.SortingField == SubscriptionSort.Title && !ViewBag.SortDescending) })
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Cost)
+                @Html.ActionLink(
+                    ViewBag.SortingField == SubscriptionSort.Cost
+                    ? $"Cost {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    : "Cost",
+                    "Index", new { sortingField = SubscriptionSort.Cost, isSortDescending = (ViewBag.SortingField == SubscriptionSort.Cost && !ViewBag.SortDescending) })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ReleasedIn)
+                @Html.ActionLink(
+                    ViewBag.SortingField == SubscriptionSort.ReleasedIn
+                    ? $"Released in {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    : "Released in",
+                    "Index", new { sortingField = SubscriptionSort.ReleasedIn, isSortDescending = (ViewBag.SortingField == SubscriptionSort.ReleasedIn && !ViewBag.SortDescending) })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Duration)
+                @Html.ActionLink(
+                    ViewBag.SortingField == SubscriptionSort.Duration
+                    ? $"Duration {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    : "Duration",
+                    "Index", new { sortingField = SubscriptionSort.Duration, isSortDescending = (ViewBag.SortingField == SubscriptionSort.Duration && !ViewBag.SortDescending) })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.AvailableUntil)
+                @Html.ActionLink(
+                    ViewBag.SortingField == SubscriptionSort.AvailableUntil
+                    ? $"Available until {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    : "Available until",
+                    "Index", new { sortingField = SubscriptionSort.AvailableUntil, isSortDescending = (ViewBag.SortingField == SubscriptionSort.AvailableUntil && !ViewBag.SortDescending) })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LevelName)
+                @Html.ActionLink(
+                    ViewBag.SortingField == SubscriptionSort.Level
+                    ? $"Level {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    : "Level",
+                    "Index", new { sortingField = SubscriptionSort.Level, isSortDescending = (ViewBag.SortingField == SubscriptionSort.Level && !ViewBag.SortDescending) })
             </th>
-            <th></th>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <th><!--Header for Action links--></th>
+            }
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
             <tr>
-                <td>
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        if (item.IsPurchasedByCurrentUser)
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <td>
+                        @if (item.IsPurchasedByCurrentUser)
                         {
-                            @Html.ActionLink("Cancel", "CancelSubscription", "Users", new { subscriptionId = item.Id }, new { @class = "btn btn-primary", @title = "Cancel subscription" })
-                            @Html.ActionLink("Buy", "", new { subscriptionId = item.Id }, new { @class = "btn btn-secondary disabled", @title = "You are already have this subscription" })
+                        @Html.ActionLink("Cancel", "CancelSubscription", "Users", new { subscriptionId = item.Id }, new { @class = "btn btn-primary", @title = "Cancel subscription" })
+                        @Html.ActionLink("Buy", "", new { subscriptionId = item.Id }, new { @class = "btn btn-secondary disabled", @title = "You are already have this subscription" })
                         }
                         else
                         {
-                            @Html.ActionLink("Buy", "BuySubscription", "Users", new { subscriptionId = item.Id }, new { @class = "btn btn-primary", @title = "Buy this subscription" })
+                        @Html.ActionLink("Buy", "BuySubscription", "Users", new { subscriptionId = item.Id }, new { @class = "btn btn-primary", @title = "Buy this subscription" })
                         }
-                    }
-                </td>
+                    </td>
+                }
+
                 <td>
                     @Html.DisplayFor(modelItem => item.Title)
                 </td>

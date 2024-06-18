@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<KVA.Cinema.Models.Genre.GenreDisplayViewModel>
+@using KVA.Cinema.Models.ViewModels.Genre;
 
 @{
     ViewData["Title"] = "Index";
@@ -20,9 +21,16 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Title)
+                @Html.ActionLink(
+                    ViewBag.SortingField == GenreSort.Title
+                    ? $"Title {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    : "Title",
+                    "Index", new { sortingField = GenreSort.Title, isSortDescending = (ViewBag.SortingField == GenreSort.Title && !ViewBag.SortDescending) })
             </th>
-            <th></th>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <th><!--Header for Action links--></th>
+            }
         </tr>
     </thead>
     <tbody>

@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<KVA.Cinema.Models.ViewModels.Tag.TagDisplayViewModel>
+@using KVA.Cinema.Models.ViewModels.Tag;
 
 @{
     ViewData["Title"] = "Index";
@@ -20,12 +21,19 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Text)
+                @Html.ActionLink(
+                    ViewBag.SortingField == TagSort.Text
+                    ? $"Text {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    : "Text",
+                    "Index", new { sortingField = TagSort.Text, isSortDescending = (ViewBag.SortingField == TagSort.Text && !ViewBag.SortDescending) })
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Color)
             </th>
-            <th></th>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <th><!--Header for Action links--></th>
+            }
         </tr>
     </thead>
     <tbody>

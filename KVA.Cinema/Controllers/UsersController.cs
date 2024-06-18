@@ -29,10 +29,36 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
         }
 
         // GET: Users
-        public IActionResult Index()
+        public IActionResult Index(UserSort sortingField = UserSort.Nickname, bool isSortDescending = false)
         {
-            var data = UserService.ReadAll();
-            return View(data);
+            ViewBag.SortingField = sortingField;
+            ViewBag.SortDescending = isSortDescending;
+
+            var users = UserService.ReadAll();
+
+            switch (sortingField)
+            {
+                case UserSort.Nickname:
+                    users = isSortDescending ? users.OrderByDescending(s => s.Nickname) : users.OrderBy(s => s.Nickname);
+                    break;
+                case UserSort.FirstName:
+                    users = isSortDescending ? users.OrderByDescending(s => s.FirstName) : users.OrderBy(s => s.FirstName);
+                    break;
+                case UserSort.LastName:
+                    users = isSortDescending ? users.OrderByDescending(s => s.LastName) : users.OrderBy(s => s.LastName);
+                    break;
+                case UserSort.BirthDate:
+                    users = isSortDescending ? users.OrderByDescending(s => s.BirthDate) : users.OrderBy(s => s.BirthDate);
+                    break;
+                case UserSort.Email:
+                    users = isSortDescending ? users.OrderByDescending(s => s.Email) : users.OrderBy(s => s.Email);
+                    break;
+                default:
+                    users = users.OrderBy(s => s.Nickname);
+                    break;
+            }
+
+            return View(users.ToList());
         }
 
         // GET: Users/Details/5

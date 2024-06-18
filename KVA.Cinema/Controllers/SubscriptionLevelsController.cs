@@ -22,10 +22,23 @@ namespace KVA.Cinema.Controllers
         }
 
         // GET: SubscriptionLevels
-        public IActionResult Index()
+        public IActionResult Index(SubscriptionLevelSort sortingField = SubscriptionLevelSort.Title, bool isSortDescending = false)
         {
-            var data = SubscriptionLevelService.ReadAll();
-            return View(data);
+            ViewBag.SortingField = sortingField;
+            ViewBag.SortDescending = isSortDescending;
+
+            var subscriptionLevels = SubscriptionLevelService.ReadAll();
+
+            if (sortingField == SubscriptionLevelSort.Title && isSortDescending)
+            {
+                subscriptionLevels = subscriptionLevels.OrderByDescending(s => s.Title);
+            }
+            else
+            {
+                subscriptionLevels = subscriptionLevels.OrderBy(s => s.Title);
+            }
+
+            return View(subscriptionLevels.ToList());
         }
 
         // GET: SubscriptionLevels/Details/5

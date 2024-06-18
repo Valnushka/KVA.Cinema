@@ -23,10 +23,23 @@ namespace KVA.Cinema.Controllers
         }
 
         // GET: Genres
-        public IActionResult Index()
+        public IActionResult Index(GenreSort sortingField = GenreSort.Title, bool isSortDescending = false)
         {
-            var data = GenreService.ReadAll();
-            return View(data);
+            ViewBag.SortingField = sortingField;
+            ViewBag.SortDescending = isSortDescending;
+
+            var genres = GenreService.ReadAll();
+
+            if (sortingField == GenreSort.Title && isSortDescending)
+            {
+                genres = genres.OrderByDescending(s => s.Title);
+            }
+            else
+            {
+                genres = genres.OrderBy(s => s.Title);
+            }
+
+            return View(genres.ToList());
         }
 
         // GET: Genres/Details/5
