@@ -10,11 +10,20 @@ using KVA.Cinema.Models.Entities;
 using KVA.Cinema.Models.Genre;
 using KVA.Cinema.Services;
 using KVA.Cinema.Models.ViewModels.Genre;
+using KVA.Cinema.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace KVA.Cinema.Controllers
 {
     public class GenresController : Controller
     {
+        private static Breadcrumb homeBreadcrumb;
+        private static Breadcrumb indexBreadcrumb;
+        private static Breadcrumb detailsBreadcrumb;
+        private static Breadcrumb createBreadcrumb;
+        private static Breadcrumb editBreadcrumb;
+        private static Breadcrumb deleteBreadcrumb;
+
         private GenreService GenreService { get; }
 
         public GenresController(GenreService genreService)
@@ -22,11 +31,25 @@ namespace KVA.Cinema.Controllers
             GenreService = genreService;
         }
 
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            base.OnActionExecuting(context);
+
+            homeBreadcrumb = new Breadcrumb { Title = "Home", Url = Url.Action("Index", "Home") };
+            indexBreadcrumb = new Breadcrumb { Title = "Genres", Url = Url.Action("Index", "Genres") };
+            detailsBreadcrumb = new Breadcrumb { Title = "Details", Url = Url.Action("Details", "Genres") };
+            createBreadcrumb = new Breadcrumb { Title = "Create", Url = Url.Action("Create", "Genres") };
+            editBreadcrumb = new Breadcrumb { Title = "Edit", Url = Url.Action("Edit", "Genres") };
+            deleteBreadcrumb = new Breadcrumb { Title = "Delete", Url = Url.Action("Delete", "Genres") };
+        }
+
         // GET: Genres
         public IActionResult Index(GenreSort sortingField = GenreSort.Title, bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;
             ViewBag.SortDescending = isSortDescending;
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb);
 
             var genres = GenreService.ReadAll();
 
@@ -58,12 +81,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, detailsBreadcrumb);
+
             return View(genre);
         }
 
         // GET: Genres/Create
         public IActionResult Create()
         {
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
+
             return View();
         }
 
@@ -86,6 +113,9 @@ namespace KVA.Cinema.Controllers
                     ModelState.AddModelError(string.Empty, ex.Message);
                 }
             }
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
+
             return View(genreData);
         }
 
@@ -110,6 +140,8 @@ namespace KVA.Cinema.Controllers
                 Id = genre.Id,
                 Title = genre.Title
             };
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
 
             return View(genreEditModel);
         }
@@ -138,6 +170,9 @@ namespace KVA.Cinema.Controllers
                     ModelState.AddModelError(string.Empty, ex.Message);
                 }
             }
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
+
             return View(genreNewData);
         }
 
@@ -157,6 +192,8 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
+
             return View(genre);
         }
 
@@ -169,12 +206,19 @@ namespace KVA.Cinema.Controllers
                 .FirstOrDefault(m => m.Id == id);
             GenreService.Delete(genre.Id);
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
+
             return RedirectToAction(nameof(Index));
         }
 
         private bool GenreExists(Guid id)
         {
             return GenreService.IsEntityExist(id);
+        }
+
+        private void AddBreadcrumbs(params Breadcrumb[] breadcrumbs)
+        {
+            ViewBag.Breadcrumbs = new List<Breadcrumb>(breadcrumbs);
         }
     }
 }

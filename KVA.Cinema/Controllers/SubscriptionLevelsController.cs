@@ -9,11 +9,20 @@ using KVA.Cinema.Models;
 using KVA.Cinema.Models.Entities;
 using KVA.Cinema.Services;
 using KVA.Cinema.Models.ViewModels.SubscriptionLevel;
+using KVA.Cinema.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace KVA.Cinema.Controllers
 {
     public class SubscriptionLevelsController : Controller
     {
+        private static Breadcrumb homeBreadcrumb;
+        private static Breadcrumb indexBreadcrumb;
+        private static Breadcrumb detailsBreadcrumb;
+        private static Breadcrumb createBreadcrumb;
+        private static Breadcrumb editBreadcrumb;
+        private static Breadcrumb deleteBreadcrumb;
+
         private SubscriptionLevelService SubscriptionLevelService { get; set; }
 
         public SubscriptionLevelsController(SubscriptionLevelService subscriptionLevelService)
@@ -21,11 +30,25 @@ namespace KVA.Cinema.Controllers
             SubscriptionLevelService = subscriptionLevelService;
         }
 
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            base.OnActionExecuting(context);
+
+            homeBreadcrumb = new Breadcrumb { Title = "Home", Url = Url.Action("Index", "Home") };
+            indexBreadcrumb = new Breadcrumb { Title = "SubscriptionLevels", Url = Url.Action("Index", "SubscriptionLevels") };
+            detailsBreadcrumb = new Breadcrumb { Title = "Details", Url = Url.Action("Details", "SubscriptionLevels") };
+            createBreadcrumb = new Breadcrumb { Title = "Create", Url = Url.Action("Create", "SubscriptionLevels") };
+            editBreadcrumb = new Breadcrumb { Title = "Edit", Url = Url.Action("Edit", "SubscriptionLevels") };
+            deleteBreadcrumb = new Breadcrumb { Title = "Delete", Url = Url.Action("Delete", "SubscriptionLevels") };
+        }
+
         // GET: SubscriptionLevels
         public IActionResult Index(SubscriptionLevelSort sortingField = SubscriptionLevelSort.Title, bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;
             ViewBag.SortDescending = isSortDescending;
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb);
 
             var subscriptionLevels = SubscriptionLevelService.ReadAll();
 
@@ -57,12 +80,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, detailsBreadcrumb);
+
             return View(subscriptionLevel);
         }
 
         // GET: SubscriptionLevels/Create
         public IActionResult Create()
         {
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
+
             return View();
         }
 
@@ -85,6 +112,9 @@ namespace KVA.Cinema.Controllers
                     ModelState.AddModelError(string.Empty, ex.Message);
                 }
             }
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
+
             return View(subscriptionLevelData);
         }
 
@@ -109,6 +139,8 @@ namespace KVA.Cinema.Controllers
                 Id = subscriptionLevel.Id,
                 Title = subscriptionLevel.Title
             };
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
 
             return View(subscriptionLevelEditModel);
         }
@@ -137,6 +169,9 @@ namespace KVA.Cinema.Controllers
                     ModelState.AddModelError(string.Empty, ex.Message);
                 }
             }
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
+
             return View(subscriptionLevelNewData);
         }
 
@@ -151,6 +186,8 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
+
             return View(subscriptionLevel);
         }
 
@@ -163,12 +200,19 @@ namespace KVA.Cinema.Controllers
                 .FirstOrDefault(m => m.Id == id);
             SubscriptionLevelService.Delete(subscriptionLevel.Id);
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
+
             return RedirectToAction(nameof(Index));
         }
 
         private bool SubscriptionLevelExists(Guid id)
         {
             return SubscriptionLevelService.IsEntityExist(id);
+        }
+
+        private void AddBreadcrumbs(params Breadcrumb[] breadcrumbs)
+        {
+            ViewBag.Breadcrumbs = new List<Breadcrumb>(breadcrumbs);
         }
     }
 }

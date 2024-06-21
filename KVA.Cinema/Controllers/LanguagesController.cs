@@ -9,11 +9,20 @@ using KVA.Cinema.Models;
 using KVA.Cinema.Models.Entities;
 using KVA.Cinema.Services;
 using KVA.Cinema.Models.ViewModels.Language;
+using KVA.Cinema.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace KVA.Cinema.Controllers
 {
     public class LanguagesController : Controller
     {
+        private static Breadcrumb homeBreadcrumb;
+        private static Breadcrumb indexBreadcrumb;
+        private static Breadcrumb detailsBreadcrumb;
+        private static Breadcrumb createBreadcrumb;
+        private static Breadcrumb editBreadcrumb;
+        private static Breadcrumb deleteBreadcrumb;
+
         private LanguageService LanguageService { get; }
 
         public LanguagesController(LanguageService languageService)
@@ -21,11 +30,25 @@ namespace KVA.Cinema.Controllers
             LanguageService = languageService;
         }
 
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            base.OnActionExecuting(context);
+
+            homeBreadcrumb = new Breadcrumb { Title = "Home", Url = Url.Action("Index", "Home") };
+            indexBreadcrumb = new Breadcrumb { Title = "Languages", Url = Url.Action("Index", "Languages") };
+            detailsBreadcrumb = new Breadcrumb { Title = "Details", Url = Url.Action("Details", "Languages") };
+            createBreadcrumb = new Breadcrumb { Title = "Create", Url = Url.Action("Create", "Languages") };
+            editBreadcrumb = new Breadcrumb { Title = "Edit", Url = Url.Action("Edit", "Languages") };
+            deleteBreadcrumb = new Breadcrumb { Title = "Delete", Url = Url.Action("Delete", "Languages") };
+        }
+
         // GET: Languages
         public IActionResult Index(LanguageSort sortingField = LanguageSort.Name, bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;
             ViewBag.SortDescending = isSortDescending;
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb);
 
             var languages = LanguageService.ReadAll();
 
@@ -57,12 +80,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, detailsBreadcrumb);
+
             return View(language);
         }
 
         // GET: Languages/Create
         public IActionResult Create()
         {
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
+
             return View();
         }
 
@@ -86,6 +113,9 @@ namespace KVA.Cinema.Controllers
                     ModelState.AddModelError(string.Empty, ex.Message);
                 }
             }
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
+
             return View(languageData);
         }
 
@@ -110,6 +140,8 @@ namespace KVA.Cinema.Controllers
                 Id = language.Id,
                 Name = language.Name
             };
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
 
             return View(languageEditModel);
         }
@@ -138,6 +170,9 @@ namespace KVA.Cinema.Controllers
                     ModelState.AddModelError(string.Empty, ex.Message);
                 }
             }
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
+
             return View(languageNewData);
         }
 
@@ -157,6 +192,8 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
+
             return View(language);
         }
 
@@ -169,12 +206,19 @@ namespace KVA.Cinema.Controllers
                 .FirstOrDefault(m => m.Id == id);
             LanguageService.Delete(language.Id);
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
+
             return RedirectToAction(nameof(Index));
         }
 
         private bool LanguageExists(Guid id)
         {
             return LanguageService.IsEntityExist(id);
+        }
+
+        private void AddBreadcrumbs(params Breadcrumb[] breadcrumbs)
+        {
+            ViewBag.Breadcrumbs = new List<Breadcrumb>(breadcrumbs);
         }
     }
 }

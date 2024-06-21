@@ -13,11 +13,25 @@ using KVA.Cinema.Exceptions;
 using Microsoft.AspNetCore.Identity;
 using KVA.Cinema.Models.ViewModels.User;
 using KVA.Cinema.Models.ViewModels.Subscription;
+using KVA.Cinema.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
 {
     public class UsersController : Controller
     {
+        private static Breadcrumb homeBreadcrumb;
+        private static Breadcrumb indexBreadcrumb;
+        private static Breadcrumb detailsBreadcrumb;
+        private static Breadcrumb createBreadcrumb;
+        private static Breadcrumb editBreadcrumb;
+        private static Breadcrumb deleteBreadcrumb;
+        private static Breadcrumb loginBreadcrumb;
+        private static Breadcrumb logoutBreadcrumb;
+        private static Breadcrumb buySubscriptionBreadcrumb;
+        private static Breadcrumb cancelSubscriptionBreadcrumb;
+        private static Breadcrumb subscriptionsBreadcrumb;
+
         private UserService UserService { get; }
 
         private SubscriptionService SubscriptionService { get; }
@@ -28,11 +42,30 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
             SubscriptionService = subscriptionService;
         }
 
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            base.OnActionExecuting(context);
+
+            homeBreadcrumb = new Breadcrumb { Title = "Home", Url = Url.Action("Index", "Home") };
+            indexBreadcrumb = new Breadcrumb { Title = "Users", Url = Url.Action("Index", "Users") };
+            detailsBreadcrumb = new Breadcrumb { Title = "Details", Url = Url.Action("Details", "Users") };
+            createBreadcrumb = new Breadcrumb { Title = "Create", Url = Url.Action("Create", "Users") };
+            editBreadcrumb = new Breadcrumb { Title = "Edit", Url = Url.Action("Edit", "Users") };
+            deleteBreadcrumb = new Breadcrumb { Title = "Delete", Url = Url.Action("Delete", "Users") };
+            loginBreadcrumb = new Breadcrumb { Title = "Login", Url = Url.Action("Login", "Users") }; ;
+            logoutBreadcrumb = new Breadcrumb { Title = "Logout", Url = Url.Action("Logout", "Users") };
+            buySubscriptionBreadcrumb = new Breadcrumb { Title = "Buy subscription", Url = Url.Action("BuySubscription", "Users") };
+            cancelSubscriptionBreadcrumb = new Breadcrumb { Title = "Cancel subscription", Url = Url.Action("CancelSubscription", "Users") };
+            subscriptionsBreadcrumb = new Breadcrumb { Title = "Subscriptions", Url = Url.Action("Index", "Subscriptions") };
+        }
+
         // GET: Users
         public IActionResult Index(UserSort sortingField = UserSort.Nickname, bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;
             ViewBag.SortDescending = isSortDescending;
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb);
 
             var users = UserService.ReadAll();
 
@@ -80,6 +113,8 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
             //     ? Enumerable.Empty<string>()
             //     : user.UserSubscriptions.Select(x => $"{x.Subscription.Title}: {x.LastUntil}").ToList();
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, detailsBreadcrumb);
+
             return View(user);
         }
 
@@ -87,6 +122,8 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
         [HttpGet]
         public IActionResult Create()
         {
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
+
             return View();
         }
 
@@ -116,6 +153,9 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
                     ModelState.AddModelError(string.Empty, ex.Message);
                 }
             }
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
+
             return View(userData);
         }
 
@@ -135,6 +175,8 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
             {
                 return NotFound();
             }
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
 
             var userEditModel = new UserEditViewModel()
             {
@@ -173,6 +215,9 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
                     ModelState.AddModelError(string.Empty, ex.Message);
                 }
             }
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
+
             return View(userNewData);
         }
 
@@ -192,6 +237,8 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
                 return NotFound();
             }
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
+
             return View(user);
         }
 
@@ -204,12 +251,16 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
                 .FirstOrDefault(m => m.Id == id);
             UserService.Delete(user.Id);
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
+
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
         public IActionResult Login(string returnUrl)
         {
+            AddBreadcrumbs(homeBreadcrumb, loginBreadcrumb);
+
             return View(new LoginViewModel { ReturnUrl = returnUrl });
         }
 
@@ -239,6 +290,9 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
                     ModelState.AddModelError("", "Incorrect login or/and password");
                 }
             }
+
+            AddBreadcrumbs(homeBreadcrumb, loginBreadcrumb);
+
             return View(model);
         }
 
@@ -247,6 +301,9 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
         {
             // удаляем аутентификационные куки
             await UserService.SignInManager.SignOutAsync();
+
+            AddBreadcrumbs(homeBreadcrumb, logoutBreadcrumb);
+
             return RedirectToAction("Index", "Home");
         }
 
@@ -271,6 +328,8 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
 
             subscription.LastUntil = lastUntil;
 
+            AddBreadcrumbs(homeBreadcrumb, subscriptionsBreadcrumb, buySubscriptionBreadcrumb);
+
             return View(subscription);
         }
 
@@ -284,7 +343,7 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
             try
             {
                 UserService.AddSubscription(user.Nickname, subscriptionId);
-                return RedirectToAction(nameof(Index), "Subscriptions");
+                return RedirectToAction(nameof(Index), "Users");
             }
             catch (Exception ex)
             {
@@ -292,6 +351,8 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
             }
 
             var subscription = SubscriptionService.Read(subscriptionId);
+
+            AddBreadcrumbs(homeBreadcrumb, subscriptionsBreadcrumb, buySubscriptionBreadcrumb);
 
             return View(subscription);
         }
@@ -311,6 +372,8 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
                 return NotFound();
             }
 
+            AddBreadcrumbs(homeBreadcrumb, subscriptionsBreadcrumb, cancelSubscriptionBreadcrumb);
+
             return View(subscription);
         }
 
@@ -324,7 +387,7 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
             try
             {
                 UserService.RemoveSubscription(user.Nickname, subscriptionId);
-                return RedirectToAction(nameof(Index), "Subscriptions");
+                return RedirectToAction(nameof(Index), "Users");
             }
             catch (Exception ex)
             {
@@ -333,12 +396,19 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
 
             var subscription = SubscriptionService.Read(subscriptionId);
 
+            AddBreadcrumbs(homeBreadcrumb, subscriptionsBreadcrumb, cancelSubscriptionBreadcrumb);
+
             return View(subscription);
         }
 
         private bool UserExists(Guid id)
         {
             return UserService.IsEntityExist(id);
+        }
+
+        private void AddBreadcrumbs(params Breadcrumb[] breadcrumbs)
+        {
+            ViewBag.Breadcrumbs = new List<Breadcrumb>(breadcrumbs);
         }
     }
 }

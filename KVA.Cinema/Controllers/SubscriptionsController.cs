@@ -10,11 +10,20 @@ using KVA.Cinema.Models.Entities;
 using KVA.Cinema.Services;
 using KVA.Cinema.Models.ViewModels.Subscription;
 using KVA.Cinema.Models.ViewModels.Video;
+using KVA.Cinema.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace KVA.Cinema.Controllers
 {
     public class SubscriptionsController : Controller
     {
+        private static Breadcrumb homeBreadcrumb;
+        private static Breadcrumb indexBreadcrumb;
+        private static Breadcrumb detailsBreadcrumb;
+        private static Breadcrumb createBreadcrumb;
+        private static Breadcrumb editBreadcrumb;
+        private static Breadcrumb deleteBreadcrumb;
+
         private SubscriptionService SubscriptionService { get; set; }
 
         private SubscriptionLevelService SubscriptionLevelService { get; set; }
@@ -23,7 +32,10 @@ namespace KVA.Cinema.Controllers
 
         private VideoService VideoService { get; set; }
 
-        public SubscriptionsController(SubscriptionService subscriptionService, SubscriptionLevelService subscriptionLevelService, UserService userService, VideoService videoService)
+        public SubscriptionsController(SubscriptionService subscriptionService,
+                                       SubscriptionLevelService subscriptionLevelService,
+                                       UserService userService,
+                                       VideoService videoService)
         {
             SubscriptionService = subscriptionService;
             SubscriptionLevelService = subscriptionLevelService;
@@ -31,11 +43,25 @@ namespace KVA.Cinema.Controllers
             VideoService = videoService;
         }
 
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            base.OnActionExecuting(context);
+
+            homeBreadcrumb = new Breadcrumb { Title = "Home", Url = Url.Action("Index", "Home") };
+            indexBreadcrumb = new Breadcrumb { Title = "Subscriptions", Url = Url.Action("Index", "Subscriptions") };
+            detailsBreadcrumb = new Breadcrumb { Title = "Details", Url = Url.Action("Details", "Subscriptions") };
+            createBreadcrumb = new Breadcrumb { Title = "Create", Url = Url.Action("Create", "Subscriptions") };
+            editBreadcrumb = new Breadcrumb { Title = "Edit", Url = Url.Action("Edit", "Subscriptions") };
+            deleteBreadcrumb = new Breadcrumb { Title = "Delete", Url = Url.Action("Delete", "Subscriptions") };
+        }
+
         // GET: Subscriptions
         public IActionResult Index(SubscriptionSort sortingField = SubscriptionSort.Title, bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;
             ViewBag.SortDescending = isSortDescending;
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb);
 
             var subscriptions = SubscriptionService.ReadAll();
 
@@ -91,6 +117,8 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, detailsBreadcrumb);
+
             return View(subscription);
         }
 
@@ -99,6 +127,8 @@ namespace KVA.Cinema.Controllers
         {
             ViewBag.LevelId = new SelectList(SubscriptionLevelService.ReadAll(), "Id", "Title");
             ViewBag.VideoIds = new SelectList(VideoService.ReadAll(), "Id", nameof(VideoDisplayViewModel.Name));
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
 
             return View();
         }
@@ -126,6 +156,8 @@ namespace KVA.Cinema.Controllers
             ViewBag.LevelId = new SelectList(SubscriptionLevelService.ReadAll(), "Id", "Title");
             ViewBag.VideoIds = new SelectList(VideoService.ReadAll(), "Id", nameof(VideoDisplayViewModel.Name));
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
+
             return View(subscriptionData);
         }
 
@@ -147,6 +179,8 @@ namespace KVA.Cinema.Controllers
 
             ViewBag.LevelId = new SelectList(SubscriptionLevelService.ReadAll(), "Id", "Title");
             ViewBag.VideoIds = new SelectList(VideoService.ReadAll(), "Id", nameof(VideoDisplayViewModel.Name));
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
 
             var subscriptionEditModel = new SubscriptionEditViewModel()
             {
@@ -192,6 +226,8 @@ namespace KVA.Cinema.Controllers
             ViewBag.LevelId = new SelectList(SubscriptionLevelService.ReadAll(), "Id", "Title");
             ViewBag.VideoIds = new SelectList(VideoService.ReadAll(), "Id", nameof(VideoDisplayViewModel.Name));
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
+
             return View(subscriptionNewData);
         }
 
@@ -206,6 +242,8 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
+
             return View(subscription);
         }
 
@@ -218,12 +256,19 @@ namespace KVA.Cinema.Controllers
                 .FirstOrDefault(m => m.Id == id);
             SubscriptionService.Delete(subscription.Id);
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
+
             return RedirectToAction(nameof(Index));
         }
 
         private bool SubscriptionExists(Guid id)
         {
             return SubscriptionService.IsEntityExist(id);
+        }
+
+        private void AddBreadcrumbs(params Breadcrumb[] breadcrumbs)
+        {
+            ViewBag.Breadcrumbs = new List<Breadcrumb>(breadcrumbs);
         }
     }
 }
