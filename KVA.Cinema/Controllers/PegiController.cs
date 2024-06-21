@@ -9,11 +9,20 @@ using KVA.Cinema.Models;
 using KVA.Cinema.Models.Entities;
 using KVA.Cinema.Services;
 using KVA.Cinema.Models.ViewModels.Pegi;
+using KVA.Cinema.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace KVA.Cinema.Controllers
 {
     public class PegiController : Controller
     {
+        private static Breadcrumb homeBreadcrumb;
+        private static Breadcrumb indexBreadcrumb;
+        private static Breadcrumb detailsBreadcrumb;
+        private static Breadcrumb createBreadcrumb;
+        private static Breadcrumb editBreadcrumb;
+        private static Breadcrumb deleteBreadcrumb;
+
         private PegiService PegiService { get; }
 
         public PegiController(PegiService pegiService)
@@ -21,11 +30,25 @@ namespace KVA.Cinema.Controllers
             PegiService = pegiService;
         }
 
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            base.OnActionExecuting(context);
+
+            homeBreadcrumb = new Breadcrumb { Title = "Home", Url = Url.Action("Index", "Home") };
+            indexBreadcrumb = new Breadcrumb { Title = "Pegi", Url = Url.Action("Index", "Pegi") };
+            detailsBreadcrumb = new Breadcrumb { Title = "Details", Url = Url.Action("Details", "Pegi") };
+            createBreadcrumb = new Breadcrumb { Title = "Create", Url = Url.Action("Create", "Pegi") };
+            editBreadcrumb = new Breadcrumb { Title = "Edit", Url = Url.Action("Edit", "Pegi") };
+            deleteBreadcrumb = new Breadcrumb { Title = "Delete", Url = Url.Action("Delete", "Pegi") };
+        }
+
         // GET: Pegi
         public IActionResult Index(PegiSort sortingField = PegiSort.Type, bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;
             ViewBag.SortDescending = isSortDescending;
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb);
 
             var pegi = PegiService.ReadAll();
 
@@ -57,12 +80,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, detailsBreadcrumb);
+
             return View(pegi);
         }
 
         // GET: Pegi/Create
         public IActionResult Create()
         {
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
+
             return View();
         }
 
@@ -86,6 +113,9 @@ namespace KVA.Cinema.Controllers
                     ModelState.AddModelError(string.Empty, ex.Message);
                 }
             }
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
+
             return View(pegiData);
         }
 
@@ -110,6 +140,8 @@ namespace KVA.Cinema.Controllers
                 Id = pegi.Id,
                 Type = pegi.Type
             };
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
 
             return View(pegiEditModel);
         }
@@ -138,6 +170,9 @@ namespace KVA.Cinema.Controllers
                     ModelState.AddModelError(string.Empty, ex.Message);
                 }
             }
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
+
             return View(pegiNewData);
         }
 
@@ -157,6 +192,8 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
+
             return View(pegi);
         }
 
@@ -169,7 +206,14 @@ namespace KVA.Cinema.Controllers
                 .FirstOrDefault(m => m.Id == id);
             PegiService.Delete(pegi.Id);
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
+
             return RedirectToAction(nameof(Index));
+        }
+
+        private void AddBreadcrumbs(params Breadcrumb[] breadcrumbs)
+        {
+            ViewBag.Breadcrumbs = new List<Breadcrumb>(breadcrumbs);
         }
     }
 }

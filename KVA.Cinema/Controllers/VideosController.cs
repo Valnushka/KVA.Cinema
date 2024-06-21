@@ -4,11 +4,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using KVA.Cinema.Services;
 using KVA.Cinema.Models.ViewModels.Video;
+using KVA.Cinema.Models.ViewModels;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace KVA.Cinema.Controllers
 {
     public class VideosController : Controller
     {
+        private static Breadcrumb homeBreadcrumb;
+        private static Breadcrumb indexBreadcrumb;
+        private static Breadcrumb detailsBreadcrumb;
+        private static Breadcrumb createBreadcrumb;
+        private static Breadcrumb editBreadcrumb;
+        private static Breadcrumb deleteBreadcrumb;
+
         private VideoService VideoService { get; }
 
         private CountryService CountryService { get; }
@@ -40,11 +50,25 @@ namespace KVA.Cinema.Controllers
             TagService = tagService;
         }
 
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            base.OnActionExecuting(context);
+
+            homeBreadcrumb = new Breadcrumb { Title = "Home", Url = Url.Action("Index", "Home") };
+            indexBreadcrumb = new Breadcrumb { Title = "Videos", Url = Url.Action("Index", "Videos") };
+            detailsBreadcrumb = new Breadcrumb { Title = "Details", Url = Url.Action("Details", "Videos") };
+            createBreadcrumb = new Breadcrumb { Title = "Create", Url = Url.Action("Create", "Videos") };
+            editBreadcrumb = new Breadcrumb { Title = "Edit", Url = Url.Action("Edit", "Videos") };
+            deleteBreadcrumb = new Breadcrumb { Title = "Delete", Url = Url.Action("Delete", "Videos") };
+        }
+
         // GET: Videos
         public IActionResult Index(VideoSort sortingField = VideoSort.Name, bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;
             ViewBag.SortDescending = isSortDescending;
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb);
 
             var videos = VideoService.ReadAll();
 
@@ -83,6 +107,8 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb);
+
             return View(video);
         }
 
@@ -95,6 +121,9 @@ namespace KVA.Cinema.Controllers
             ViewBag.PegiId = new SelectList(PegiService.ReadAll(), "Id", "Type");
             ViewBag.GenreIds = new SelectList(GenreService.ReadAll(), "Id", "Title");
             ViewBag.TagIds = new SelectList(TagService.ReadAll(), "Id", "Text");
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
+
             return View();
         }
 
@@ -128,6 +157,8 @@ namespace KVA.Cinema.Controllers
             ViewBag.GenreIds = new SelectList(GenreService.ReadAll(), "Id", "Title");
             ViewBag.TagIds = new SelectList(TagService.ReadAll(), "Id", "Text");
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
+
             return View(videoData);
         }
 
@@ -153,6 +184,8 @@ namespace KVA.Cinema.Controllers
             ViewBag.PegiId = new SelectList(PegiService.ReadAll(), "Id", "Type");
             ViewBag.GenreIds = new SelectList(GenreService.ReadAll(), "Id", "Title");
             ViewBag.TagIds = new SelectList(TagService.ReadAll(), "Id", "Text");
+
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
 
             var videoEditModel = new VideoEditViewModel()
             {
@@ -209,6 +242,8 @@ namespace KVA.Cinema.Controllers
             ViewBag.GenreIds = new SelectList(GenreService.ReadAll(), "Id", "Title");
             ViewBag.TagIds = new SelectList(TagService.ReadAll(), "Id", "Text");
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
+
             return View(videoNewData);
         }
 
@@ -228,6 +263,8 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
+
             return View(video);
         }
 
@@ -240,12 +277,19 @@ namespace KVA.Cinema.Controllers
                 .FirstOrDefault(m => m.Id == id);
             VideoService.Delete(video.Id);
 
+            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
+
             return RedirectToAction(nameof(Index));
         }
 
         private bool VideoExists(Guid id)
         {
             return VideoService.IsEntityExist(id);
+        }
+
+        private void AddBreadcrumbs(params Breadcrumb[] breadcrumbs)
+        {
+            ViewBag.Breadcrumbs = new List<Breadcrumb>(breadcrumbs);
         }
     }
 }
