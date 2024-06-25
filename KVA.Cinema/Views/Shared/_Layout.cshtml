@@ -28,29 +28,52 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="nav nav-pills">
-                        <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Index", "Users")">Users</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Index", "Videos")">Videos</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Index", "Subscriptions")">Subscriptions</a>
-                        </li>
+                    @{
+                        Dictionary<string, string> mainControllers = new Dictionary<string, string>
+                            {
+                                { "Users", "Users" },
+                                { "Videos", "Videos" },
+                                { "Subscriptions", "Subscriptions" }
+                            };
+
+                        Dictionary<string, string> lookupControllers = new Dictionary<string, string>
+                            {
+                                { "Countries", "Countries" },
+                                { "Languages", "Languages" },
+                                { "Genres", "Genres" },
+                                { "Directors", "Directors" },
+                                { "Pegi", "PEGI" },
+                                { "SubscriptionLevels", "Subscription levels" },
+                                { "Tags", "Tags" }
+                            };
+
+                        var currentController = ViewContext.RouteData.Values["controller"].ToString();
+                        var currentAction = ViewContext.RouteData.Values["action"].ToString();
+
+                        bool isMainControllerActive = lookupControllers.ContainsKey(currentController);
+                        bool isLookupControllerActive = lookupControllers.ContainsKey(currentController);
+                    }
+
+                    <ul class="nav nav-underline">
+                        @foreach (var controller in mainControllers)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @(currentController == controller.Key ? "active" : "")" href="@Url.Action("Index", controller.Key)">@controller.Value</a>
+                            </li>
+                        }
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Lookups</a>
+                            <a class="nav-link dropdown-toggle @(isLookupControllerActive ? "active" : "")" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Lookups</a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="@Url.Action("Index", "Countries")">Countries</a></li>
-                                <li><a class="dropdown-item" href="@Url.Action("Index", "Languages")">Languages</a></li>
-                                <li><a class="dropdown-item" href="@Url.Action("Index", "Genres")">Genres</a></li>
-                                <li><a class="dropdown-item" href="@Url.Action("Index", "Directors")">Directors</a></li>
-                                <li><a class="dropdown-item" href="@Url.Action("Index", "Pegi")">PEGI</a></li>
-                                <li><a class="dropdown-item" href="@Url.Action("Index", "SubscriptionLevels")">Subscription levels</a></li>
-                                <li><a class="dropdown-item" href="@Url.Action("Index", "Tags")">Tags</a></li>
+                                @foreach (var controller in lookupControllers)
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link @(currentController == controller.Key ? "active" : "")" href="@Url.Action("Index", controller.Key)">@controller.Value</a>
+                                    </li>
+                                }
                             </ul>
                         </li>
                     </ul>
+
                     <div style="display: flex; align-items: center; gap: 1rem">
                         @if (User.Identity.IsAuthenticated)
                         {
