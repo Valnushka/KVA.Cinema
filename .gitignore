@@ -399,3 +399,6 @@ FodyWeavers.xsd
 
 # Uploaded files (images etc)
 */wwwroot/upload
+
+# App settings that might contain secrets
+appsettings.Development.json
