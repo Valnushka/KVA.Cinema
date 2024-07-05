@@ -55,11 +55,6 @@
                     @Html.ValidationMessageFor(model => model.PegiId)
                 </div>
                 <div class="form-group">
-                    @Html.LabelFor(model => model.Length)
-                    @Html.EditorFor(model => model.Length, additionalViewData: new { @class = "form-control" })
-                    @Html.ValidationMessageFor(model => model.Length)
-                </div>
-                <div class="form-group">
                     @Html.LabelFor(model => model.LanguageId)
                     @Html.DropDownListFor(model => model.LanguageId, ViewBag.LanguageId as SelectList)
                     @Html.ValidationMessageFor(model => model.LanguageId)

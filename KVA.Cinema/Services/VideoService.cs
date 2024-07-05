@@ -142,7 +142,7 @@
                 Id = videoId,
                 Title = videoData.Name,
                 Description = videoData.Description,
-                Length = videoData.Length,
+                Length = 1,
                 CountryId = videoData.CountryId,
                 ReleasedIn = videoData.ReleasedIn.ToUniversalTime(),
                 Views = 0,
@@ -293,7 +293,7 @@
 
             video.Title = newVideoData.Name;
             video.Description = newVideoData.Description;
-            video.Length = newVideoData.Length;
+            video.Length = 1;
             video.CountryId = newVideoData.CountryId;
             video.ReleasedIn = newVideoData.ReleasedIn.ToUniversalTime();
             video.Views = video.Views;

@@ -192,7 +192,7 @@ namespace KVA.Cinema.Controllers
                 Id = video.Id,
                 Name = video.Name,
                 Description = video.Description,
-                Length = video.Length,
+                Length = 1,
                 CountryId = video.CountryId,
                 ReleasedIn = video.ReleasedIn,
                 Views = video.Views,
