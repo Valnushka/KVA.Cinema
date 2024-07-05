@@ -1,4 +1,6 @@
-﻿@{
+﻿@using KVA.Cinema.Controllers;
+
+@{
     ViewData["Title"] = "ConfirmEmail";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -7,15 +9,32 @@
 
 @if (ViewBag.IsActivationSucceeded)
 {
-    <p>Your account is successfully activated</p>
-    <p>Welcome!</p>
+    <p>Your account is successfully activated. You will be automatically redirected to home page in 5 seconds.</p>
+
+    <p>Don't want to wait?</p>
+    @Html.ActionLink("Main page", "Index", "Home", null, new { @class = "btn btn-primary" })
 }
 else
 {
-    <p>Error</p>
+    <p>There was an error activating your account. Please try again or contact support.</p>
 }
 
 @section Scripts
 {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        function activateRedirect() {
+            setTimeout(function () {
+                window.location.href = '@Url.Action(nameof(HomeController.Index), "Home")';
+            }, 5000); // Redirect in 5 sec
+        }
+
+        @if (ViewBag.IsActivationSucceeded)
+        {
+            <text>
+            activateRedirect();
+            </text>
+        }
+    </script>
 }

@@ -178,18 +178,18 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
             string userIdDecoded = HttpUtility.UrlDecode(userId);
             string userTokenDecoded = HttpUtility.UrlDecode(userToken);
 
-
-            IdentityResult result = null;
-
             try
             {
-                result = await UserService.ActivateAccountAsync(userIdDecoded, userTokenDecoded);
+                IdentityResult result = await UserService.ActivateAccountAsync(userIdDecoded, userTokenDecoded);
 
                 if (result.Succeeded)
                 {
                     User user = await UserService.UserManager.FindByIdAsync(userId);
                     await UserService.SignInManager.SignInAsync(user, true);
-                    return RedirectToAction("Index", "Home");
+
+                    ViewBag.IsActivationSucceeded = true;
+
+                    return View();
                 }
 
             }
@@ -198,7 +198,7 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
                 ModelState.AddModelError(string.Empty, ex.Message);
             }
 
-            ViewBag.IsActivationSucceeded = result?.Succeeded ?? false;
+            ViewBag.IsActivationSucceeded = false;
 
             return View();
         }

@@ -8,6 +8,8 @@
 <p>Your account is created</p>
 <p>Please check activation link on <b>@ViewBag.Email</b></p>
 
+@Html.ActionLink("Main page", "Index", "Home", null, new { @class = "btn btn-primary" })
+
 @section Scripts
 {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
