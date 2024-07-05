@@ -6,10 +6,12 @@
     using KVA.Cinema.Models.User;
     using KVA.Cinema.Models.ViewModels.User;
     using KVA.Cinema.Utilities;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Identity;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Policy;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
 
@@ -75,13 +77,19 @@
         /// </summary>
         public SignInManager<User> SignInManager { get; }
 
+        public EmailSender EmailSender { get; set; }
+
         private CinemaContext Context { get; }
 
-        public UserService(CinemaContext db, UserManager<User> userManager, SignInManager<User> signInManager)
+        public UserService(CinemaContext db,
+                           UserManager<User> userManager,
+                           SignInManager<User> signInManager,
+                           EmailSender emailSender)
         {
             Context = db;
             UserManager = userManager;
             SignInManager = signInManager;
+            EmailSender = emailSender;
         }
 
         public IEnumerable<UserCreateViewModel> Read()
@@ -223,14 +231,17 @@
                 Email = userData.Email,
                 RegisteredOn = DateTime.UtcNow,
                 LastVisit = DateTime.UtcNow,
-                IsActive = true
+                IsActive = false
             };
 
             var result = await UserManager.CreateAsync(newUser, userData.Password);
 
             if (result.Succeeded)
             {
-                await SignInManager.SignInAsync(newUser, false);
+                string userToken = await UserManager.GenerateEmailConfirmationTokenAsync(newUser);
+                await EmailSender.SendActivateAccountLinkAsync(newUser.Email, newUser.Id.ToString(), newUser.Nickname, userToken);
+                //await SignInManager.SignInAsync(newUser, true); - автоматический вход после создания акка (без подтверждения)
+                Context.SaveChanges();
             }
             else
             {
@@ -243,9 +254,38 @@
             throw new NotImplementedException();
         }
 
+        public async Task<IdentityResult> ActivateAccountAsync(string userId, string token)
+        {
+            if (CheckUtilities.ContainsNullOrEmptyValue(userId, token))
+            {
+                throw new ArgumentNullException("One or more required fields have no value");
+            }
+
+            if (!Guid.TryParse(userId, out Guid userGuidId))
+            {
+                throw new ArgumentException("Invalid user id format");
+            }
+
+            User user = Context.Users.FirstOrDefault(x => x.Id == userGuidId);
+
+            if (user == default)
+            {
+                throw new EntityNotFoundException($"User with id \"{userId}\" not found");
+            }
+
+            IdentityResult result = await UserManager.ConfirmEmailAsync(user, token);
+
+            if (result.Succeeded)
+            {
+                user.IsActive = true;
+                Context.SaveChanges();
+            }
+
+            return result;
+        }
+
         public void Update(Guid userId, UserEditViewModel userNewData)
         {
-
             User user = Context.Users.FirstOrDefault(x => x.Id == userId);
 
             if (user == default)

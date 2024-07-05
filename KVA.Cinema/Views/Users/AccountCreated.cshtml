@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "AccountCreated";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<p>Your account is created</p>
+<p>Please check activation link on <b>@ViewBag.Email</b></p>
+
+@section Scripts
+{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

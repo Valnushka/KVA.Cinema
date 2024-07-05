@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "ConfirmEmail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+
+@if (ViewBag.IsActivationSucceeded)
+{
+    <p>Your account is successfully activated</p>
+    <p>Welcome!</p>
+}
+else
+{
+    <p>Error</p>
+}
+
+@section Scripts
+{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

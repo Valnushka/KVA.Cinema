@@ -15,6 +15,7 @@ using KVA.Cinema.Models.ViewModels.User;
 using KVA.Cinema.Models.ViewModels.Subscription;
 using KVA.Cinema.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System.Web;
 
 namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
 {
@@ -139,7 +140,7 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
                 try
                 {
                     await UserService.CreateAsync(userData);
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(AccountCreated), new { email = userData.Email });
                 }
                 catch (FailedToCreateEntityException ex)
                 {
@@ -157,6 +158,49 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
 
             return View(userData);
+        }
+
+        public IActionResult AccountCreated(string email)
+        {
+            ViewBag.Email = email;
+
+            return View();
+        }
+
+        [HttpGet, HttpPost]
+        public async Task<IActionResult> ConfirmEmail(string userId, string userToken)
+        {
+            if (userId == null || userToken == null)
+            {
+                return NotFound();
+            }
+
+            string userIdDecoded = HttpUtility.UrlDecode(userId);
+            string userTokenDecoded = HttpUtility.UrlDecode(userToken);
+
+
+            IdentityResult result = null;
+
+            try
+            {
+                result = await UserService.ActivateAccountAsync(userIdDecoded, userTokenDecoded);
+
+                if (result.Succeeded)
+                {
+                    User user = await UserService.UserManager.FindByIdAsync(userId);
+                    await UserService.SignInManager.SignInAsync(user, true);
+                    return RedirectToAction("Index", "Home");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
+
+            ViewBag.IsActivationSucceeded = result?.Succeeded ?? false;
+
+            return View();
         }
 
         // GET: Users/Edit/5
@@ -270,24 +314,40 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
         {
             if (ModelState.IsValid)
             {
-                var result =
-                    await UserService.SignInManager.PasswordSignInAsync(model.Nickname, model.Password, model.RememberMe, false);
+                User user = await UserService.UserManager.FindByNameAsync(model.Nickname);
 
-                if (result.Succeeded)
+                if (user == null)
                 {
-                    //проверяем, принадлежит ли URL приложению
-                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                    {
-                        return Redirect(returnUrl);
-                    }
-                    else
-                    {
-                        return RedirectToAction("Index", "Home");
-                    }
+                    ModelState.AddModelError(string.Empty, "User with this nickname is not found");
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Incorrect login or/and password");
+                    if (!user.IsActive || !await UserService.UserManager.IsEmailConfirmedAsync(user))
+                    {
+                        ModelState.AddModelError(string.Empty, "Your account is not active. Please confirm your email to access");
+                        AddBreadcrumbs(homeBreadcrumb, loginBreadcrumb);
+                        return View(model);
+                    }
+
+                    var result = await UserService.SignInManager.PasswordSignInAsync(model.Nickname, model.Password, model.RememberMe, false);
+
+                    if (result.Succeeded)
+                    {
+                        AddBreadcrumbs(homeBreadcrumb, loginBreadcrumb);
+
+                        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                        {
+                            return Redirect(returnUrl);
+                        }
+                        else
+                        {
+                            return RedirectToAction("Index", "Home");
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Incorrect login or/and password");
+                    }
                 }
             }
 

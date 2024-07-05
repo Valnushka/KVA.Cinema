@@ -6,6 +6,9 @@ namespace KVA.Cinema
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
+    using Microsoft.AspNetCore.Mvc.Routing;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -35,22 +38,39 @@ namespace KVA.Cinema
             })
                 .AddEntityFrameworkStores<CinemaContext>();
 
+            services.AddIdentityCore<User>(options => options.SignIn.RequireConfirmedAccount = true)
+                    .AddEntityFrameworkStores<CinemaContext>()
+                    .AddTokenProvider<DataProtectorTokenProvider<User>>(TokenOptions.DefaultProvider);
+
             string connection = Configuration.GetConnectionString("DefaultConnection");
 
             services.AddDbContext<CinemaContext>(options => options.UseLazyLoadingProxies().UseSqlServer(connection));
 
-            services.AddTransient<UserService>();
-            services.AddTransient<VideoService>();
-            services.AddTransient<CountryService>();
-            services.AddTransient<DirectorService>();
-            services.AddTransient<GenreService>();
-            services.AddTransient<SubscriptionLevelService>();
-            services.AddTransient<SubscriptionService>();
-            services.AddTransient<PegiService>();
-            services.AddTransient<LanguageService>();
-            services.AddTransient<TagService>();
+            services.AddHttpContextAccessor();
+            services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            services.AddScoped(provider =>
+            {
+                var actionContext = provider.GetService<IActionContextAccessor>().ActionContext;
+                var factory = provider.GetService<IUrlHelperFactory>();
+                return factory.GetUrlHelper(actionContext);
+            });
+
+            services.AddTransient<EmailSender>()
+                    .AddTransient<UserService>()
+                    .AddTransient<VideoService>()
+                    .AddTransient<CountryService>()
+                    .AddTransient<DirectorService>()
+                    .AddTransient<GenreService>()
+                    .AddTransient<SubscriptionLevelService>()
+                    .AddTransient<SubscriptionService>()
+                    .AddTransient<PegiService>()
+                    .AddTransient<LanguageService>()
+                    .AddTransient<TagService>();
 
             services.AddControllersWithViews();
+
+            services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -68,16 +88,16 @@ namespace KVA.Cinema
             }
 
             app.UseHttpsRedirection()
-                .UseStaticFiles()
-                .UseAuthorization()
-                .UseRouting()
-                .UseAuthentication()
-                .UseEndpoints(endpoints =>
-                {
+               .UseStaticFiles()
+               .UseAuthorization()
+               .UseRouting()
+               .UseAuthentication()
+               .UseEndpoints(endpoints =>
+               {
                     endpoints.MapControllerRoute(
                         name: "default",
                         pattern: "{controller=Home}/{action=Index}/{id?}");
-                });
+               });
         }
     }
 }
