@@ -1,8 +1,8 @@
-﻿namespace KVA.Cinema.Models.ViewModels.SubscriptionLevel
-{
-    using System;
-    using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
+namespace KVA.Cinema.Models.ViewModels.SubscriptionLevel
+{
     public class SubscriptionLevelDisplayViewModel
     {
         public Guid Id { get; set; }

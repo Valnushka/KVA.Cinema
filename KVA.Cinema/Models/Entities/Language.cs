@@ -1,8 +1,8 @@
-﻿namespace KVA.Cinema.Models.Entities
-{
-    using System;
-    using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
+namespace KVA.Cinema.Models.Entities
+{
     /// <summary>
     /// Language of video and its subtitles
     /// </summary>

@@ -1,9 +1,9 @@
-﻿namespace KVA.Cinema.Models.ViewModels.Subscription
-{
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
+namespace KVA.Cinema.Models.ViewModels.Subscription
+{
     public class SubscriptionCreateViewModel
     {
         public Guid Id { get; set; }

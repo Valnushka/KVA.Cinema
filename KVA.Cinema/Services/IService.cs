@@ -1,9 +1,8 @@
-﻿namespace KVA.Cinema.Services
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
 
+namespace KVA.Cinema.Services
+{
     internal interface IService<TEntityCreateViewModel, TEntityDisplayViewModel, TEntityEditViewModel>
         where TEntityCreateViewModel : class
         where TEntityDisplayViewModel : class

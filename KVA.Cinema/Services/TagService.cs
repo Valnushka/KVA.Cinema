@@ -1,15 +1,14 @@
-﻿namespace KVA.Cinema.Services
-{
-    using KVA.Cinema.Exceptions;
-    using KVA.Cinema.Models;
-    using KVA.Cinema.Models.Entities;
-    using KVA.Cinema.Models.ViewModels.Tag;
-    using KVA.Cinema.Utilities;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
+﻿using KVA.Cinema.Exceptions;
+using KVA.Cinema.Models;
+using KVA.Cinema.Models.Entities;
+using KVA.Cinema.Models.ViewModels.Tag;
+using KVA.Cinema.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
+namespace KVA.Cinema.Services
+{
     public class TagService : IService<TagCreateViewModel, TagDisplayViewModel, TagEditViewModel>
     {
         /// <summary>

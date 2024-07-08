@@ -1,8 +1,8 @@
-﻿namespace KVA.Cinema.Models.Director
-{
-    using System;
-    using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
+namespace KVA.Cinema.Models.Director
+{
     public class DirectorCreateViewModel
     {
         public Guid Id { get; set; }

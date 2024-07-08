@@ -1,12 +1,11 @@
-﻿namespace KVA.Cinema.Models.User
-{
-    using KVA.Cinema.Models.Entities;
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.Linq;
+﻿using KVA.Cinema.Models.Entities;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
+namespace KVA.Cinema.Models.User
+{
     /// <summary>
     /// Person's data to display
     /// </summary>

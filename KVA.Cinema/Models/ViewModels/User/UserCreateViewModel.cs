@@ -1,10 +1,10 @@
-﻿namespace KVA.Cinema.Models.User
-{
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using KVA.Cinema.Attributes;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using KVA.Cinema.Attributes;
 
+namespace KVA.Cinema.Models.User
+{
     /// <summary>
     /// Essential data to create person (written by user)
     /// </summary>

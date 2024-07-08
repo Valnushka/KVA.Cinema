@@ -1,7 +1,7 @@
-﻿namespace KVA.Cinema.Models.Entities
-{
-    using System;
+﻿using System;
 
+namespace KVA.Cinema.Models.Entities
+{
     public class Frame //добавить свойство для самого кадра
     {
         public Guid Id { get; set; }

@@ -1,19 +1,17 @@
-﻿namespace KVA.Cinema.Services
-{
-    using KVA.Cinema.Models.Mail;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Options;
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Mail;
-    using System.Threading.Tasks;
-    using System.Web;
+﻿using KVA.Cinema.Models.Mail;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Net.Mail;
+using System.Threading.Tasks;
+using System.Web;
 
+namespace KVA.Cinema.Services
+{
     public class EmailSender
     {
         public EmailSettings EmailSettings { get; }

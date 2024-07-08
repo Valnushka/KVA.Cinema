@@ -1,11 +1,8 @@
-﻿namespace KVA.Cinema.Models.ViewModels.Pegi
-{
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.Linq;
-    using System.Threading.Tasks;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
+namespace KVA.Cinema.Models.ViewModels.Pegi
+{
     public class PegiCreateViewModel
     {
         public Guid Id { get; set; }

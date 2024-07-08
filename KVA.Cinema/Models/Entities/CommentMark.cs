@@ -1,10 +1,7 @@
-﻿namespace KVA.Cinema.Models.Entities
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
+﻿using System;
 
+namespace KVA.Cinema.Models.Entities
+{
     public class CommentMark
     {
         public Guid Id { get; set; }

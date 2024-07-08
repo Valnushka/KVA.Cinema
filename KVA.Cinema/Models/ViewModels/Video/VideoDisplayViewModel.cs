@@ -1,12 +1,12 @@
-﻿namespace KVA.Cinema.Models.ViewModels.Video
-{
-    using KVA.Cinema.Models.ViewModels.Tag;
-    using Microsoft.AspNetCore.Http;
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.Linq;
+﻿using KVA.Cinema.Models.ViewModels.Tag;
+using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
+namespace KVA.Cinema.Models.ViewModels.Video
+{
     public class VideoDisplayViewModel
     {
         public Guid Id { get; set; }

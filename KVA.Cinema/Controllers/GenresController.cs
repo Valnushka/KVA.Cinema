@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using KVA.Cinema.Models;
-using KVA.Cinema.Models.Entities;
 using KVA.Cinema.Models.Genre;
 using KVA.Cinema.Services;
 using KVA.Cinema.Models.ViewModels.Genre;

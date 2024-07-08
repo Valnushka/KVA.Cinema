@@ -1,11 +1,11 @@
-﻿namespace KVA.Cinema.Models.ViewModels.Video
-{
-    using KVA.Cinema.Models.ViewModels.Tag;
-    using Microsoft.AspNetCore.Http;
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
+﻿using KVA.Cinema.Models.ViewModels.Tag;
+using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
+namespace KVA.Cinema.Models.ViewModels.Video
+{
     public class VideoCreateViewModel
     {
         [Required(ErrorMessage = "Required field")]

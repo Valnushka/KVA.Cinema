@@ -1,12 +1,9 @@
-﻿namespace KVA.Cinema.Views.ViewComponents
-{
-    using KVA.Cinema.Models.ViewModels;
-    using Microsoft.AspNetCore.Mvc;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
+﻿using KVA.Cinema.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
+namespace KVA.Cinema.Views.ViewComponents
+{
     public class BreadcrumbViewComponent : ViewComponent
     {
         public IViewComponentResult Invoke(List<Breadcrumb> breadcrumbs)

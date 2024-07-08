@@ -1,20 +1,18 @@
-﻿namespace KVA.Cinema.Services
-{
-    using KVA.Cinema.Exceptions;
-    using KVA.Cinema.Models;
-    using KVA.Cinema.Models.Entities;
-    using KVA.Cinema.Models.User;
-    using KVA.Cinema.Models.ViewModels.User;
-    using KVA.Cinema.Utilities;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Identity;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Security.Policy;
-    using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
+﻿using KVA.Cinema.Exceptions;
+using KVA.Cinema.Models;
+using KVA.Cinema.Models.Entities;
+using KVA.Cinema.Models.User;
+using KVA.Cinema.Models.ViewModels.User;
+using KVA.Cinema.Utilities;
+using Microsoft.AspNetCore.Identity;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
+namespace KVA.Cinema.Services
+{
     public class UserService : IService<UserCreateViewModel, UserDisplayViewModel, UserEditViewModel>
     {
         /// <summary>

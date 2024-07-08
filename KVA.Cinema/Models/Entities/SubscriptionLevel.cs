@@ -1,8 +1,8 @@
-﻿namespace KVA.Cinema.Models.Entities
-{
-    using System;
-    using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
+namespace KVA.Cinema.Models.Entities
+{
     public class SubscriptionLevel
     {
         public Guid Id { get; set; }

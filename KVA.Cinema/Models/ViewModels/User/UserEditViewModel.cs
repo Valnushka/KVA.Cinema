@@ -1,12 +1,9 @@
-﻿namespace KVA.Cinema.Models.ViewModels.User
-{
-    using KVA.Cinema.Attributes;
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.Linq;
-    using System.Threading.Tasks;
+﻿using KVA.Cinema.Attributes;
+using System;
+using System.ComponentModel.DataAnnotations;
 
+namespace KVA.Cinema.Models.ViewModels.User
+{
     public class UserEditViewModel
     {
         public Guid Id { get; set; }

@@ -1,13 +1,11 @@
-﻿// Ignore Spelling: Pegis KVA
+﻿using KVA.Cinema.Models.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace KVA.Cinema.Models
 {
-    using KVA.Cinema.Models.Entities;
-    using Microsoft.AspNetCore.Identity;
-    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore;
-    using System;
-
     public class CinemaContext : IdentityDbContext<Entities.User, IdentityRole<Guid>, Guid>
     {
         public virtual DbSet<Comment> Comments { get; set; }
