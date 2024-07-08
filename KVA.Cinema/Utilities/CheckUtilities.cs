@@ -47,51 +47,5 @@
 
             return false;
         }
-
-        public static TResult ParseInput<TResult>(string input, Predicate<TResult> conditionValidation = null)
-        {
-            bool canBeParsed = true;
-            object result = default;
-
-            if (typeof(TResult) == typeof(string))
-            {
-                result = input;
-            }
-            else if (typeof(TResult) == typeof(int))
-            {
-                canBeParsed = int.TryParse(input, out int intResult);
-                result = intResult;
-            }
-            else if (typeof(TResult) == typeof(DateTime))
-            {
-                canBeParsed = DateTime.TryParse(input, out DateTime dtResult);
-                result = dtResult;
-            }
-            else if (typeof(TResult) == typeof(decimal))
-            {
-                canBeParsed = decimal.TryParse(input, out decimal dtResult);
-                result = dtResult;
-            }
-            else
-            {
-                canBeParsed = false;
-            }
-
-            if (!canBeParsed)
-            {
-                return default;
-            }
-
-            TResult resultAsRequiredType = (TResult)Convert.ChangeType(result, typeof(TResult));
-
-            bool isMatchCondition = conditionValidation?.Invoke(resultAsRequiredType) ?? true;
-
-            if (!isMatchCondition)
-            {
-                return default;
-            }
-
-            return resultAsRequiredType;
-        }
     }
 }
