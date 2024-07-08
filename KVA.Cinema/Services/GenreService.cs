@@ -22,7 +22,7 @@
         /// </summary>
         private const int TITLE_LENGHT_MAX = 50;
 
-        public CinemaContext Context { get; set; }
+        public CinemaContext Context { get; }
 
         public GenreService(CinemaContext db)
         {

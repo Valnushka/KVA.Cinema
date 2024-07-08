@@ -14,7 +14,7 @@
         private const int DURATION_DAYS_MIN = 1;
         private const int DURATION_DAYS_MAX = 366;
 
-        public CinemaContext Context { get; set; }
+        public CinemaContext Context { get; }
 
         public SubscriptionService(CinemaContext db)
         {

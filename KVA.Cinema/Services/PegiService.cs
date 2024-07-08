@@ -16,7 +16,7 @@
 
         private const int AGE_MAX = 99;
 
-        private CinemaContext Context { get; set; }
+        private CinemaContext Context { get; }
 
         public PegiService(CinemaContext db)
         {

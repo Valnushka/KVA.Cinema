@@ -22,7 +22,7 @@
         /// </summary>
         private const int TEXT_LENGHT_MAX = 20;
 
-        private CinemaContext Context { get; set; }
+        private CinemaContext Context { get; }
 
         public TagService(CinemaContext db)
         {
