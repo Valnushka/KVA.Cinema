@@ -27,7 +27,7 @@
         /// </summary>
         private const int MAX_PREVIEW_SIZE = 25_000_000; // 25 MB
 
-        private CinemaContext Context { get; set; }
+        private CinemaContext Context { get; }
 
         private IWebHostEnvironment HostEnvironment { get; }
 

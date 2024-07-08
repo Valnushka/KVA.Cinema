@@ -77,7 +77,7 @@
         /// </summary>
         public SignInManager<User> SignInManager { get; }
 
-        public EmailSender EmailSender { get; set; }
+        public EmailSender EmailSender { get; }
 
         private CinemaContext Context { get; }
 

@@ -23,7 +23,7 @@ namespace KVA.Cinema.Controllers
         private static Breadcrumb editBreadcrumb;
         private static Breadcrumb deleteBreadcrumb;
 
-        private SubscriptionLevelService SubscriptionLevelService { get; set; }
+        private SubscriptionLevelService SubscriptionLevelService { get; }
 
         public SubscriptionLevelsController(SubscriptionLevelService subscriptionLevelService)
         {

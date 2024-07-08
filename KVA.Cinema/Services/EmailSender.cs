@@ -22,7 +22,7 @@
 
         public IHttpContextAccessor HttpContextAccessor { get; }
 
-        public IWebHostEnvironment WebHostEnvironment { get; set; }
+        public IWebHostEnvironment WebHostEnvironment { get; }
 
         public EmailSender(IOptions<EmailSettings> emailSettings,
                            IUrlHelper myProperty,

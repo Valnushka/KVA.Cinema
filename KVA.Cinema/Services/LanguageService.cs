@@ -22,7 +22,7 @@
         /// </summary>
         private const int NAME_LENGHT_MAX = 128;
 
-        private CinemaContext Context { get; set; }
+        private CinemaContext Context { get; }
 
         public LanguageService(CinemaContext db)
         {

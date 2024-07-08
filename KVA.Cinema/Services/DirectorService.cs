@@ -21,7 +21,7 @@
         /// </summary>
         private const int NAME_LENGHT_MAX = 128;
 
-        public CinemaContext Context { get; set; }
+        public CinemaContext Context { get; }
 
         public DirectorService(CinemaContext db)
         {
