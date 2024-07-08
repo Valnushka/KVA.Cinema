@@ -1,10 +1,7 @@
-﻿namespace KVA.Cinema.Models.Mail
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
+namespace KVA.Cinema.Models.Mail
+{
     public class ConfirmEmailModel : IEmailTemplate<string, string>
     {
         public string UserId { get; set; }
@@ -18,7 +15,7 @@
             return new Dictionary<string, string>
             {
                 { "{UserId}", UserId },
-                { "{Nickname}", Nickname }, 
+                { "{Nickname}", Nickname },
                 { "{ConfirmationLink}", ConfirmationLink }
             };
         }

@@ -1,14 +1,14 @@
-﻿namespace KVA.Cinema.Services
-{
-    using KVA.Cinema.Exceptions;
-    using KVA.Cinema.Models;
-    using KVA.Cinema.Models.Entities;
-    using KVA.Cinema.Models.ViewModels.Subscription;
-    using KVA.Cinema.Utilities;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
+﻿using KVA.Cinema.Exceptions;
+using KVA.Cinema.Models;
+using KVA.Cinema.Models.Entities;
+using KVA.Cinema.Models.ViewModels.Subscription;
+using KVA.Cinema.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
+namespace KVA.Cinema.Services
+{
     public class SubscriptionService : IService<SubscriptionCreateViewModel, SubscriptionDisplayViewModel, SubscriptionEditViewModel>
     {
         private const int DURATION_DAYS_MIN = 1;

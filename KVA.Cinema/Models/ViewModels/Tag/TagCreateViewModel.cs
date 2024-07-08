@@ -1,8 +1,8 @@
-﻿namespace KVA.Cinema.Models.ViewModels.Tag
-{
-    using System;
-    using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
+namespace KVA.Cinema.Models.ViewModels.Tag
+{
     public class TagCreateViewModel
     {
         [Required(ErrorMessage = "Required field")]

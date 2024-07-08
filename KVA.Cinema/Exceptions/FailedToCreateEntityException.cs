@@ -1,10 +1,8 @@
-﻿namespace KVA.Cinema.Exceptions
-{
-    using Microsoft.AspNetCore.Identity;
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
+﻿using System;
+using System.Collections;
 
+namespace KVA.Cinema.Exceptions
+{
     internal class FailedToCreateEntityException : Exception
     {
         public IEnumerable Errors { get; set; }

@@ -1,11 +1,8 @@
-﻿namespace KVA.Cinema.Attributes
-{
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.Linq;
-    using System.Threading.Tasks;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
+namespace KVA.Cinema.Attributes
+{
     /// <summary>
     /// Specifies the minimum and maximum age that is allowed in a data field
     /// </summary>
@@ -35,7 +32,7 @@
         public override bool IsValid(object birthDate)
         {
             return (DateTime)birthDate <= DateTime.Now.AddYears(-AgeMin) && (DateTime)birthDate >= DateTime.Now.AddYears(-AgeMax);
-        }            
+        }
     }
 }
 

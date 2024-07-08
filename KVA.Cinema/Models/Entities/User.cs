@@ -1,11 +1,9 @@
-﻿namespace KVA.Cinema.Models.Entities
-{
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using Microsoft.AspNetCore.Identity;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
 
+namespace KVA.Cinema.Models.Entities
+{
     public class User : IdentityUser<Guid>
     {
         public override Guid Id { get; set; }

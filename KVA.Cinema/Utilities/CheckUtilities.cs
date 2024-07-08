@@ -1,8 +1,8 @@
-﻿namespace KVA.Cinema.Utilities
-{
-    using System;
-    using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
+namespace KVA.Cinema.Utilities
+{
     public static class CheckUtilities
     {
         public static bool ContainsNullOrEmptyValue(params object[] args)

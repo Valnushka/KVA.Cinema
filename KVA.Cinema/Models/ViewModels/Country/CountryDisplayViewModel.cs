@@ -1,8 +1,8 @@
-﻿namespace KVA.Cinema.Models.Country
-{
-    using System;
-    using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
+namespace KVA.Cinema.Models.Country
+{
     public class CountryDisplayViewModel
     {
         public Guid Id { get; set; }

@@ -1,10 +1,10 @@
-﻿namespace KVA.Cinema.Models.ViewModels.Video
-{
-    using Microsoft.AspNetCore.Http;
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
+namespace KVA.Cinema.Models.ViewModels.Video
+{
     public class VideoEditViewModel
     {
         public Guid Id { get; set; }

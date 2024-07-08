@@ -1,14 +1,10 @@
-﻿namespace KVA.Cinema.Controllers
-{
-    using KVA.Cinema.Models;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Linq;
-    using System.Threading.Tasks;
+﻿using KVA.Cinema.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
+namespace KVA.Cinema.Controllers
+{
     public class HomeController : Controller
     {
         private ILogger<HomeController> Logger { get; }
