@@ -39,6 +39,18 @@ namespace KVA.Cinema.Services
             });
         }
 
+        public LanguageDisplayViewModel Read(Guid languageId)
+        {
+            var language = Context.Languages.FirstOrDefault(x => x.Id == languageId);
+
+            if (language == default)
+            {
+                throw new EntityNotFoundException($"Language with id \"{languageId}\" not found");
+            }
+
+            return MapToDisplayViewModel(language);
+        }
+
         public IEnumerable<LanguageDisplayViewModel> ReadAll()
         {
             List<Language> languages = Context.Languages.ToList(); //TODO: перенести ToList в return
@@ -144,6 +156,15 @@ namespace KVA.Cinema.Services
             Language language = Context.Languages.FirstOrDefault(x => x.Id == languageId);
 
             return language != default;
+        }
+
+        private LanguageDisplayViewModel MapToDisplayViewModel(Language language)
+        {
+            return new LanguageDisplayViewModel()
+            {
+                Id = language.Id,
+                Name = language.Name
+            };
         }
     }
 }
