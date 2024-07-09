@@ -30,13 +30,11 @@ namespace KVA.Cinema.Services
 
         public IEnumerable<LanguageCreateViewModel> Read()
         {
-            List<Language> languages = Context.Languages.ToList(); //TODO: перенести ToList в return
-
-            return languages.Select(x => new LanguageCreateViewModel()
+            return Context.Languages.Select(x => new LanguageCreateViewModel()
             {
                 Id = x.Id,
                 Name = x.Name
-            });
+            }).ToList();
         }
 
         public LanguageDisplayViewModel Read(Guid languageId)
@@ -53,13 +51,11 @@ namespace KVA.Cinema.Services
 
         public IEnumerable<LanguageDisplayViewModel> ReadAll()
         {
-            List<Language> languages = Context.Languages.ToList(); //TODO: перенести ToList в return
-
-            return languages.Select(x => new LanguageDisplayViewModel()
+            return Context.Languages.Select(x => new LanguageDisplayViewModel()
             {
                 Id = x.Id,
                 Name = x.Name
-            });
+            }).ToList();
         }
 
         public void CreateAsync(LanguageCreateViewModel languageData)
