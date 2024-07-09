@@ -279,7 +279,16 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
                 return NotFound();
             }
 
-            var user = UserService.Read(id.Value);
+            UserDisplayViewModel user = null;
+
+            try
+            {
+                user = UserService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (user == null)
             {
