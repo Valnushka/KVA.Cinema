@@ -31,24 +31,32 @@ namespace KVA.Cinema.Services
 
         public IEnumerable<CountryCreateViewModel> Read()
         {
-            List<Country> countries = Context.Countries.ToList(); //TODO: перенести ToList в return
-
-            return countries.Select(x => new CountryCreateViewModel()
+            return Context.Countries.Select(x => new CountryCreateViewModel()
             {
                 Id = x.Id,
                 Name = x.Name
-            });
+            }).ToList();
+        }
+
+        public CountryDisplayViewModel Read(Guid countryId)
+        {
+            var country = Context.Countries.FirstOrDefault(x => x.Id == countryId);
+
+            if (country == default)
+            {
+                throw new EntityNotFoundException($"Country with id \"{countryId}\" not found");
+            }
+
+            return MapToDisplayViewModel(country);
         }
 
         public IEnumerable<CountryDisplayViewModel> ReadAll()
         {
-            List<Country> countries = Context.Countries.ToList(); //TODO: перенести ToList в return
-
-            return countries.Select(x => new CountryDisplayViewModel()
+            return Context.Countries.Select(x => new CountryDisplayViewModel()
             {
                 Id = x.Id,
                 Name = x.Name
-            });
+            }).ToList();
         }
 
         public void CreateAsync(CountryCreateViewModel countryData)
@@ -145,6 +153,15 @@ namespace KVA.Cinema.Services
             Country country = Context.Countries.FirstOrDefault(x => x.Id == countryId);
 
             return country != default;
+        }
+
+        private CountryDisplayViewModel MapToDisplayViewModel(Country country)
+        {
+            return new CountryDisplayViewModel()
+            {
+                Id = country.Id,
+                Name = country.Name
+            };
         }
     }
 }
