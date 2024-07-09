@@ -38,6 +38,7 @@ namespace KVA.Cinema.Controllers
         }
 
         // GET: Pegi
+        [Route("Pegi")]
         public IActionResult Index(PegiSort sortingField = PegiSort.Type, bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;

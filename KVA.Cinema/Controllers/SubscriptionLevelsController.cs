@@ -38,6 +38,7 @@ namespace KVA.Cinema.Controllers
         }
 
         // GET: SubscriptionLevels
+        [Route("SubscriptionLevels")]
         public IActionResult Index(SubscriptionLevelSort sortingField = SubscriptionLevelSort.Title, bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;

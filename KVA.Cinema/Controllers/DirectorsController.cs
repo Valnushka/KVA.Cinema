@@ -39,6 +39,7 @@ namespace KVA.Cinema.Controllers
         }
 
         // GET: Directors
+        [Route("Directors")]
         public IActionResult Index(DirectorSort sortingField = DirectorSort.Name, bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;

@@ -39,6 +39,7 @@ namespace KVA.Cinema.Controllers
         }
 
         // GET: Countries
+        [Route("Countries")]
         public IActionResult Index(CountrySort sortingField = CountrySort.Name, bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;
