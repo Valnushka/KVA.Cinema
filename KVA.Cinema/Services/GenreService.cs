@@ -39,6 +39,18 @@ namespace KVA.Cinema.Services
             });
         }
 
+        public GenreDisplayViewModel Read(Guid genreId)
+        {
+            var genre = Context.Genres.FirstOrDefault(x => x.Id == genreId);
+
+            if (genre == default)
+            {
+                throw new EntityNotFoundException($"Genre with id \"{genreId}\" not found");
+            }
+
+            return MapToDisplayViewModel(genre);
+        }
+
         public IEnumerable<GenreDisplayViewModel> ReadAll()
         {
             List<Genre> genres = Context.Genres.ToList();
@@ -144,6 +156,15 @@ namespace KVA.Cinema.Services
             Genre genre = Context.Genres.FirstOrDefault(x => x.Id == genreId);
 
             return genre != default;
+        }
+
+        private GenreDisplayViewModel MapToDisplayViewModel(Genre genre)
+        {
+            return new GenreDisplayViewModel()
+            {
+                Id = genre.Id,
+                Title = genre.Title
+            };
         }
     }
 }
