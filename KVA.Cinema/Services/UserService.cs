@@ -247,9 +247,10 @@ namespace KVA.Cinema.Services
             }
         }
 
+        [Obsolete("This method is obsolete. Call async Task CreateAsync instead.", true)]
         void IService<UserCreateViewModel, UserDisplayViewModel, UserEditViewModel>.CreateAsync(UserCreateViewModel entityData)
         {
-            throw new NotImplementedException();
+            return;
         }
 
         public async Task<IdentityResult> ActivateAccountAsync(string userId, string token)
@@ -342,7 +343,7 @@ namespace KVA.Cinema.Services
             user.BirthDate = userNewData.BirthDate;
             user.Email = userNewData.Email;
 
-            // ASS TO THINK: А если мы ввели те же самые данные пользователя - то имеет ли тут смысл вызывать сохранение бд?
+            // TO THINK: А если мы ввели те же самые данные пользователя - то имеет ли тут смысл вызывать сохранение бд?
             Context.SaveChanges();
         }
 
