@@ -38,6 +38,7 @@ namespace KVA.Cinema.Controllers
         }
 
         // GET: Tags
+        [Route("Tags")]
         public IActionResult Index(TagSort sortingField = TagSort.Text, bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;

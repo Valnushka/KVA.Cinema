@@ -63,6 +63,7 @@ namespace KVA.Cinema.Controllers
         }
 
         // GET: Videos
+        [Route("Videos")]
         public IActionResult Index(VideoSort sortingField = VideoSort.Name, bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;

@@ -57,6 +57,7 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
         }
 
         // GET: Users
+        [Route("Users")]
         public IActionResult Index(UserSort sortingField = UserSort.Nickname, bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;

@@ -38,6 +38,7 @@ namespace KVA.Cinema.Controllers
         }
 
         // GET: Languages
+        [Route("Languages")]
         public IActionResult Index(LanguageSort sortingField = LanguageSort.Name, bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;
