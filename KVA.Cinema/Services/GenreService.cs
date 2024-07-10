@@ -30,13 +30,23 @@ namespace KVA.Cinema.Services
         }
         public IEnumerable<GenreCreateViewModel> Read()
         {
-            List<Genre> genres = Context.Genres.ToList(); //TODO: перенести ToList в return
-
-            return genres.Select(x => new GenreCreateViewModel()
+            return Context.Genres.Select(x => new GenreCreateViewModel()
             {
                 Id = x.Id,
                 Title = x.Title
-            });
+            }).ToList();
+        }
+
+        public GenreDisplayViewModel Read(Guid genreId)
+        {
+            var genre = Context.Genres.FirstOrDefault(x => x.Id == genreId);
+
+            if (genre == default)
+            {
+                throw new EntityNotFoundException($"Genre with id \"{genreId}\" not found");
+            }
+
+            return MapToDisplayViewModel(genre);
         }
 
         public IEnumerable<GenreDisplayViewModel> ReadAll()
@@ -144,6 +154,15 @@ namespace KVA.Cinema.Services
             Genre genre = Context.Genres.FirstOrDefault(x => x.Id == genreId);
 
             return genre != default;
+        }
+
+        private GenreDisplayViewModel MapToDisplayViewModel(Genre genre)
+        {
+            return new GenreDisplayViewModel()
+            {
+                Id = genre.Id,
+                Title = genre.Title
+            };
         }
     }
 }

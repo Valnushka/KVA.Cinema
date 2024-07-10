@@ -100,7 +100,16 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
                 return NotFound();
             }
 
-            var user = UserService.Read(id.Value);
+            UserDisplayViewModel user = null;
+
+            try
+            {
+                user = UserService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (user == null)
             {
@@ -270,8 +279,16 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
                 return NotFound();
             }
 
-            var user = UserService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
+            UserDisplayViewModel user = null;
+
+            try
+            {
+                user = UserService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (user == null)
             {
@@ -288,9 +305,15 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(Guid id)
         {
-            var user = UserService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
-            UserService.Delete(user.Id);
+            try
+            {
+                var user = UserService.Read(id);
+                UserService.Delete(user.Id);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
 
@@ -394,11 +417,9 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
         [ValidateAntiForgeryToken]
         public IActionResult BuySubscriptionConfirmed(Guid subscriptionId)
         {
-            var user = UserService.ReadAll()
-                .FirstOrDefault(m => m.Nickname == User.Identity.Name);
-
             try
             {
+                var user = UserService.Read(User.Identity.Name);
                 UserService.AddSubscription(user.Nickname, subscriptionId);
                 return RedirectToAction(nameof(Index), "Users");
             }
@@ -438,11 +459,9 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
         [ValidateAntiForgeryToken]
         public IActionResult CancelSubscriptionConfirmed(Guid subscriptionId)
         {
-            var user = UserService.ReadAll()
-                .FirstOrDefault(m => m.Nickname == User.Identity.Name);
-
             try
             {
+                var user = UserService.Read(User.Identity.Name);
                 UserService.RemoveSubscription(user.Nickname, subscriptionId);
                 return RedirectToAction(nameof(Index), "Users");
             }

@@ -30,18 +30,34 @@ namespace KVA.Cinema.Services
 
         public IEnumerable<DirectorCreateViewModel> Read()
         {
-            throw new NotImplementedException();
+            return Context.Directors.Select(x => new DirectorCreateViewModel()
+            {
+                Id = x.Id,
+                Name = x.Name
+            }).ToList();
+        }
+
+        public DirectorDisplayViewModel Read(Guid directorId)
+        {
+            var director = Context.Directors.FirstOrDefault(x => x.Id == directorId);
+
+            if (director == default)
+            {
+                throw new EntityNotFoundException($"Director with id \"{directorId}\" not found");
+            }
+
+            return MapToDisplayViewModel(director);
         }
 
         public IEnumerable<DirectorDisplayViewModel> ReadAll()
         {
             List<Director> directors = Context.Directors.ToList();
 
-            return directors.Select(x => new DirectorDisplayViewModel()
+            return Context.Directors.Select(x => new DirectorDisplayViewModel()
             {
                 Id = x.Id,
                 Name = x.Name
-            });
+            }).ToList();
         }
 
         public void CreateAsync(DirectorCreateViewModel directorData)
@@ -138,6 +154,15 @@ namespace KVA.Cinema.Services
             Director director = Context.Directors.FirstOrDefault(x => x.Id == directorId);
 
             return director != default;
+        }
+
+        private DirectorDisplayViewModel MapToDisplayViewModel(Director director)
+        {
+            return new DirectorDisplayViewModel()
+            {
+                Id = director.Id,
+                Name = director.Name
+            };
         }
     }
 }

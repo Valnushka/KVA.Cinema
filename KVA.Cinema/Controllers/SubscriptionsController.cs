@@ -231,8 +231,17 @@ namespace KVA.Cinema.Controllers
         // GET: Subscriptions/Delete/5
         public IActionResult Delete(Guid? id)
         {
-            var subscription = SubscriptionService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
+            SubscriptionDisplayViewModel subscription = null;
+
+            try
+            {
+                subscription = SubscriptionService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
+
 
             if (subscription == null)
             {
@@ -249,9 +258,15 @@ namespace KVA.Cinema.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(Guid id)
         {
-            var subscription = SubscriptionService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
-            SubscriptionService.Delete(subscription.Id);
+            try
+            {
+                SubscriptionDisplayViewModel subscription = SubscriptionService.Read(id);
+                SubscriptionLevelService.Delete(subscription.Id);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
 

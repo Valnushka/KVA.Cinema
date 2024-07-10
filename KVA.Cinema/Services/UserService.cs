@@ -90,19 +90,6 @@ namespace KVA.Cinema.Services
             EmailSender = emailSender;
         }
 
-        public IEnumerable<UserCreateViewModel> Read()
-        {
-            return Context.Users.Select(x => new UserCreateViewModel()
-            {
-                Id = x.Id,
-                FirstName = x.FirstName,
-                LastName = x.LastName,
-                Nickname = x.Nickname,
-                BirthDate = x.BirthDate,
-                Email = x.Email
-            }).ToList();
-        }
-
         public IEnumerable<UserDisplayViewModel> ReadAll()
         {
             return Context.Users
@@ -118,6 +105,31 @@ namespace KVA.Cinema.Services
                 }).ToList();
         }
 
+        public IEnumerable<UserCreateViewModel> Read()
+        {
+            return Context.Users.Select(x => new UserCreateViewModel()
+            {
+                Id = x.Id,
+                FirstName = x.FirstName,
+                LastName = x.LastName,
+                Nickname = x.Nickname,
+                BirthDate = x.BirthDate,
+                Email = x.Email
+            }).ToList();
+        }
+        
+        public UserDisplayViewModel Read(string nickname)
+        {
+            var user = Context.Users.FirstOrDefault(x => x.Nickname == nickname);
+
+            if (user == default)
+            {
+                throw new EntityNotFoundException($"User with nickname \"{nickname}\" not found");
+            }
+
+            return MapToDisplayViewModel(user);
+        }
+
         public UserDisplayViewModel Read(Guid userId)
         {
             var user = Context.Users.FirstOrDefault(x => x.Id == userId);
@@ -127,20 +139,7 @@ namespace KVA.Cinema.Services
                 throw new EntityNotFoundException($"User with id \"{userId}\" not found");
             }
 
-            var subscriptionIds = user.UserSubscriptions.Select(x => x.SubscriptionId);
-            var subs = Context.Subscriptions.Where(x => subscriptionIds.Contains(x.Id));
-
-            return new UserDisplayViewModel()
-            {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Nickname = user.Nickname,
-                BirthDate = user.BirthDate,
-                Email = user.Email,
-                Subscriptions = Context.Subscriptions.Where(x => subscriptionIds.Contains(x.Id)),
-                UserSubscriptions = user.UserSubscriptions,
-            };
+            return MapToDisplayViewModel(user);
         }
 
         /// <summary>
@@ -449,6 +448,24 @@ namespace KVA.Cinema.Services
             User user = Context.Users.FirstOrDefault(x => x.Id == userId);
 
             return user != default;
+        }
+
+        private UserDisplayViewModel MapToDisplayViewModel(User user)
+        {
+            var subscriptionIds = user.UserSubscriptions.Select(x => x.SubscriptionId);
+            var subs = Context.Subscriptions.Where(x => subscriptionIds.Contains(x.Id));
+
+            return new UserDisplayViewModel()
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Nickname = user.Nickname,
+                BirthDate = user.BirthDate,
+                Email = user.Email,
+                Subscriptions = Context.Subscriptions.Where(x => subscriptionIds.Contains(x.Id)),
+                UserSubscriptions = user.UserSubscriptions,
+            };
         }
     }
 }

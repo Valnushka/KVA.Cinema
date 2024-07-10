@@ -68,8 +68,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var language = LanguageService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
+            LanguageDisplayViewModel language = null;
+
+            try
+            {
+                language = LanguageService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (language == null)
             {
@@ -123,7 +131,7 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var language = LanguageService.ReadAll()
+            var language = LanguageService.Read()
                 .FirstOrDefault(m => m.Id == id);
 
             if (language == null)
@@ -180,8 +188,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var language = LanguageService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
+            LanguageDisplayViewModel language = null;
+
+            try
+            {
+                language = LanguageService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (language == null)
             {
@@ -198,9 +214,16 @@ namespace KVA.Cinema.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(Guid id)
         {
-            var language = LanguageService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
-            LanguageService.Delete(language.Id);
+            try
+            {
+                var language = LanguageService.Read(id);
+                LanguageService.Delete(language.Id);
+
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
 

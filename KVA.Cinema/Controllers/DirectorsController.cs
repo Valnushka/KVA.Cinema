@@ -69,8 +69,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var director = DirectorService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
+            DirectorDisplayViewModel director = null;
+
+            try
+            {
+                director = DirectorService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (director == null)
             {
@@ -124,7 +132,7 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var director = DirectorService.ReadAll()
+            var director = DirectorService.Read()
                 .FirstOrDefault(m => m.Id == id);
 
             if (director == null)
@@ -181,8 +189,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var director = DirectorService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
+            DirectorDisplayViewModel director = null;
+
+            try
+            {
+                director = DirectorService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (director == null)
             {
@@ -199,9 +215,16 @@ namespace KVA.Cinema.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(Guid id)
         {
-            var director = DirectorService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
-            DirectorService.Delete(director.Id);
+            try
+            {
+                var director = DirectorService.Read(id);
+
+                DirectorService.Delete(director.Id);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
 

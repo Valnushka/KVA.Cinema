@@ -69,8 +69,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var genre = GenreService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
+            GenreDisplayViewModel genre = null;
+
+            try
+            {
+                genre = GenreService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (genre == null)
             {
@@ -123,7 +131,7 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var genre = GenreService.ReadAll()
+            var genre = GenreService.Read()
                 .FirstOrDefault(m => m.Id == id);
 
             if (genre == null)
@@ -180,8 +188,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var genre = GenreService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
+            GenreDisplayViewModel genre = null;
+
+            try
+            {
+                genre = GenreService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (genre == null)
             {
@@ -198,9 +214,15 @@ namespace KVA.Cinema.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(Guid id)
         {
-            var genre = GenreService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
-            GenreService.Delete(genre.Id);
+            try
+            {
+                var genre = GenreService.Read(id);
+                GenreService.Delete(genre.Id);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
 

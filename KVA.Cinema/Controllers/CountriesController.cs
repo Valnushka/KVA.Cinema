@@ -69,8 +69,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var country = CountryService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
+            CountryDisplayViewModel country = null;
+
+            try
+            {
+                country = CountryService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (country == null)
             {
@@ -124,8 +132,8 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var country = CountryService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
+            var country = CountryService.Read()
+                    .FirstOrDefault(x => x.Id == id);
 
             if (country == null)
             {
@@ -181,8 +189,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var country = CountryService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
+            CountryDisplayViewModel country = null;
+
+            try
+            {
+                country = CountryService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (country == null)
             {
@@ -199,9 +215,15 @@ namespace KVA.Cinema.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(Guid id)
         {
-            var country = CountryService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
-            CountryService.Delete(country.Id);
+            try
+            {
+                var country = CountryService.Read(id);
+                CountryService.Delete(country.Id);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
 

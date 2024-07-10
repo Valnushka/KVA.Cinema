@@ -30,24 +30,32 @@ namespace KVA.Cinema.Services
 
         public IEnumerable<LanguageCreateViewModel> Read()
         {
-            List<Language> languages = Context.Languages.ToList(); //TODO: перенести ToList в return
-
-            return languages.Select(x => new LanguageCreateViewModel()
+            return Context.Languages.Select(x => new LanguageCreateViewModel()
             {
                 Id = x.Id,
                 Name = x.Name
-            });
+            }).ToList();
+        }
+
+        public LanguageDisplayViewModel Read(Guid languageId)
+        {
+            var language = Context.Languages.FirstOrDefault(x => x.Id == languageId);
+
+            if (language == default)
+            {
+                throw new EntityNotFoundException($"Language with id \"{languageId}\" not found");
+            }
+
+            return MapToDisplayViewModel(language);
         }
 
         public IEnumerable<LanguageDisplayViewModel> ReadAll()
         {
-            List<Language> languages = Context.Languages.ToList(); //TODO: перенести ToList в return
-
-            return languages.Select(x => new LanguageDisplayViewModel()
+            return Context.Languages.Select(x => new LanguageDisplayViewModel()
             {
                 Id = x.Id,
                 Name = x.Name
-            });
+            }).ToList();
         }
 
         public void CreateAsync(LanguageCreateViewModel languageData)
@@ -144,6 +152,15 @@ namespace KVA.Cinema.Services
             Language language = Context.Languages.FirstOrDefault(x => x.Id == languageId);
 
             return language != default;
+        }
+
+        private LanguageDisplayViewModel MapToDisplayViewModel(Language language)
+        {
+            return new LanguageDisplayViewModel()
+            {
+                Id = language.Id,
+                Name = language.Name
+            };
         }
     }
 }

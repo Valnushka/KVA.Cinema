@@ -68,8 +68,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var pegi = PegiService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
+            PegiDisplayViewModel pegi = null;
+
+            try
+            {
+                pegi = PegiService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (pegi == null)
             {
@@ -123,7 +131,7 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var pegi = PegiService.ReadAll()
+            var pegi = PegiService.Read()
                 .FirstOrDefault(m => m.Id == id);
 
             if (pegi == null)
@@ -180,8 +188,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var pegi = PegiService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
+            PegiDisplayViewModel pegi = null;
+
+            try
+            {
+                pegi = PegiService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (pegi == null)
             {
@@ -198,9 +214,15 @@ namespace KVA.Cinema.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(Guid id)
         {
-            var pegi = PegiService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
+            try
+            {
+            var pegi = PegiService.Read(id);
             PegiService.Delete(pegi.Id);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
 
