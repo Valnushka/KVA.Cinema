@@ -30,25 +30,33 @@ namespace KVA.Cinema.Services
 
         public IEnumerable<TagCreateViewModel> Read()
         {
-            List<Tag> tags = Context.Tags.ToList(); //TODO: перенести ToList в return
-
-            return tags.Select(x => new TagCreateViewModel()
+            return Context.Tags.Select(x => new TagCreateViewModel()
             {
                 Text = x.Text,
                 Color = x.Color
-            });
+            }).ToList();
+        }
+
+        public TagDisplayViewModel Read(Guid tagId)
+        {
+            var tag = Context.Tags.FirstOrDefault(x => x.Id == tagId);
+
+            if (tag == default)
+            {
+                throw new EntityNotFoundException($"Tag with id \"{tagId}\" not found");
+            }
+
+            return MapToDisplayViewModel(tag);
         }
 
         public IEnumerable<TagDisplayViewModel> ReadAll()
         {
-            List<Tag> tags = Context.Tags.ToList(); //TODO: перенести ToList в return
-
-            return tags.Select(x => new TagDisplayViewModel()
+            return Context.Tags.Select(x => new TagDisplayViewModel()
             {
                 Id = x.Id,
                 Text = x.Text,
                 Color = x.Color
-            });
+            }).ToList();
         }
 
         public void CreateAsync(TagCreateViewModel tagData)
@@ -147,6 +155,16 @@ namespace KVA.Cinema.Services
             Tag tag = Context.Tags.FirstOrDefault(x => x.Id == id);
 
             return tag != default;
+        }
+
+        private TagDisplayViewModel MapToDisplayViewModel(Tag tag)
+        {
+            return new TagDisplayViewModel()
+            {
+                Id = tag.Id,
+                Text = tag.Text,
+                Color = tag.Color
+            };
         }
     }
 }

@@ -68,8 +68,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var tag = TagService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
+            TagDisplayViewModel tag = null;
+
+            try
+            {
+                tag = TagService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (tag == null)
             {
@@ -123,8 +131,7 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var tag = TagService.ReadAll()
-                            .FirstOrDefault(m => m.Id == id);
+            var tag = TagService.Read(id.Value);
 
             if (tag == null)
             {
@@ -199,9 +206,17 @@ namespace KVA.Cinema.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(Guid id)
         {
-            var tag = TagService.ReadAll()
-                 .FirstOrDefault(m => m.Id == id);
-            TagService.Delete(tag.Id);
+            TagDisplayViewModel tag = null;
+
+            try
+            {
+                tag = TagService.Read(id);
+                TagService.Delete(tag.Id);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
 
