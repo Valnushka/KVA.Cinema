@@ -30,13 +30,11 @@ namespace KVA.Cinema.Services
         }
         public IEnumerable<GenreCreateViewModel> Read()
         {
-            List<Genre> genres = Context.Genres.ToList(); //TODO: перенести ToList в return
-
-            return genres.Select(x => new GenreCreateViewModel()
+            return Context.Genres.Select(x => new GenreCreateViewModel()
             {
                 Id = x.Id,
                 Title = x.Title
-            });
+            }).ToList();
         }
 
         public GenreDisplayViewModel Read(Guid genreId)
