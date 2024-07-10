@@ -24,13 +24,11 @@ namespace KVA.Cinema.Services
 
         public IEnumerable<PegiCreateViewModel> Read()
         {
-            List<Pegi> pegis = Context.Pegis.ToList(); //TODO: перенести ToList в return
-
-            return pegis.Select(x => new PegiCreateViewModel()
+            return Context.Pegis.Select(x => new PegiCreateViewModel()
             {
                 Id = x.Id,
                 Type = x.Type
-            });
+            }).ToList();
         }
 
         public PegiDisplayViewModel Read(Guid pegiId)
@@ -47,13 +45,11 @@ namespace KVA.Cinema.Services
 
         public IEnumerable<PegiDisplayViewModel> ReadAll()
         {
-            List<Pegi> pegis = Context.Pegis.ToList(); //TODO: перенести ToList в return
-
-            return pegis.Select(x => new PegiDisplayViewModel()
+            return Context.Pegis.Select(x => new PegiDisplayViewModel()
             {
                 Id = x.Id,
                 Type = x.Type
-            });
+            }).ToList();
         }
 
         public void CreateAsync(PegiCreateViewModel pegiData)
