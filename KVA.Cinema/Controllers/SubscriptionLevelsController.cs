@@ -68,8 +68,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var subscriptionLevel = SubscriptionLevelService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
+            SubscriptionLevelDisplayViewModel subscriptionLevel = null;
+
+            try
+            {
+                subscriptionLevel = SubscriptionLevelService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (subscriptionLevel == null)
             {
@@ -122,7 +130,7 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var subscriptionLevel = SubscriptionLevelService.ReadAll()
+            var subscriptionLevel = SubscriptionLevelService.Read()
                 .FirstOrDefault(m => m.Id == id);
 
             if (subscriptionLevel == null)
@@ -174,8 +182,16 @@ namespace KVA.Cinema.Controllers
         // GET: SubscriptionLevels/Delete/5
         public IActionResult Delete(Guid? id)
         {
-            var subscriptionLevel = SubscriptionLevelService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
+            SubscriptionLevelDisplayViewModel subscriptionLevel = null;
+
+            try
+            {
+                subscriptionLevel = SubscriptionLevelService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (subscriptionLevel == null)
             {
@@ -192,9 +208,17 @@ namespace KVA.Cinema.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(Guid id)
         {
-            var subscriptionLevel = SubscriptionLevelService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
-            SubscriptionLevelService.Delete(subscriptionLevel.Id);
+            SubscriptionLevelDisplayViewModel subscriptionLevel = null;
+
+            try
+            {
+                subscriptionLevel = SubscriptionLevelService.Read(id.Value);
+                SubscriptionLevelService.Delete(subscriptionLevel.Id);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
 

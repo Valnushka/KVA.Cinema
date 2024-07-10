@@ -30,24 +30,32 @@ namespace KVA.Cinema.Services
 
         public IEnumerable<SubscriptionLevelCreateViewModel> Read()
         {
-            List<SubscriptionLevel> levels = Context.SubscriptionLevels.ToList(); //TODO: перенести ToList в return
-
-            return levels.Select(x => new SubscriptionLevelCreateViewModel()
+            return Context.SubscriptionLevels.Select(x => new SubscriptionLevelCreateViewModel()
             {
                 Id = x.Id,
                 Title = x.Title
-            });
+            }).ToList();
+        }
+
+        public SubscriptionLevelDisplayViewModel Read(Guid subscriptionLevelId)
+        {
+            var subscriptionLevel = Context.SubscriptionLevels.FirstOrDefault(x => x.Id == subscriptionLevelId);
+
+            if (subscriptionLevel == default)
+            {
+                throw new EntityNotFoundException($"Subscription level with id \"{subscriptionLevelId}\" not found");
+            }
+
+            return MapToDisplayViewModel(subscriptionLevel);
         }
 
         public IEnumerable<SubscriptionLevelDisplayViewModel> ReadAll()
         {
-            List<SubscriptionLevel> subscriptionLevels = Context.SubscriptionLevels.ToList();
-
-            return subscriptionLevels.Select(x => new SubscriptionLevelDisplayViewModel()
+            return Context.SubscriptionLevels.Select(x => new SubscriptionLevelDisplayViewModel()
             {
                 Id = x.Id,
                 Title = x.Title
-            });
+            }).ToList();
         }
 
         public void CreateAsync(SubscriptionLevelCreateViewModel subscriptionLevelData)
@@ -144,6 +152,15 @@ namespace KVA.Cinema.Services
             SubscriptionLevel subscriptionLevel = Context.SubscriptionLevels.FirstOrDefault(x => x.Id == subscriptionLevelId);
 
             return subscriptionLevel != default;
+        }
+
+        private SubscriptionLevelDisplayViewModel MapToDisplayViewModel(SubscriptionLevel subscriptionLevel)
+        {
+            return new SubscriptionLevelDisplayViewModel()
+            {
+                Id = subscriptionLevel.Id,
+                Title = subscriptionLevel.Title
+            };
         }
     }
 }
