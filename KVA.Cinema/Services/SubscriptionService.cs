@@ -38,24 +38,14 @@ namespace KVA.Cinema.Services
 
         public SubscriptionDisplayViewModel Read(Guid subscriptionId)
         {
-            if (CheckUtilities.ContainsNullOrEmptyValue(subscriptionId))
+            var subscription = Context.Subscriptions.FirstOrDefault(x => x.Id == subscriptionId);
+
+            if (subscription == default)
             {
-                throw new ArgumentNullException("Id has no value");
+                throw new EntityNotFoundException($"Subscription with id \"{subscriptionId}\" not found");
             }
 
-            return Context.Subscriptions.Where(x => x.Id == subscriptionId).Select(x => new SubscriptionDisplayViewModel()
-            {
-                Id = x.Id,
-                Title = x.Title,
-                Description = x.Description,
-                Cost = x.Cost,
-                LevelId = x.LevelId,
-                ReleasedIn = x.ReleasedIn,
-                Duration = x.Duration,
-                AvailableUntil = x.AvailableUntil,
-                LevelName = x.Level.Title,
-                VideoNames = x.VideoInSubscriptions.Select(y => y.Video.Title)
-            }).FirstOrDefault();
+            return MapToDisplayViewModel(subscription);
         }
 
         public IEnumerable<SubscriptionDisplayViewModel> ReadAll()
@@ -237,6 +227,24 @@ namespace KVA.Cinema.Services
             Subscription subscription = Context.Subscriptions.FirstOrDefault(x => x.Id == subscriptionId);
 
             return subscription != default;
+        }
+
+        private SubscriptionDisplayViewModel MapToDisplayViewModel(Subscription subscription)
+        {
+            return new SubscriptionDisplayViewModel()
+            {
+                Id = subscription.Id,
+                Title = subscription.Title,
+                Description = subscription.Description,
+                Cost = subscription.Cost,
+                LevelId = subscription.LevelId,
+                LevelName = subscription.Level.Title,
+                ReleasedIn = subscription.ReleasedIn,
+                Duration = subscription.Duration,
+                AvailableUntil = subscription.AvailableUntil,
+                VideosInSubscription = subscription.VideoInSubscriptions,
+                VideoNames = subscription.VideoInSubscriptions.Select(y => y.Video.Title)
+            };
         }
     }
 }
