@@ -100,8 +100,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var video = VideoService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
+            VideoDisplayViewModel video = null;
+
+            try
+            {
+                video = VideoService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (video == null)
             {
@@ -256,8 +264,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var video = VideoService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
+            VideoDisplayViewModel video = null;
+
+            try
+            {
+                video = VideoService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (video == null)
             {
@@ -274,9 +290,15 @@ namespace KVA.Cinema.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(Guid id)
         {
-            var video = VideoService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
-            VideoService.Delete(video.Id);
+            try
+            {
+                VideoDisplayViewModel video = VideoService.Read(id);
+                VideoService.Delete(video.Id);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
 

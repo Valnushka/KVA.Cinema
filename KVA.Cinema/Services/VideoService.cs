@@ -58,6 +58,18 @@ namespace KVA.Cinema.Services
             });
         }
 
+        public VideoDisplayViewModel Read(Guid videoId)
+        {
+            var video = Context.Videos.FirstOrDefault(x => x.Id == videoId);
+
+            if (video == default)
+            {
+                throw new EntityNotFoundException($"Video with id \"{videoId}\" not found");
+            }
+
+            return MapToDisplayViewModel(video);
+        }
+
         public IEnumerable<VideoDisplayViewModel> ReadAll()
         {
             return Context.Videos.Select(x => new VideoDisplayViewModel()
@@ -348,6 +360,26 @@ namespace KVA.Cinema.Services
             }
 
             return fileNewName;
+        }
+
+        private VideoDisplayViewModel MapToDisplayViewModel(Video video)
+        {
+            return new VideoDisplayViewModel()
+            {
+                Id = video.Id,
+                Name = video.Title,
+                Description = video.Description,
+                Length = video.Length,
+                CountryId = video.CountryId,
+                ReleasedIn = video.ReleasedIn,
+                Views = video.Views,
+                PegiId = video.PegiId,
+                LanguageId = video.LanguageId,
+                DirectorId = video.DirectorId,
+                Genres = video.Genres,
+                Tags = video.Tags,
+                TagViewModels = video.Tags.Select(x => new Models.ViewModels.Tag.TagDisplayViewModel() { Text = x.Text, Color = x.Color })
+            };
         }
     }
 }
