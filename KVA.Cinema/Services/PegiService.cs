@@ -33,6 +33,18 @@ namespace KVA.Cinema.Services
             });
         }
 
+        public PegiDisplayViewModel Read(Guid pegiId)
+        {
+            var pegi = Context.Pegis.FirstOrDefault(x => x.Id == pegiId);
+
+            if (pegi == default)
+            {
+                throw new EntityNotFoundException($"Pegi with id \"{pegiId}\" not found");
+            }
+
+            return MapToDisplayViewModel(pegi);
+        }
+
         public IEnumerable<PegiDisplayViewModel> ReadAll()
         {
             List<Pegi> pegis = Context.Pegis.ToList(); //TODO: перенести ToList в return
@@ -123,6 +135,15 @@ namespace KVA.Cinema.Services
             Pegi pegi = Context.Pegis.FirstOrDefault(x => x.Id == pegiId);
 
             return pegi != default;
+        }
+
+        private PegiDisplayViewModel MapToDisplayViewModel(Pegi pegi)
+        {
+            return new PegiDisplayViewModel()
+            {
+                Id = pegi.Id,
+                Type = pegi.Type
+            };
         }
     }
 }
