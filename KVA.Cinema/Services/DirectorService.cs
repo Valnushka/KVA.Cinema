@@ -30,7 +30,11 @@ namespace KVA.Cinema.Services
 
         public IEnumerable<DirectorCreateViewModel> Read()
         {
-            throw new NotImplementedException();
+            return Context.Directors.Select(x => new DirectorCreateViewModel()
+            {
+                Id = x.Id,
+                Name = x.Name
+            }).ToList();
         }
 
         public DirectorDisplayViewModel Read(Guid directorId)
@@ -49,11 +53,11 @@ namespace KVA.Cinema.Services
         {
             List<Director> directors = Context.Directors.ToList();
 
-            return directors.Select(x => new DirectorDisplayViewModel()
+            return Context.Directors.Select(x => new DirectorDisplayViewModel()
             {
                 Id = x.Id,
                 Name = x.Name
-            });
+            }).ToList();
         }
 
         public void CreateAsync(DirectorCreateViewModel directorData)
