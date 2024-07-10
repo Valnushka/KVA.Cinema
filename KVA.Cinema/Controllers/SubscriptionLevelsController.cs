@@ -212,7 +212,7 @@ namespace KVA.Cinema.Controllers
 
             try
             {
-                subscriptionLevel = SubscriptionLevelService.Read(id.Value);
+                subscriptionLevel = SubscriptionLevelService.Read(id);
                 SubscriptionLevelService.Delete(subscriptionLevel.Id);
             }
             catch (Exception ex)
