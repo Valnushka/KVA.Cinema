@@ -208,11 +208,9 @@ namespace KVA.Cinema.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(Guid id)
         {
-            SubscriptionLevelDisplayViewModel subscriptionLevel = null;
-
             try
             {
-                subscriptionLevel = SubscriptionLevelService.Read(id);
+                SubscriptionLevelDisplayViewModel subscriptionLevel = SubscriptionLevelService.Read(id);
                 SubscriptionLevelService.Delete(subscriptionLevel.Id);
             }
             catch (Exception ex)
