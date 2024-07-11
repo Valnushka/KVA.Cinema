@@ -231,11 +231,6 @@ namespace KVA.Cinema.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool DirectorExists(Guid id)
-        {
-            return DirectorService.IsEntityExist(id);
-        }
-
         private void AddBreadcrumbs(params Breadcrumb[] breadcrumbs)
         {
             ViewBag.Breadcrumbs = new List<Breadcrumb>(breadcrumbs);

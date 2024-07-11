@@ -438,18 +438,6 @@ namespace KVA.Cinema.Services
             Context.SaveChanges();// TODO
         }
 
-        public bool IsEntityExist(Guid userId)
-        {
-            if (CheckUtilities.ContainsNullOrEmptyValue(userId))
-            {
-                return false;
-            }
-
-            User user = Context.Users.FirstOrDefault(x => x.Id == userId);
-
-            return user != default;
-        }
-
         private UserDisplayViewModel MapToDisplayViewModel(User user)
         {
             var subscriptionIds = user.UserSubscriptions.Select(x => x.SubscriptionId);

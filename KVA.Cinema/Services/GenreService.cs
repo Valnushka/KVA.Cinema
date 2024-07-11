@@ -144,18 +144,6 @@ namespace KVA.Cinema.Services
             Context.SaveChanges();
         }
 
-        public bool IsEntityExist(Guid genreId)
-        {
-            if (CheckUtilities.ContainsNullOrEmptyValue(genreId))
-            {
-                return false;
-            }
-
-            Genre genre = Context.Genres.FirstOrDefault(x => x.Id == genreId);
-
-            return genre != default;
-        }
-
         private GenreDisplayViewModel MapToDisplayViewModel(Genre genre)
         {
             return new GenreDisplayViewModel()

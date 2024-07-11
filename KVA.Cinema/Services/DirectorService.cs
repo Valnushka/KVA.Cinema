@@ -144,18 +144,6 @@ namespace KVA.Cinema.Services
             Context.SaveChanges();
         }
 
-        public bool IsEntityExist(Guid directorId)
-        {
-            if (CheckUtilities.ContainsNullOrEmptyValue(directorId))
-            {
-                return false;
-            }
-
-            Director director = Context.Directors.FirstOrDefault(x => x.Id == directorId);
-
-            return director != default;
-        }
-
         private DirectorDisplayViewModel MapToDisplayViewModel(Director director)
         {
             return new DirectorDisplayViewModel()
