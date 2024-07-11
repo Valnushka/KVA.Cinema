@@ -7,6 +7,14 @@ using KVA.Cinema.Models.ViewModels.Video;
 using KVA.Cinema.Models.ViewModels;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Filters;
+using KVA.Cinema.Utilities;
+using Microsoft.Extensions.Caching.Memory;
+using KVA.Cinema.Models.Country;
+using KVA.Cinema.Models.Director;
+using KVA.Cinema.Models.ViewModels.Language;
+using KVA.Cinema.Models.ViewModels.Pegi;
+using KVA.Cinema.Models.Genre;
+using KVA.Cinema.Models.ViewModels.Tag;
 
 namespace KVA.Cinema.Controllers
 {
@@ -33,13 +41,16 @@ namespace KVA.Cinema.Controllers
 
         private TagService TagService { get; }
 
+        private CacheManager CacheManager { get; }
+
         public VideosController(VideoService videoService,
                                 CountryService countryService,
                                 DirectorService directorService,
                                 LanguageService languageService,
                                 PegiService pegiService,
                                 GenreService genreService,
-                                TagService tagService)
+                                TagService tagService,
+                                CacheManager memoryCache)
         {
             VideoService = videoService;
             CountryService = countryService;
@@ -48,6 +59,7 @@ namespace KVA.Cinema.Controllers
             PegiService = pegiService;
             GenreService = genreService;
             TagService = tagService;
+            CacheManager = memoryCache;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -124,12 +136,7 @@ namespace KVA.Cinema.Controllers
         // GET: Videos/Create
         public IActionResult Create()
         {
-            ViewBag.CountryId = new SelectList(CountryService.ReadAll(), "Id", "Name");
-            ViewBag.DirectorId = new SelectList(DirectorService.ReadAll(), "Id", "Name");
-            ViewBag.LanguageId = new SelectList(LanguageService.ReadAll(), "Id", "Name");
-            ViewBag.PegiId = new SelectList(PegiService.ReadAll(), "Id", "Type");
-            ViewBag.GenreIds = new SelectList(GenreService.ReadAll(), "Id", "Title");
-            ViewBag.TagIds = new SelectList(TagService.ReadAll(), "Id", "Text");
+            GetCachedEntities();
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
 
@@ -159,17 +166,13 @@ namespace KVA.Cinema.Controllers
             }
 
             // TODO: При каждой ошибки валидации считывается 5 раз наборы сущностей
-            ViewBag.CountryId = new SelectList(CountryService.ReadAll(), "Id", "Name");
-            ViewBag.DirectorId = new SelectList(DirectorService.ReadAll(), "Id", "Name");
-            ViewBag.LanguageId = new SelectList(LanguageService.ReadAll(), "Id", "Name");
-            ViewBag.PegiId = new SelectList(PegiService.ReadAll(), "Id", "Type");
-            ViewBag.GenreIds = new SelectList(GenreService.ReadAll(), "Id", "Title");
-            ViewBag.TagIds = new SelectList(TagService.ReadAll(), "Id", "Text");
+            GetCachedEntities();
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
 
             return View(videoData);
         }
+
 
         // GET: Videos/Edit/5
         public IActionResult Edit(Guid? id)
@@ -187,12 +190,7 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            ViewBag.CountryId = new SelectList(CountryService.ReadAll(), "Id", "Name");
-            ViewBag.DirectorId = new SelectList(DirectorService.ReadAll(), "Id", "Name");
-            ViewBag.LanguageId = new SelectList(LanguageService.ReadAll(), "Id", "Name");
-            ViewBag.PegiId = new SelectList(PegiService.ReadAll(), "Id", "Type");
-            ViewBag.GenreIds = new SelectList(GenreService.ReadAll(), "Id", "Title");
-            ViewBag.TagIds = new SelectList(TagService.ReadAll(), "Id", "Text");
+            GetCachedEntities();
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
 
@@ -244,12 +242,7 @@ namespace KVA.Cinema.Controllers
                 }
             }
 
-            ViewBag.CountryId = new SelectList(CountryService.ReadAll(), "Id", "Name");
-            ViewBag.DirectorId = new SelectList(DirectorService.ReadAll(), "Id", "Name");
-            ViewBag.LanguageId = new SelectList(LanguageService.ReadAll(), "Id", "Name");
-            ViewBag.PegiId = new SelectList(PegiService.ReadAll(), "Id", "Type");
-            ViewBag.GenreIds = new SelectList(GenreService.ReadAll(), "Id", "Title");
-            ViewBag.TagIds = new SelectList(TagService.ReadAll(), "Id", "Text");
+            GetCachedEntities();
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
 
@@ -313,6 +306,15 @@ namespace KVA.Cinema.Controllers
         private void AddBreadcrumbs(params Breadcrumb[] breadcrumbs)
         {
             ViewBag.Breadcrumbs = new List<Breadcrumb>(breadcrumbs);
+        }
+        private void GetCachedEntities()
+        {
+            ViewBag.CountryId = CacheManager.GetCachedSelectList("CountriesSelectedList", CountryService.ReadAll, nameof(CountryDisplayViewModel.Id), nameof(CountryDisplayViewModel.Name));
+            ViewBag.DirectorId = CacheManager.GetCachedSelectList("DirectorsSelectedList", DirectorService.ReadAll, nameof(DirectorDisplayViewModel.Id), nameof(DirectorDisplayViewModel.Name));
+            ViewBag.LanguageId = CacheManager.GetCachedSelectList("LanguagesSelectedList", LanguageService.ReadAll, nameof(LanguageDisplayViewModel.Id), nameof(DirectorDisplayViewModel.Name));
+            ViewBag.PegiId = CacheManager.GetCachedSelectList("PegisSelectedList", PegiService.ReadAll, nameof(PegiDisplayViewModel.Id), nameof(PegiDisplayViewModel.Type));
+            ViewBag.GenreIds = CacheManager.GetCachedSelectList("GenresSelectedList", GenreService.ReadAll, nameof(GenreDisplayViewModel.Id), nameof(GenreDisplayViewModel.Title));
+            ViewBag.TagIds = CacheManager.GetCachedSelectList("TagsSelectedList", TagService.ReadAll, nameof(TagDisplayViewModel.Id), nameof(TagDisplayViewModel.Text));
         }
     }
 }
