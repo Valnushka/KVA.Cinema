@@ -121,18 +121,6 @@ namespace KVA.Cinema.Services
             Context.SaveChanges();
         }
 
-        public bool IsEntityExist(Guid pegiId)
-        {
-            if (CheckUtilities.ContainsNullOrEmptyValue(pegiId))
-            {
-                return false;
-            }
-
-            Pegi pegi = Context.Pegis.FirstOrDefault(x => x.Id == pegiId);
-
-            return pegi != default;
-        }
-
         private PegiDisplayViewModel MapToDisplayViewModel(Pegi pegi)
         {
             return new PegiDisplayViewModel()

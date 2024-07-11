@@ -145,18 +145,6 @@ namespace KVA.Cinema.Services
             Context.SaveChanges();
         }
 
-        public bool IsEntityExist(Guid id)
-        {
-            if (CheckUtilities.ContainsNullOrEmptyValue(id))
-            {
-                return false;
-            }
-
-            Tag tag = Context.Tags.FirstOrDefault(x => x.Id == id);
-
-            return tag != default;
-        }
-
         private TagDisplayViewModel MapToDisplayViewModel(Tag tag)
         {
             return new TagDisplayViewModel()

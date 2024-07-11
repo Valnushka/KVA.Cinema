@@ -217,18 +217,6 @@ namespace KVA.Cinema.Services
             Context.SaveChanges();
         }
 
-        public bool IsEntityExist(Guid subscriptionId)
-        {
-            if (CheckUtilities.ContainsNullOrEmptyValue(subscriptionId))
-            {
-                return false;
-            }
-
-            Subscription subscription = Context.Subscriptions.FirstOrDefault(x => x.Id == subscriptionId);
-
-            return subscription != default;
-        }
-
         private SubscriptionDisplayViewModel MapToDisplayViewModel(Subscription subscription)
         {
             return new SubscriptionDisplayViewModel()

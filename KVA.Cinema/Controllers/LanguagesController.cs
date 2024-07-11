@@ -230,11 +230,6 @@ namespace KVA.Cinema.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool LanguageExists(Guid id)
-        {
-            return LanguageService.IsEntityExist(id);
-        }
-
         private void AddBreadcrumbs(params Breadcrumb[] breadcrumbs)
         {
             ViewBag.Breadcrumbs = new List<Breadcrumb>(breadcrumbs);

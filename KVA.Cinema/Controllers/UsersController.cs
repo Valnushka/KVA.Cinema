@@ -477,11 +477,6 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
             return View(subscription);
         }
 
-        private bool UserExists(Guid id)
-        {
-            return UserService.IsEntityExist(id);
-        }
-
         private void AddBreadcrumbs(params Breadcrumb[] breadcrumbs)
         {
             ViewBag.Breadcrumbs = new List<Breadcrumb>(breadcrumbs);

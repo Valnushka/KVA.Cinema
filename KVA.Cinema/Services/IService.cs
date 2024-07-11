@@ -17,7 +17,5 @@ namespace KVA.Cinema.Services
         void Update(Guid id, TEntityEditViewModel newEntityData);
 
         void Delete(Guid id);
-
-        bool IsEntityExist(Guid id);
     }
 }

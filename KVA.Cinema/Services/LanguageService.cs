@@ -142,18 +142,6 @@ namespace KVA.Cinema.Services
             Context.SaveChanges();
         }
 
-        public bool IsEntityExist(Guid languageId)
-        {
-            if (CheckUtilities.ContainsNullOrEmptyValue(languageId))
-            {
-                return false;
-            }
-
-            Language language = Context.Languages.FirstOrDefault(x => x.Id == languageId);
-
-            return language != default;
-        }
-
         private LanguageDisplayViewModel MapToDisplayViewModel(Language language)
         {
             return new LanguageDisplayViewModel()

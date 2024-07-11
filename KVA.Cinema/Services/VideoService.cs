@@ -324,18 +324,6 @@ namespace KVA.Cinema.Services
             }
         }
 
-        public bool IsEntityExist(Guid videoId)
-        {
-            if (CheckUtilities.ContainsNullOrEmptyValue(videoId))
-            {
-                return false;
-            }
-
-            Video video = Context.Videos.FirstOrDefault(x => x.Id == videoId);
-
-            return video != default;
-        }
-
         private string SaveFile(IFormFile file, string destinationFolderName)
         {
             if (file == null || string.IsNullOrWhiteSpace(destinationFolderName))

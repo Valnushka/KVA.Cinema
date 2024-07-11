@@ -143,18 +143,6 @@ namespace KVA.Cinema.Services
             Context.SaveChanges();
         }
 
-        public bool IsEntityExist(Guid countryId)
-        {
-            if (CheckUtilities.ContainsNullOrEmptyValue(countryId))
-            {
-                return false;
-            }
-
-            Country country = Context.Countries.FirstOrDefault(x => x.Id == countryId);
-
-            return country != default;
-        }
-
         private CountryDisplayViewModel MapToDisplayViewModel(Country country)
         {
             return new CountryDisplayViewModel()
