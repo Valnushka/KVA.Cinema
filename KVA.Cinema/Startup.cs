@@ -1,6 +1,7 @@
 using KVA.Cinema.Models;
 using KVA.Cinema.Models.Entities;
 using KVA.Cinema.Services;
+using KVA.Cinema.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -65,9 +66,11 @@ namespace KVA.Cinema
                     .AddTransient<SubscriptionService>()
                     .AddTransient<PegiService>()
                     .AddTransient<LanguageService>()
-                    .AddTransient<TagService>();
+                    .AddTransient<TagService>()
+                    .AddTransient<CacheManager>();
 
             services.AddControllersWithViews();
+            services.AddMemoryCache();
 
             services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
         }
