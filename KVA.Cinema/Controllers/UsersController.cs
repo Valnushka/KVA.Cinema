@@ -150,9 +150,11 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
                 }
                 catch (FailedToCreateEntityException ex)
                 {
-                    foreach (var error in ex.Errors)
+                    var identityErrors = ex.Errors.OfType<IdentityError>();
+
+                    foreach (var error in identityErrors)
                     {
-                        ModelState.AddModelError(string.Empty, (error as IdentityError).Description);
+                        ModelState.AddModelError(string.Empty, error.Description);
                     }
                 }
                 catch (Exception ex)
