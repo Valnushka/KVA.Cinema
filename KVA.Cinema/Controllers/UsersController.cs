@@ -334,47 +334,38 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                User user = await UserService.UserManager.FindByNameAsync(model.Nickname);
-
-                if (user == null)
-                {
-                    ModelState.AddModelError(string.Empty, "User with this nickname is not found");
-                }
-                else
-                {
-                    if (!user.IsActive || !await UserService.UserManager.IsEmailConfirmedAsync(user))
-                    {
-                        ModelState.AddModelError(string.Empty, "Your account is not active. Please confirm your email to access");
-                        AddBreadcrumbs(homeBreadcrumb, loginBreadcrumb);
-                        return View(model);
-                    }
-
-                    var result = await UserService.SignInManager.PasswordSignInAsync(model.Nickname, model.Password, model.RememberMe, false);
-
-                    if (result.Succeeded)
-                    {
-                        AddBreadcrumbs(homeBreadcrumb, loginBreadcrumb);
-
-                        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                        {
-                            return Redirect(returnUrl);
-                        }
-                        else
-                        {
-                            return RedirectToAction("Index", "Home");
-                        }
-                    }
-                    else
-                    {
-                        ModelState.AddModelError(string.Empty, "Incorrect login or/and password");
-                    }
-                }
+                AddBreadcrumbs(homeBreadcrumb, loginBreadcrumb);
+                return View(model);
             }
 
-            AddBreadcrumbs(homeBreadcrumb, loginBreadcrumb);
+            User user = await UserService.UserManager.FindByNameAsync(model.Nickname);
 
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "User with this nickname is not found");
+                AddBreadcrumbs(homeBreadcrumb, loginBreadcrumb);
+                return View(model);
+            }
+
+            if (!user.IsActive || !await UserService.UserManager.IsEmailConfirmedAsync(user))
+            {
+                ModelState.AddModelError(string.Empty, "Your account is not active. Please confirm your email to access");
+                AddBreadcrumbs(homeBreadcrumb, loginBreadcrumb);
+                return View(model);
+            }
+
+            var result = await UserService.SignInManager.PasswordSignInAsync(model.Nickname, model.Password, model.RememberMe, false);
+
+            if (result.Succeeded)
+            {
+                AddBreadcrumbs(homeBreadcrumb, loginBreadcrumb);
+                return !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) ? Redirect(returnUrl) : RedirectToAction("Index", "Home");
+            }
+
+            ModelState.AddModelError(string.Empty, "Incorrect login or/and password");
+            AddBreadcrumbs(homeBreadcrumb, loginBreadcrumb);
             return View(model);
         }
 
