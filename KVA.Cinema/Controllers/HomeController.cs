@@ -7,19 +7,7 @@ namespace KVA.Cinema.Controllers
 {
     public class HomeController : Controller
     {
-        private ILogger<HomeController> Logger { get; }
-
-        public HomeController(ILogger<HomeController> logger)
-        {
-            Logger = logger;
-        }
-
         public IActionResult Index()
-        {
-            return View();
-        }
-
-        public IActionResult Privacy()
         {
             return View();
         }
