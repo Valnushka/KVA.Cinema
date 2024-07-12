@@ -165,7 +165,6 @@ namespace KVA.Cinema.Controllers
                 }
             }
 
-            // TODO: При каждой ошибки валидации считывается 5 раз наборы сущностей
             GetCachedEntities();
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
@@ -302,6 +301,7 @@ namespace KVA.Cinema.Controllers
         {
             ViewBag.Breadcrumbs = new List<Breadcrumb>(breadcrumbs);
         }
+
         private void GetCachedEntities()
         {
             ViewBag.CountryId = CacheManager.GetCachedSelectList("CountriesSelectedList", CountryService.ReadAll, nameof(CountryDisplayViewModel.Id), nameof(CountryDisplayViewModel.Name));
