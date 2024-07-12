@@ -8,6 +8,8 @@ using KVA.Cinema.Models.ViewModels.Subscription;
 using KVA.Cinema.Models.ViewModels.Video;
 using KVA.Cinema.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc.Filters;
+using KVA.Cinema.Models.ViewModels.SubscriptionLevel;
+using KVA.Cinema.Utilities;
 
 namespace KVA.Cinema.Controllers
 {
@@ -28,15 +30,19 @@ namespace KVA.Cinema.Controllers
 
         private VideoService VideoService { get; }
 
+        private CacheManager CacheManager { get; }
+
         public SubscriptionsController(SubscriptionService subscriptionService,
                                        SubscriptionLevelService subscriptionLevelService,
                                        UserService userService,
-                                       VideoService videoService)
+                                       VideoService videoService,
+                                       CacheManager memoryCache)
         {
             SubscriptionService = subscriptionService;
             SubscriptionLevelService = subscriptionLevelService;
             UserService = userService;
             VideoService = videoService;
+            CacheManager = memoryCache;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -122,8 +128,7 @@ namespace KVA.Cinema.Controllers
         // GET: Subscriptions/Create
         public IActionResult Create()
         {
-            ViewBag.LevelId = new SelectList(SubscriptionLevelService.ReadAll(), "Id", "Title");
-            ViewBag.VideoIds = new SelectList(VideoService.ReadAll(), "Id", nameof(VideoDisplayViewModel.Name));
+            GetCachedEntities();
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
 
@@ -150,8 +155,7 @@ namespace KVA.Cinema.Controllers
                 }
             }
 
-            ViewBag.LevelId = new SelectList(SubscriptionLevelService.ReadAll(), "Id", "Title");
-            ViewBag.VideoIds = new SelectList(VideoService.ReadAll(), "Id", nameof(VideoDisplayViewModel.Name));
+            GetCachedEntities();
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
 
@@ -174,8 +178,7 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            ViewBag.LevelId = new SelectList(SubscriptionLevelService.ReadAll(), "Id", "Title");
-            ViewBag.VideoIds = new SelectList(VideoService.ReadAll(), "Id", nameof(VideoDisplayViewModel.Name));
+            GetCachedEntities();
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
 
@@ -220,8 +223,7 @@ namespace KVA.Cinema.Controllers
                 }
             }
 
-            ViewBag.LevelId = new SelectList(SubscriptionLevelService.ReadAll(), "Id", "Title");
-            ViewBag.VideoIds = new SelectList(VideoService.ReadAll(), "Id", nameof(VideoDisplayViewModel.Name));
+            GetCachedEntities();
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
 
@@ -276,6 +278,12 @@ namespace KVA.Cinema.Controllers
         private void AddBreadcrumbs(params Breadcrumb[] breadcrumbs)
         {
             ViewBag.Breadcrumbs = new List<Breadcrumb>(breadcrumbs);
+        }
+
+        private void GetCachedEntities()
+        {
+            ViewBag.LevelId = CacheManager.GetCachedSelectList("LevelsSelectedList", SubscriptionLevelService.ReadAll, nameof(SubscriptionLevelDisplayViewModel.Id), nameof(SubscriptionLevelDisplayViewModel.Title));
+            ViewBag.VideoIds = CacheManager.GetCachedSelectList("VideosSelectedList", VideoService.ReadAll, nameof(VideoDisplayViewModel.Id), nameof(VideoDisplayViewModel.Name));
         }
     }
 }
