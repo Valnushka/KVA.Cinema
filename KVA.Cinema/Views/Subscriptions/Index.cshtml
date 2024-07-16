@@ -48,13 +48,13 @@
                     })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.First().Duration)
+                @Html.DisplayNameFor(model => model.First().Description)
             </th>
             <th>
                 @Html.ActionLink(
                     ViewBag.SortingField == SubscriptionSort.Cost
-                    ? $"Cost {(ViewBag.SortDescending ? "▾" : "▴")}"
-                    : "Cost",
+                    ? $"Cost ($) {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    : "Cost ($)",
                     "Index",
                     new
                     {
@@ -79,8 +79,8 @@
             <th>
                 @Html.ActionLink(
                     ViewBag.SortingField == SubscriptionSort.Duration
-                    ? $"Duration {(ViewBag.SortDescending ? "▾" : "▴")}"
-                    : "Duration",
+                    ? $"Duration (days) {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    : "Duration (days)",
                     "Index",
                     new
                     {
@@ -92,8 +92,8 @@
             <th>
                 @Html.ActionLink(
                     ViewBag.SortingField == SubscriptionSort.AvailableUntil
-                    ? $"Available until {(ViewBag.SortDescending ? "▾" : "▴")}"
-                    : "Available until",
+                    ? $"Available to buy until {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    : "Available to buy until",
                     "Index",
                     new
                     { 
