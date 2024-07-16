@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using KVA.Cinema.Models.Entities;
-using KVA.Cinema.Models.User;
+using KVA.Cinema.Entities;
 using KVA.Cinema.Services;
 using KVA.Cinema.Exceptions;
 using Microsoft.AspNetCore.Identity;
-using KVA.Cinema.Models.ViewModels.User;
-using KVA.Cinema.Models.ViewModels;
+using KVA.Cinema.ViewModels;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Web;
 

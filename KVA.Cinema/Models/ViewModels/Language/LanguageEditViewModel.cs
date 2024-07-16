@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace KVA.Cinema.Models.ViewModels.Language
+namespace KVA.Cinema.ViewModels
 {
     public class LanguageEditViewModel
     {

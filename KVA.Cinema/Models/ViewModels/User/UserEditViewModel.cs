@@ -2,7 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace KVA.Cinema.Models.ViewModels.User
+namespace KVA.Cinema.ViewModels
 {
     public class UserEditViewModel
     {

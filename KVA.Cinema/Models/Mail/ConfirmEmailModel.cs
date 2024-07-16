@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace KVA.Cinema.Models.Mail
+namespace KVA.Cinema.Models
 {
     public class ConfirmEmailModel : IEmailTemplate<string, string>
     {

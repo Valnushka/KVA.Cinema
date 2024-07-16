@@ -1,7 +1,7 @@
 ﻿using KVA.Cinema.Exceptions;
 using KVA.Cinema.Models;
-using KVA.Cinema.Models.Entities;
-using KVA.Cinema.Models.ViewModels.Pegi;
+using KVA.Cinema.Entities;
+using KVA.Cinema.ViewModels;
 using KVA.Cinema.Utilities;
 using System;
 using System.Collections.Generic;

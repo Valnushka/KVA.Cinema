@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using KVA.Cinema.Models.Entities;
+using KVA.Cinema.Entities;
 
-namespace KVA.Cinema.Models.ViewModels.Subscription
+namespace KVA.Cinema.ViewModels
 {
     public class SubscriptionDisplayViewModel
     {

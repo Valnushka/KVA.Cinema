@@ -1,4 +1,4 @@
-﻿namespace KVA.Cinema.Models.ViewModels.User
+﻿namespace KVA.Cinema.ViewModels
 {
     public enum UserSort
     {

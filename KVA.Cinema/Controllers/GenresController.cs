@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using KVA.Cinema.Models.Genre;
 using KVA.Cinema.Services;
-using KVA.Cinema.Models.ViewModels.Genre;
-using KVA.Cinema.Models.ViewModels;
+using KVA.Cinema.ViewModels;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace KVA.Cinema.Controllers
@@ -40,14 +38,23 @@ namespace KVA.Cinema.Controllers
 
         // GET: Genres
         [Route("Genres")]
-        public IActionResult Index(GenreSort sortingField = GenreSort.Title, bool isSortDescending = false)
+        public IActionResult Index(int? pageNumber,
+                                   string searchString,
+                                   GenreSort sortingField = GenreSort.Title,
+                                   bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;
             ViewBag.SortDescending = isSortDescending;
+            ViewBag.CurrentFilter = searchString;
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb);
 
             var genres = GenreService.ReadAll();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                genres = genres.Where(x => x.Title.Contains(searchString));
+            }
 
             if (sortingField == GenreSort.Title && isSortDescending)
             {
@@ -58,7 +65,9 @@ namespace KVA.Cinema.Controllers
                 genres = genres.OrderBy(s => s.Title);
             }
 
-            return View(genres.ToList());
+            int itemsOnPage = 15;
+
+            return View(PaginatedList<GenreDisplayViewModel>.CreateAsync(genres, pageNumber ?? 1, itemsOnPage));
         }
 
         // GET: Genres/Details/5

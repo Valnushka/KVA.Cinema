@@ -1,5 +1,5 @@
+using KVA.Cinema.Entities;
 using KVA.Cinema.Models;
-using KVA.Cinema.Models.Entities;
 using KVA.Cinema.Services;
 using KVA.Cinema.Utilities;
 using Microsoft.AspNetCore.Builder;

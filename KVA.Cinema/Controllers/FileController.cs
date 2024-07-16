@@ -1,4 +1,4 @@
-﻿using KVA.Cinema.Models.Entities;
+﻿using KVA.Cinema.Entities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

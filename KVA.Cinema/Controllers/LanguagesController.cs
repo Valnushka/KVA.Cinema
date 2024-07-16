@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using KVA.Cinema.Services;
-using KVA.Cinema.Models.ViewModels.Language;
-using KVA.Cinema.Models.ViewModels;
+using KVA.Cinema.ViewModels;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace KVA.Cinema.Controllers
@@ -39,14 +38,23 @@ namespace KVA.Cinema.Controllers
 
         // GET: Languages
         [Route("Languages")]
-        public IActionResult Index(LanguageSort sortingField = LanguageSort.Name, bool isSortDescending = false)
+        public IActionResult Index(int? pageNumber,
+                                   string searchString,
+                                   LanguageSort sortingField = LanguageSort.Name,
+                                   bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;
             ViewBag.SortDescending = isSortDescending;
+            ViewBag.CurrentFilter = searchString;
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb);
 
             var languages = LanguageService.ReadAll();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                languages = languages.Where(x => x.Name.Contains(searchString));
+            }
 
             if (sortingField == LanguageSort.Name && isSortDescending)
             {
@@ -57,7 +65,9 @@ namespace KVA.Cinema.Controllers
                 languages = languages.OrderBy(s => s.Name);
             }
 
-            return View(languages.ToList());
+            int itemsOnPage = 15;
+
+            return View(PaginatedList<LanguageDisplayViewModel>.CreateAsync(languages, pageNumber ?? 1, itemsOnPage));
         }
 
         // GET: Languages/Details/5

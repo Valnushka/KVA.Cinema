@@ -1,4 +1,4 @@
-﻿namespace KVA.Cinema.Models.ViewModels.Pegi
+﻿namespace KVA.Cinema.ViewModels
 {
     public enum PegiSort
     {

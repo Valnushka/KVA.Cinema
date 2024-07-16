@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using KVA.Cinema.Attributes;
 
-namespace KVA.Cinema.Models.User
+namespace KVA.Cinema.ViewModels
 {
     /// <summary>
     /// Essential data to create person (written by user)

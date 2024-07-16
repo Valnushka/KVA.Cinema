@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace KVA.Cinema.Models.ViewModels.Country
+namespace KVA.Cinema.ViewModels
 {
     public class CountryEditViewModel
     {

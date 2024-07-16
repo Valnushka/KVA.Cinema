@@ -1,4 +1,4 @@
-﻿namespace KVA.Cinema.Models.ViewModels.Genre
+﻿namespace KVA.Cinema.ViewModels
 {
     public enum GenreSort
     {

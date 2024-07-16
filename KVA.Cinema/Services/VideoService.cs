@@ -1,7 +1,7 @@
 ﻿using KVA.Cinema.Exceptions;
 using KVA.Cinema.Models;
-using KVA.Cinema.Models.Entities;
-using KVA.Cinema.Models.ViewModels.Video;
+using KVA.Cinema.Entities;
+using KVA.Cinema.ViewModels;
 using KVA.Cinema.Utilities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -54,7 +54,7 @@ namespace KVA.Cinema.Services
                 DirectorId = x.DirectorId,
                 GenreIds = x.Genres.Select(x => x.Id),
                 TagIds = x.Tags.Select(x => x.Id),
-                TagsViewModels = x.Tags.Select(x => new Models.ViewModels.Tag.TagDisplayViewModel() { Text = x.Text, Color = x.Color })
+                TagsViewModels = x.Tags.Select(x => new ViewModels.TagDisplayViewModel() { Text = x.Text, Color = x.Color })
             });
         }
 
@@ -91,7 +91,7 @@ namespace KVA.Cinema.Services
                 DirectorName = x.Director.Name,
                 Genres = x.Genres,
                 Tags = x.Tags,
-                TagViewModels = x.Tags.Select(x => new Models.ViewModels.Tag.TagDisplayViewModel() { Text = x.Text, Color = x.Color })
+                TagViewModels = x.Tags.Select(x => new ViewModels.TagDisplayViewModel() { Text = x.Text, Color = x.Color })
             }).ToList();
         }
 
@@ -366,7 +366,7 @@ namespace KVA.Cinema.Services
                 DirectorName = video.Director.Name,
                 Genres = video.Genres,
                 Tags = video.Tags,
-                TagViewModels = video.Tags.Select(x => new Models.ViewModels.Tag.TagDisplayViewModel() { Text = x.Text, Color = x.Color })
+                TagViewModels = video.Tags.Select(x => new ViewModels.TagDisplayViewModel() { Text = x.Text, Color = x.Color })
             };
         }
     }

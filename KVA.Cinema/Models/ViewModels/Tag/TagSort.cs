@@ -1,4 +1,4 @@
-﻿namespace KVA.Cinema.Models.ViewModels.Tag
+﻿namespace KVA.Cinema.ViewModels
 {
     public enum TagSort
     {

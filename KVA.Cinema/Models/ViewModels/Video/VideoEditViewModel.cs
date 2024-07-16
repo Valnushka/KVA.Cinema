@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace KVA.Cinema.Models.ViewModels.Video
+namespace KVA.Cinema.ViewModels
 {
     public class VideoEditViewModel
     {

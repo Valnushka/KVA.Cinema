@@ -1,7 +1,6 @@
-﻿@model PaginatedList<KVA.Cinema.Models.User.UserDisplayViewModel>
+﻿@model PaginatedList<KVA.Cinema.ViewModels.UserDisplayViewModel>
 
-@using KVA.Cinema.Models.ViewModels.User;
-@using KVA.Cinema.Models.ViewModels;
+@using KVA.Cinema.ViewModels;
 
 @{
     ViewData["Title"] = "Users List";
@@ -39,9 +38,9 @@
                     "Index",
                     new
                         {
-                         sortingField = UserSort.Nickname,
-                         isSortDescending = (ViewBag.SortingField == UserSort.Nickname && !ViewBag.SortDescending),
-                         searchString = ViewBag.CurrentFilter
+                            sortingField = UserSort.Nickname,
+                            isSortDescending = (ViewBag.SortingField == UserSort.Nickname && !ViewBag.SortDescending),
+                            searchString = ViewBag.CurrentFilter
                         })
             </th>
             <th>
@@ -52,9 +51,9 @@
                     "Index",
                     new
                         {
-                         sortingField = UserSort.FirstName,
-                         isSortDescending = (ViewBag.SortingField == UserSort.FirstName && !ViewBag.SortDescending),
-                         searchString = ViewBag.CurrentFilter
+                            sortingField = UserSort.FirstName,
+                            isSortDescending = (ViewBag.SortingField == UserSort.FirstName && !ViewBag.SortDescending),
+                            searchString = ViewBag.CurrentFilter
                         })
             </th>
             <th>
@@ -65,9 +64,9 @@
                     "Index",
                     new
                          {
-                          sortingField = UserSort.LastName,
-                          isSortDescending = (ViewBag.SortingField == UserSort.LastName && !ViewBag.SortDescending),
-                          searchString = ViewBag.CurrentFilter
+                            sortingField = UserSort.LastName,
+                            isSortDescending = (ViewBag.SortingField == UserSort.LastName && !ViewBag.SortDescending),
+                            searchString = ViewBag.CurrentFilter
                          })
             </th>
             <th>
@@ -78,9 +77,9 @@
                     "Index",
                     new
                          {
-                          sortingField = UserSort.BirthDate,
-                          isSortDescending = (ViewBag.SortingField == UserSort.BirthDate && !ViewBag.SortDescending),
-                          searchString = ViewBag.CurrentFilter
+                            sortingField = UserSort.BirthDate,
+                            isSortDescending = (ViewBag.SortingField == UserSort.BirthDate && !ViewBag.SortDescending),
+                            searchString = ViewBag.CurrentFilter
                          })
             </th>
             <th>
@@ -91,9 +90,9 @@
                     "Index",
                     new
                          {
-                          sortingField = UserSort.Email,
-                          isSortDescending = (ViewBag.SortingField == UserSort.Email && !ViewBag.SortDescending),
-                          searchString = ViewBag.CurrentFilter
+                            sortingField = UserSort.Email,
+                            isSortDescending = (ViewBag.SortingField == UserSort.Email && !ViewBag.SortDescending),
+                            searchString = ViewBag.CurrentFilter
                          })
             </th>
             @if (User.Identity.IsAuthenticated)

@@ -4,11 +4,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using KVA.Cinema.Services;
-using KVA.Cinema.Models.ViewModels.Subscription;
-using KVA.Cinema.Models.ViewModels.Video;
-using KVA.Cinema.Models.ViewModels;
+using KVA.Cinema.ViewModels;
 using Microsoft.AspNetCore.Mvc.Filters;
-using KVA.Cinema.Models.ViewModels.SubscriptionLevel;
 using KVA.Cinema.Utilities;
 
 namespace KVA.Cinema.Controllers
@@ -59,14 +56,23 @@ namespace KVA.Cinema.Controllers
 
         // GET: Subscriptions
         [Route("Subscriptions")]
-        public IActionResult Index(SubscriptionSort sortingField = SubscriptionSort.Title, bool isSortDescending = false)
+        public IActionResult Index(int? pageNumber,
+                                   string searchString,
+                                   SubscriptionSort sortingField = SubscriptionSort.Title,
+                                   bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;
             ViewBag.SortDescending = isSortDescending;
+            ViewBag.CurrentFilter = searchString;
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb);
 
             var subscriptions = SubscriptionService.ReadAll();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                subscriptions = subscriptions.Where(x => x.Title.Contains(searchString));
+            }
 
             switch (sortingField)
             {
@@ -93,7 +99,9 @@ namespace KVA.Cinema.Controllers
                     break;
             }
 
-            return View(subscriptions.ToList());
+            int itemsOnPage = 15;
+
+            return View(PaginatedList<SubscriptionDisplayViewModel>.CreateAsync(subscriptions, pageNumber ?? 1, itemsOnPage));
         }
 
         // GET: Subscriptions/Details/5

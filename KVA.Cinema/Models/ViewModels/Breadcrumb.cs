@@ -1,4 +1,4 @@
-﻿namespace KVA.Cinema.Models.ViewModels
+﻿namespace KVA.Cinema.ViewModels
 {
     public class Breadcrumb
     {

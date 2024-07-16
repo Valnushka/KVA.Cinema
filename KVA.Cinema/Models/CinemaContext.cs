@@ -1,4 +1,4 @@
-﻿using KVA.Cinema.Models.Entities;
+﻿using KVA.Cinema.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -6,29 +6,29 @@ using System;
 
 namespace KVA.Cinema.Models
 {
-    public class CinemaContext : IdentityDbContext<Entities.User, IdentityRole<Guid>, Guid>
+    public class CinemaContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
     {
         public virtual DbSet<Comment> Comments { get; set; }
 
         public virtual DbSet<CommentMark> CommentMarks { get; set; }
 
-        public virtual DbSet<Entities.Country> Countries { get; set; }
+        public virtual DbSet<Country> Countries { get; set; }
 
-        public virtual DbSet<Entities.Director> Directors { get; set; }
+        public virtual DbSet<Director> Directors { get; set; }
 
         public virtual DbSet<Frame> Frames { get; set; }
 
-        public virtual DbSet<Entities.Genre> Genres { get; set; }
+        public virtual DbSet<Genre> Genres { get; set; }
 
         public virtual DbSet<Language> Languages { get; set; }
 
-        public virtual DbSet<Entities.SubscriptionLevel> SubscriptionLevels { get; set; }
+        public virtual DbSet<SubscriptionLevel> SubscriptionLevels { get; set; }
 
         public virtual DbSet<Pegi> Pegis { get; set; }
 
         public virtual DbSet<Review> Reviews { get; set; }
 
-        public virtual DbSet<Entities.Subscription> Subscriptions { get; set; }
+        public virtual DbSet<Subscription> Subscriptions { get; set; }
 
         public virtual DbSet<Subtitle> Subtitles { get; set; }
 

@@ -1,8 +1,7 @@
 ﻿using KVA.Cinema.Exceptions;
 using KVA.Cinema.Models;
-using KVA.Cinema.Models.Entities;
-using KVA.Cinema.Models.User;
-using KVA.Cinema.Models.ViewModels.User;
+using KVA.Cinema.Entities;
+using KVA.Cinema.ViewModels;
 using KVA.Cinema.Utilities;
 using Microsoft.AspNetCore.Identity;
 using System;

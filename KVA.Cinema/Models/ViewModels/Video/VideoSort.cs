@@ -1,4 +1,4 @@
-﻿namespace KVA.Cinema.Models.ViewModels.Video
+﻿namespace KVA.Cinema.ViewModels
 {
     public enum VideoSort
     {

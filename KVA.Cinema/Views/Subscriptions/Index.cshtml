@@ -1,5 +1,6 @@
-﻿@model IEnumerable<KVA.Cinema.Models.ViewModels.Subscription.SubscriptionDisplayViewModel>
-@using KVA.Cinema.Models.ViewModels.Subscription;
+﻿@model PaginatedList<KVA.Cinema.ViewModels.SubscriptionDisplayViewModel>
+
+@using KVA.Cinema.ViewModels;
 
 @{
     ViewData["Title"] = "Subscriptions List";
@@ -15,6 +16,17 @@
     </p>
 }
 
+@using (Html.BeginForm())
+{
+    <div>
+        <p>
+            Find by title: <input type="text" name="SearchString" value=@ViewBag.CurrentFilter />
+            <input type="submit" value="Search" class="btn btn-light" /> |
+            @Html.ActionLink("Reset filters", "Index", "Subscriptions")
+        </p>
+    </div>
+}
+
 <table class="table">
     <thead>
         <tr>
@@ -27,45 +39,81 @@
                     ViewBag.SortingField == SubscriptionSort.Title
                     ? $"Title {(ViewBag.SortDescending ? "▾" : "▴")}"
                     : "Title",
-                    "Index", new { sortingField = SubscriptionSort.Title, isSortDescending = (ViewBag.SortingField == SubscriptionSort.Title && !ViewBag.SortDescending) })
+                    "Index",
+                    new
+                    {
+                        sortingField = SubscriptionSort.Title,
+                        isSortDescending = (ViewBag.SortingField == SubscriptionSort.Title && !ViewBag.SortDescending),
+                        searchString = ViewBag.CurrentFilter
+                    })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Description)
+                @Html.DisplayNameFor(model => model.First().Duration)
             </th>
             <th>
                 @Html.ActionLink(
                     ViewBag.SortingField == SubscriptionSort.Cost
                     ? $"Cost {(ViewBag.SortDescending ? "▾" : "▴")}"
                     : "Cost",
-                    "Index", new { sortingField = SubscriptionSort.Cost, isSortDescending = (ViewBag.SortingField == SubscriptionSort.Cost && !ViewBag.SortDescending) })
+                    "Index",
+                    new
+                    {
+                        sortingField = SubscriptionSort.Cost,
+                        isSortDescending = (ViewBag.SortingField == SubscriptionSort.Cost && !ViewBag.SortDescending),
+                        searchString = ViewBag.CurrentFilter
+                    })
             </th>
             <th>
                 @Html.ActionLink(
                     ViewBag.SortingField == SubscriptionSort.ReleasedIn
                     ? $"Released in {(ViewBag.SortDescending ? "▾" : "▴")}"
                     : "Released in",
-                    "Index", new { sortingField = SubscriptionSort.ReleasedIn, isSortDescending = (ViewBag.SortingField == SubscriptionSort.ReleasedIn && !ViewBag.SortDescending) })
+                    "Index",
+                    new
+                    {
+                        sortingField = SubscriptionSort.ReleasedIn,
+                        isSortDescending = (ViewBag.SortingField == SubscriptionSort.ReleasedIn && !ViewBag.SortDescending),
+                        searchString = ViewBag.CurrentFilter
+                    })
             </th>
             <th>
                 @Html.ActionLink(
                     ViewBag.SortingField == SubscriptionSort.Duration
                     ? $"Duration {(ViewBag.SortDescending ? "▾" : "▴")}"
                     : "Duration",
-                    "Index", new { sortingField = SubscriptionSort.Duration, isSortDescending = (ViewBag.SortingField == SubscriptionSort.Duration && !ViewBag.SortDescending) })
+                    "Index",
+                    new
+                    {
+                        sortingField = SubscriptionSort.Duration,
+                        isSortDescending = (ViewBag.SortingField == SubscriptionSort.Duration && !ViewBag.SortDescending),
+                        searchString = ViewBag.CurrentFilter
+                    })
             </th>
             <th>
                 @Html.ActionLink(
                     ViewBag.SortingField == SubscriptionSort.AvailableUntil
                     ? $"Available until {(ViewBag.SortDescending ? "▾" : "▴")}"
                     : "Available until",
-                    "Index", new { sortingField = SubscriptionSort.AvailableUntil, isSortDescending = (ViewBag.SortingField == SubscriptionSort.AvailableUntil && !ViewBag.SortDescending) })
+                    "Index",
+                    new
+                    { 
+                        sortingField = SubscriptionSort.AvailableUntil,
+                        isSortDescending = (ViewBag.SortingField == SubscriptionSort.AvailableUntil && !ViewBag.SortDescending),
+                        searchString = ViewBag.CurrentFilter
+                    })
             </th>
             <th>
                 @Html.ActionLink(
                     ViewBag.SortingField == SubscriptionSort.Level
                     ? $"Level {(ViewBag.SortDescending ? "▾" : "▴")}"
                     : "Level",
-                    "Index", new { sortingField = SubscriptionSort.Level, isSortDescending = (ViewBag.SortingField == SubscriptionSort.Level && !ViewBag.SortDescending) })
+                    "Index",
+                    new
+                    {
+                        sortingField = SubscriptionSort.Level,
+                        isSortDescending = (ViewBag.SortingField == SubscriptionSort.Level && !ViewBag.SortDescending),
+                        searchString = ViewBag.CurrentFilter
+                    })
             </th>
             @if (User.Identity.IsAuthenticated)
             {
@@ -83,12 +131,12 @@
                     <td>
                         @if (item.IsPurchasedByCurrentUser)
                         {
-                        @Html.ActionLink("Cancel", "CancelSubscription", "Users", new { subscriptionId = item.Id }, new { @class = "btn btn-primary", @title = "Cancel subscription" })
-                        @Html.ActionLink("Buy", "", new { subscriptionId = item.Id }, new { @class = "btn btn-secondary disabled", @title = "You are already have this subscription" })
+                            @Html.ActionLink("Cancel", "CancelSubscription", "Users", new { subscriptionId = item.Id }, new { @class = "btn btn-primary", title = "Cancel subscription" })
+                            @Html.ActionLink("Buy", "", new { subscriptionId = item.Id }, new { @class = "btn btn-secondary disabled", title = "You are already have this subscription" })
                         }
                         else
                         {
-                        @Html.ActionLink("Buy", "BuySubscription", "Users", new { subscriptionId = item.Id }, new { @class = "btn btn-primary", @title = "Buy this subscription" })
+                            @Html.ActionLink("Buy", "BuySubscription", "Users", new { subscriptionId = item.Id }, new { @class = "btn btn-primary", title = "Buy this subscription" })
                         }
                     </td>
                 }
@@ -127,6 +175,47 @@
         }
     </tbody>
 </table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage() ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage() ? "disabled" : "";
+}
+
+@Html.ActionLink("«", "Index", "Subscriptions",
+                new
+                {
+                    pageNumber = 1,
+                    searchString = ViewBag.CurrentFilter,
+                    sortingField = ViewBag.SortingField
+                },
+                new { @class = $"btn btn-light { prevDisabled }" })
+
+@Html.ActionLink("<", "Index", "Subscriptions",
+                 new
+                 {
+                     pageNumber = Model.PageIndex - 1,
+                     searchString = ViewBag.CurrentFilter,
+                     sortingField = ViewBag.SortingField
+                 },
+                 new { @class = $"btn btn-light { prevDisabled }" })
+
+@Html.ActionLink(">", "Index", "Subscriptions",
+                 new
+                 {
+                     pageNumber = Model.PageIndex + 1,
+                     searchString = ViewBag.CurrentFilter,
+                     sortingField = ViewBag.SortingField
+                 },
+                 new { @class = $"btn btn-light { nextDisabled }" })
+
+@Html.ActionLink("»", "Index", "Subscriptions",
+                 new
+                 {
+                     pageNumber = Model.PagesTotal,
+                     searchString = ViewBag.CurrentFilter,
+                     sortingField = ViewBag.SortingField
+                 },
+                 new { @class = $"btn btn-light { nextDisabled }" })
 
 @section Scripts
 {

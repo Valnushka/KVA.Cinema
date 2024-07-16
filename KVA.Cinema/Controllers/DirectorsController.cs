@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using KVA.Cinema.Services;
-using KVA.Cinema.Models.Director;
-using KVA.Cinema.Models.ViewModels.Director;
-using KVA.Cinema.Models.ViewModels;
+using KVA.Cinema.ViewModels;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace KVA.Cinema.Controllers
@@ -40,14 +38,23 @@ namespace KVA.Cinema.Controllers
 
         // GET: Directors
         [Route("Directors")]
-        public IActionResult Index(DirectorSort sortingField = DirectorSort.Name, bool isSortDescending = false)
+        public IActionResult Index(int? pageNumber,
+                                   string searchString,
+                                   DirectorSort sortingField = DirectorSort.Name,
+                                   bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;
             ViewBag.SortDescending = isSortDescending;
+            ViewBag.CurrentFilter = searchString;
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb);
 
             var directors = DirectorService.ReadAll();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                directors = directors.Where(x => x.Name.Contains(searchString));
+            }
 
             if (sortingField == DirectorSort.Name && isSortDescending)
             {
@@ -58,7 +65,9 @@ namespace KVA.Cinema.Controllers
                 directors = directors.OrderBy(s => s.Name);
             }
 
-            return View(directors.ToList());
+            int itemsOnPage = 15;
+
+            return View(PaginatedList<DirectorDisplayViewModel>.CreateAsync(directors, pageNumber ?? 1, itemsOnPage));
         }
 
         // GET: Directors/Details/5
