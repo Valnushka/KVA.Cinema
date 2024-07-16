@@ -1,20 +1,11 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using KVA.Cinema.Services;
-using KVA.Cinema.Models.ViewModels.Video;
-using KVA.Cinema.Models.ViewModels;
+using KVA.Cinema.ViewModels;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Filters;
 using KVA.Cinema.Utilities;
-using Microsoft.Extensions.Caching.Memory;
-using KVA.Cinema.Models.Country;
-using KVA.Cinema.Models.Director;
-using KVA.Cinema.Models.ViewModels.Language;
-using KVA.Cinema.Models.ViewModels.Pegi;
-using KVA.Cinema.Models.Genre;
-using KVA.Cinema.Models.ViewModels.Tag;
 
 namespace KVA.Cinema.Controllers
 {
@@ -76,14 +67,23 @@ namespace KVA.Cinema.Controllers
 
         // GET: Videos
         [Route("Videos")]
-        public IActionResult Index(VideoSort sortingField = VideoSort.Name, bool isSortDescending = false)
+        public IActionResult Index(int? pageNumber,
+                                   string searchString,
+                                   VideoSort sortingField = VideoSort.Name,
+                                   bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;
             ViewBag.SortDescending = isSortDescending;
+            ViewBag.CurrentFilter = searchString;
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb);
 
             var videos = VideoService.ReadAll();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                videos = videos.Where(x => x.Name.Contains(searchString));
+            }
 
             switch (sortingField)
             {
@@ -101,7 +101,9 @@ namespace KVA.Cinema.Controllers
                     break;
             }
 
-            return View(videos.ToList());
+            int itemsOnPage = 15;
+
+            return View(PaginatedList<VideoDisplayViewModel>.CreateAsync(videos, pageNumber ?? 1, itemsOnPage));
         }
 
         // GET: Videos/Details/5

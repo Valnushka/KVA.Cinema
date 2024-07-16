@@ -1,4 +1,4 @@
-﻿using KVA.Cinema.Models.ViewModels;
+﻿using KVA.Cinema.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 

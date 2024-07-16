@@ -1,4 +1,4 @@
-namespace KVA.Cinema.Models
+namespace KVA.Cinema.ViewModels
 {
     public class ErrorViewModel
     {

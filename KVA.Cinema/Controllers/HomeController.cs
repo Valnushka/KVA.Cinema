@@ -1,6 +1,5 @@
-﻿using KVA.Cinema.Models;
+﻿using KVA.Cinema.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
 namespace KVA.Cinema.Controllers

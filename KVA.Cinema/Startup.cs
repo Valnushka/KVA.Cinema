@@ -1,5 +1,5 @@
+using KVA.Cinema.Entities;
 using KVA.Cinema.Models;
-using KVA.Cinema.Models.Entities;
 using KVA.Cinema.Services;
 using KVA.Cinema.Utilities;
 using Microsoft.AspNetCore.Builder;
@@ -78,11 +78,11 @@ namespace KVA.Cinema
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            //if (env.IsDevelopment())
-            //{
-            //    app.UseDeveloperExceptionPage();
-            //}
-            //else
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
             {
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.

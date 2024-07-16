@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace KVA.Cinema.Models.Entities
+namespace KVA.Cinema.Entities
 {
     /// <summary>
     /// Language of video and its subtitles

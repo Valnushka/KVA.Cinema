@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace KVA.Cinema.Models.ViewModels.Genre
+namespace KVA.Cinema.ViewModels
 {
     public class GenreEditViewModel
     {

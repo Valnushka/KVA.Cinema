@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using KVA.Cinema.Models.Entities;
-using KVA.Cinema.Models.User;
+using KVA.Cinema.Entities;
 using KVA.Cinema.Services;
 using KVA.Cinema.Exceptions;
 using Microsoft.AspNetCore.Identity;
-using KVA.Cinema.Models.ViewModels.User;
-using KVA.Cinema.Models.ViewModels;
+using KVA.Cinema.ViewModels;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Web;
 
@@ -58,14 +56,25 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
 
         // GET: Users
         [Route("Users")]
-        public IActionResult Index(UserSort sortingField = UserSort.Nickname, bool isSortDescending = false)
+        public IActionResult Index(int? pageNumber,
+                                   string searchString,
+                                   UserSort sortingField = UserSort.Nickname,
+                                   bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;
             ViewBag.SortDescending = isSortDescending;
+            ViewBag.CurrentFilter = searchString;
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb);
 
             var users = UserService.ReadAll();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                users = users.Where(x => x.Nickname.Contains(searchString)
+                                       || x.FirstName.Contains(searchString)
+                                       || x.LastName.Contains(searchString));
+            }
 
             switch (sortingField)
             {
@@ -89,7 +98,9 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
                     break;
             }
 
-            return View(users.ToList());
+            int itemsOnPage = 15;
+
+            return View(PaginatedList<UserDisplayViewModel>.CreateAsync(users, pageNumber ?? 1, itemsOnPage));
         }
 
         // GET: Users/Details/5

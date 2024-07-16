@@ -1,5 +1,6 @@
-﻿@model IEnumerable<KVA.Cinema.Models.ViewModels.Pegi.PegiDisplayViewModel>
-@using KVA.Cinema.Models.ViewModels.Pegi;
+﻿@model PaginatedList<KVA.Cinema.ViewModels.PegiDisplayViewModel>
+
+@using KVA.Cinema.ViewModels;
 
 @{
     ViewData["Title"] = "PEGI List";
@@ -15,6 +16,17 @@
     </p>
 }
 
+@using (Html.BeginForm())
+{
+    <div>
+        <p>
+            Find by type: <input type="text" name="SearchString" value=@ViewBag.CurrentFilter />
+            <input type="submit" value="Search" class="btn btn-light" /> |
+            @Html.ActionLink("Reset filters", "Index", "Pegi")
+        </p>
+    </div>
+}
+
 <table class="table">
     <thead>
         <tr>
@@ -23,7 +35,13 @@
                     ViewBag.SortingField == PegiSort.Type
                     ? $"Type {(ViewBag.SortDescending ? "▾" : "▴")}"
                     : "Type",
-                    "Index", new { sortingField = PegiSort.Type, isSortDescending = (ViewBag.SortingField == PegiSort.Type && !ViewBag.SortDescending) })
+                    "Index",
+                    new
+                    {
+                        sortingField = PegiSort.Type,
+                        isSortDescending = (ViewBag.SortingField == PegiSort.Type && !ViewBag.SortDescending),
+                        searchString = ViewBag.CurrentFilter
+                    })
             </th>
             @if (User.Identity.IsAuthenticated)
             {
@@ -51,6 +69,47 @@
         }
     </tbody>
 </table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage() ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage() ? "disabled" : "";
+}
+
+@Html.ActionLink("«", "Index", "Pegi",
+                new
+                {
+                    pageNumber = 1,
+                    searchString = ViewBag.CurrentFilter,
+                    sortingField = ViewBag.SortingField
+                },
+                new { @class = $"btn btn-light { prevDisabled }" })
+
+@Html.ActionLink("<", "Index", "Pegi",
+                 new
+                 {
+                     pageNumber = Model.PageIndex - 1,
+                     searchString = ViewBag.CurrentFilter,
+                     sortingField = ViewBag.SortingField
+                 },
+                 new { @class = $"btn btn-light { prevDisabled }" })
+
+@Html.ActionLink(">", "Index", "Pegi",
+                 new
+                 {
+                     pageNumber = Model.PageIndex + 1,
+                     searchString = ViewBag.CurrentFilter,
+                     sortingField = ViewBag.SortingField
+                 },
+                 new { @class = $"btn btn-light { nextDisabled }" })
+
+@Html.ActionLink("»", "Index", "Pegi",
+                 new
+                 {
+                     pageNumber = Model.PagesTotal,
+                     searchString = ViewBag.CurrentFilter,
+                     sortingField = ViewBag.SortingField
+                 },
+                 new { @class = $"btn btn-light { nextDisabled }" })
 
 @section Scripts
 {

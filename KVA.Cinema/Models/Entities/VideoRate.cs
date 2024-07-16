@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KVA.Cinema.Models.Entities
+namespace KVA.Cinema.Entities
 {
     public class VideoRate
     {

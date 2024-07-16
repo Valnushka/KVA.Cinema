@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using KVA.Cinema.Services;
-using KVA.Cinema.Models.ViewModels.Pegi;
-using KVA.Cinema.Models.ViewModels;
+using KVA.Cinema.ViewModels;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace KVA.Cinema.Controllers
@@ -39,14 +38,23 @@ namespace KVA.Cinema.Controllers
 
         // GET: Pegi
         [Route("Pegi")]
-        public IActionResult Index(PegiSort sortingField = PegiSort.Type, bool isSortDescending = false)
+        public IActionResult Index(int? pageNumber,
+                                   string searchString,
+                                   PegiSort sortingField = PegiSort.Type,
+                                   bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;
             ViewBag.SortDescending = isSortDescending;
+            ViewBag.CurrentFilter = searchString;
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb);
 
             var pegi = PegiService.ReadAll();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                pegi = pegi.Where(x => x.Type.ToString().Contains(searchString));
+            }
 
             if (sortingField == PegiSort.Type && isSortDescending)
             {
@@ -57,7 +65,9 @@ namespace KVA.Cinema.Controllers
                 pegi = pegi.OrderBy(s => s.Type);
             }
 
-            return View(pegi.ToList());
+            int itemsOnPage = 15;
+
+            return View(PaginatedList<PegiDisplayViewModel>.CreateAsync(pegi, pageNumber ?? 1, itemsOnPage));
         }
 
         // GET: Pegi/Details/5

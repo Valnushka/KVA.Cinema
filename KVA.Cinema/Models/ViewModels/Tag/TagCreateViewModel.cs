@@ -1,7 +1,6 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace KVA.Cinema.Models.ViewModels.Tag
+namespace KVA.Cinema.ViewModels
 {
     public class TagCreateViewModel
     {

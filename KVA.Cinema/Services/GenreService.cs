@@ -1,12 +1,11 @@
 ﻿using KVA.Cinema.Exceptions;
-using KVA.Cinema.Models;
-using KVA.Cinema.Models.Entities;
-using KVA.Cinema.Models.Genre;
-using KVA.Cinema.Models.ViewModels.Genre;
+using KVA.Cinema.Entities;
 using KVA.Cinema.Utilities;
+using KVA.Cinema.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using KVA.Cinema.Models;
 
 namespace KVA.Cinema.Services
 {

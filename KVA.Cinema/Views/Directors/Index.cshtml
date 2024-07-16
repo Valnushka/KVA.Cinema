@@ -1,5 +1,6 @@
-﻿@model IEnumerable<KVA.Cinema.Models.Director.DirectorDisplayViewModel>
-@using KVA.Cinema.Models.ViewModels.Director;
+﻿@model PaginatedList<KVA.Cinema.ViewModels.DirectorDisplayViewModel>
+
+@using KVA.Cinema.ViewModels;
 
 @{
     ViewData["Title"] = "Directors List";
@@ -15,6 +16,17 @@
     </p>
 }
 
+@using (Html.BeginForm())
+{
+    <div>
+        <p>
+            Find by name: <input type="text" name="SearchString" value=@ViewBag.CurrentFilter />
+            <input type="submit" value="Search" class="btn btn-light" /> |
+            @Html.ActionLink("Reset filters", "Index", "Directors")
+        </p>
+    </div>
+}
+
 <table class="table">
     <thead>
         <tr>
@@ -23,7 +35,13 @@
                     ViewBag.SortingField == DirectorSort.Name
                     ? $"Name {(ViewBag.SortDescending ? "▾" : "▴")}"
                     : "Name",
-                    "Index", new { sortingField = DirectorSort.Name, isSortDescending = (ViewBag.SortingField == DirectorSort.Name && !ViewBag.SortDescending) })
+                    "Index",
+                    new
+                    {
+                        sortingField = DirectorSort.Name,
+                        isSortDescending = (ViewBag.SortingField == DirectorSort.Name && !ViewBag.SortDescending),
+                        searchString = ViewBag.CurrentFilter
+                    })
             </th>
             @if (User.Identity.IsAuthenticated)
             {
@@ -51,6 +69,47 @@
         }
     </tbody>
 </table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage() ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage() ? "disabled" : "";
+}
+
+@Html.ActionLink("«", "Index", "Directors",
+                new
+                {
+                    pageNumber = 1,
+                    searchString = ViewBag.CurrentFilter,
+                    sortingField = ViewBag.SortingField
+                },
+                new { @class = $"btn btn-light { prevDisabled }" })
+
+@Html.ActionLink("<", "Index", "Directors",
+                 new
+                 {
+                     pageNumber = Model.PageIndex - 1,
+                     searchString = ViewBag.CurrentFilter,
+                     sortingField = ViewBag.SortingField
+                 },
+                 new { @class = $"btn btn-light { prevDisabled }" })
+
+@Html.ActionLink(">", "Index", "Directors",
+                 new
+                 {
+                     pageNumber = Model.PageIndex + 1,
+                     searchString = ViewBag.CurrentFilter,
+                     sortingField = ViewBag.SortingField
+                 },
+                 new { @class = $"btn btn-light { nextDisabled }" })
+
+@Html.ActionLink("»", "Index", "Directors",
+                 new
+                 {
+                     pageNumber = Model.PagesTotal,
+                     searchString = ViewBag.CurrentFilter,
+                     sortingField = ViewBag.SortingField
+                 },
+                 new { @class = $"btn btn-light { nextDisabled }" })
 
 @section Scripts
 {

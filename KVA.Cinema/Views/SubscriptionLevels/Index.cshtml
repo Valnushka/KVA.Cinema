@@ -1,5 +1,6 @@
-﻿@model IEnumerable<KVA.Cinema.Models.ViewModels.SubscriptionLevel.SubscriptionLevelDisplayViewModel>
-@using KVA.Cinema.Models.ViewModels.SubscriptionLevel;
+﻿@model PaginatedList<KVA.Cinema.ViewModels.SubscriptionLevelDisplayViewModel>
+
+@using KVA.Cinema.ViewModels;
 
 @{
     ViewData["Title"] = "Subscription levels List";
@@ -15,6 +16,17 @@
     </p>
 }
 
+@using (Html.BeginForm())
+{
+    <div>
+        <p>
+            Find by title: <input type="text" name="SearchString" value=@ViewBag.CurrentFilter />
+            <input type="submit" value="Search" class="btn btn-light" /> |
+            @Html.ActionLink("Reset filters", "Index", "SubscriptionLevels")
+        </p>
+    </div>
+}
+
 <table class="table">
     <thead>
         <tr>
@@ -23,7 +35,13 @@
                     ViewBag.SortingField == SubscriptionLevelSort.Title
                     ? $"Title {(ViewBag.SortDescending ? "▾" : "▴")}"
                     : "Title",
-                    "Index", new { sortingField = SubscriptionLevelSort.Title, isSortDescending = (ViewBag.SortingField == SubscriptionLevelSort.Title && !ViewBag.SortDescending) })
+                    "Index",
+                    new
+                    {
+                        sortingField = SubscriptionLevelSort.Title,
+                        isSortDescending = (ViewBag.SortingField == SubscriptionLevelSort.Title && !ViewBag.SortDescending),
+                        searchString = ViewBag.CurrentFilter
+                    })
             </th>
             @if (User.Identity.IsAuthenticated)
             {
@@ -51,6 +69,47 @@
         }
     </tbody>
 </table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage() ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage() ? "disabled" : "";
+}
+
+@Html.ActionLink("«", "Index", "SubscriptionLevels",
+                new
+                {
+                    pageNumber = 1,
+                    searchString = ViewBag.CurrentFilter,
+                    sortingField = ViewBag.SortingField
+                },
+                new { @class = $"btn btn-light { prevDisabled }" })
+
+@Html.ActionLink("<", "Index", "SubscriptionLevels",
+                 new
+                 {
+                     pageNumber = Model.PageIndex - 1,
+                     searchString = ViewBag.CurrentFilter,
+                     sortingField = ViewBag.SortingField
+                 },
+                 new { @class = $"btn btn-light { prevDisabled }" })
+
+@Html.ActionLink(">", "Index", "SubscriptionLevels",
+                 new
+                 {
+                     pageNumber = Model.PageIndex + 1,
+                     searchString = ViewBag.CurrentFilter,
+                     sortingField = ViewBag.SortingField
+                 },
+                 new { @class = $"btn btn-light { nextDisabled }" })
+
+@Html.ActionLink("»", "Index", "SubscriptionLevels",
+                 new
+                 {
+                     pageNumber = Model.PagesTotal,
+                     searchString = ViewBag.CurrentFilter,
+                     sortingField = ViewBag.SortingField
+                 },
+                 new { @class = $"btn btn-light { nextDisabled }" })
 
 @section Scripts
 {

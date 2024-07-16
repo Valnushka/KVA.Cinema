@@ -1,4 +1,4 @@
-﻿namespace KVA.Cinema.Models.ViewModels.Director
+﻿namespace KVA.Cinema.ViewModels
 {
     public enum DirectorSort
     {

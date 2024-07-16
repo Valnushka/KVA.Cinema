@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using KVA.Cinema.Services;
-using KVA.Cinema.Models.ViewModels.Tag;
-using KVA.Cinema.Models.ViewModels;
+using KVA.Cinema.ViewModels;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace KVA.Cinema.Controllers
@@ -39,14 +38,23 @@ namespace KVA.Cinema.Controllers
 
         // GET: Tags
         [Route("Tags")]
-        public IActionResult Index(TagSort sortingField = TagSort.Text, bool isSortDescending = false)
+        public IActionResult Index(int? pageNumber,
+                                   string searchString,
+                                   TagSort sortingField = TagSort.Text,
+                                   bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;
             ViewBag.SortDescending = isSortDescending;
+            ViewBag.CurrentFilter = searchString;
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb);
 
             var tags = TagService.ReadAll();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                tags = tags.Where(x => x.Text.Contains(searchString));
+            }
 
             if (sortingField == TagSort.Text && isSortDescending)
             {
@@ -57,7 +65,9 @@ namespace KVA.Cinema.Controllers
                 tags = tags.OrderBy(s => s.Text);
             }
 
-            return View(tags.ToList());
+            int itemsOnPage = 15;
+
+            return View(PaginatedList<TagDisplayViewModel>.CreateAsync(tags, pageNumber ?? 1, itemsOnPage));
         }
 
         // GET: Tags/Details/5

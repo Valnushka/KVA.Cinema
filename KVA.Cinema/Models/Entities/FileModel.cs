@@ -1,7 +1,7 @@
 ﻿using System;
 using static KVA.Cinema.Controllers.FileController;
 
-namespace KVA.Cinema.Models.Entities
+namespace KVA.Cinema.Entities
 {
     public class FileModel
     {

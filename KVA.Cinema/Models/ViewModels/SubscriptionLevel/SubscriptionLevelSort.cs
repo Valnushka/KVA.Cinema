@@ -1,4 +1,4 @@
-﻿namespace KVA.Cinema.Models.ViewModels.SubscriptionLevel
+﻿namespace KVA.Cinema.ViewModels
 {
     public enum SubscriptionLevelSort
     {

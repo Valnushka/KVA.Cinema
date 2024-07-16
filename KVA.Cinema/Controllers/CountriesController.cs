@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using KVA.Cinema.Services;
-using KVA.Cinema.Models.Country;
-using KVA.Cinema.Models.ViewModels.Country;
-using KVA.Cinema.Models.ViewModels;
+using KVA.Cinema.ViewModels;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace KVA.Cinema.Controllers
@@ -40,14 +38,23 @@ namespace KVA.Cinema.Controllers
 
         // GET: Countries
         [Route("Countries")]
-        public IActionResult Index(CountrySort sortingField = CountrySort.Name, bool isSortDescending = false)
+        public IActionResult Index(int? pageNumber,
+                                   string searchString,
+                                   CountrySort sortingField = CountrySort.Name,
+                                   bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;
             ViewBag.SortDescending = isSortDescending;
+            ViewBag.CurrentFilter = searchString;
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb);
 
             var countries = CountryService.ReadAll();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                countries = countries.Where(x => x.Name.Contains(searchString));
+            }
 
             if (sortingField == CountrySort.Name && isSortDescending)
             {
@@ -58,7 +65,9 @@ namespace KVA.Cinema.Controllers
                 countries = countries.OrderBy(s => s.Name);
             }
 
-            return View(countries.ToList());
+            int itemsOnPage = 15;
+
+            return View(PaginatedList<CountryDisplayViewModel>.CreateAsync(countries, pageNumber ?? 1, itemsOnPage));
         }
 
         // GET: Countries/Details/5

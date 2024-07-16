@@ -1,4 +1,4 @@
-﻿namespace KVA.Cinema.Models.ViewModels.Country
+﻿namespace KVA.Cinema.ViewModels
 {
     public enum CountrySort
     {

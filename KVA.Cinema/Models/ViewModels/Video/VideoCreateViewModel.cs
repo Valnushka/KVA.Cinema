@@ -1,10 +1,9 @@
-﻿using KVA.Cinema.Models.ViewModels.Tag;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace KVA.Cinema.Models.ViewModels.Video
+namespace KVA.Cinema.ViewModels
 {
     public class VideoCreateViewModel
     {

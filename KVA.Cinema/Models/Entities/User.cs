@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
-namespace KVA.Cinema.Models.Entities
+namespace KVA.Cinema.Entities
 {
     public class User : IdentityUser<Guid>
     {

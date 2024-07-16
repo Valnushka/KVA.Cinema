@@ -1,10 +1,10 @@
-﻿using KVA.Cinema.Models.Entities;
+﻿using KVA.Cinema.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace KVA.Cinema.Models.User
+namespace KVA.Cinema.ViewModels
 {
     /// <summary>
     /// Person's data to display
@@ -33,7 +33,7 @@ namespace KVA.Cinema.Models.User
         public IEnumerable<Guid> SubscriptionIds { get; set; }
 
         [Display(Name = "Subscriptions")]
-        public IEnumerable<Entities.Subscription> Subscriptions { get; set; }
+        public IEnumerable<Subscription> Subscriptions { get; set; }
 
         public ICollection<UserSubscription> UserSubscriptions { get; set; }
 
