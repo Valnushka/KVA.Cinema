@@ -1,5 +1,7 @@
-﻿@model IEnumerable<KVA.Cinema.Models.User.UserDisplayViewModel>
+﻿@model PaginatedList<KVA.Cinema.Models.User.UserDisplayViewModel>
+
 @using KVA.Cinema.Models.ViewModels.User;
+@using KVA.Cinema.Models.ViewModels;
 
 @{
     ViewData["Title"] = "Users List";
@@ -92,6 +94,14 @@
         }
     </tbody>
 </table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage() ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage() ? "disabled" : "";
+}
+
+@Html.ActionLink("Previous", "Index", "Users", new { pageNumber = Model.PageIndex - 1 }, new { @class = $"btn btn-light { prevDisabled }" })
+@Html.ActionLink("Next", "Index", "Users", new { pageNumber = Model.PageIndex + 1 }, new { @class = $"btn btn-light { nextDisabled }" })
 
 @section Scripts
 {

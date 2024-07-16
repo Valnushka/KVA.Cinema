@@ -58,7 +58,9 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
 
         // GET: Users
         [Route("Users")]
-        public IActionResult Index(UserSort sortingField = UserSort.Nickname, bool isSortDescending = false)
+        public IActionResult Index(int? pageNumber,
+                                   UserSort sortingField = UserSort.Nickname,
+                                   bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;
             ViewBag.SortDescending = isSortDescending;
@@ -89,7 +91,9 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
                     break;
             }
 
-            return View(users.ToList());
+            int itemsOnPage = 10;
+
+            return View(PaginatedList<UserDisplayViewModel>.CreateAsync(users, pageNumber ?? 1, itemsOnPage));
         }
 
         // GET: Users/Details/5
