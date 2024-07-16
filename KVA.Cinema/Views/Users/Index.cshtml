@@ -17,6 +17,17 @@
     </p>
 }
 
+@using (Html.BeginForm())
+{
+    <div>
+        <p>
+            Find by name: <input type="text" name="SearchString" value=@ViewBag.CurrentFilter />
+            <input type="submit" value="Search" class="btn btn-light" /> |
+            @Html.ActionLink("Back to Full List", "Index", "Users")
+        </p>
+    </div>
+}
+
 <table class="table">
     <thead>
         <tr>

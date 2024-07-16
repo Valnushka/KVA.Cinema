@@ -59,15 +59,24 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
         // GET: Users
         [Route("Users")]
         public IActionResult Index(int? pageNumber,
+                                   string searchString,
                                    UserSort sortingField = UserSort.Nickname,
                                    bool isSortDescending = false)
         {
             ViewBag.SortingField = sortingField;
             ViewBag.SortDescending = isSortDescending;
+            ViewBag.CurrentFilter = searchString;
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb);
 
             var users = UserService.ReadAll();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                users = users.Where(x => x.Nickname.Contains(searchString)
+                                       || x.FirstName.Contains(searchString)
+                                       || x.LastName.Contains(searchString));
+            }
 
             switch (sortingField)
             {
