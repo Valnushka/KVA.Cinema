@@ -100,8 +100,10 @@
     var nextDisabled = !Model.HasNextPage() ? "disabled" : "";
 }
 
-@Html.ActionLink("Previous", "Index", "Users", new { pageNumber = Model.PageIndex - 1 }, new { @class = $"btn btn-light { prevDisabled }" })
-@Html.ActionLink("Next", "Index", "Users", new { pageNumber = Model.PageIndex + 1 }, new { @class = $"btn btn-light { nextDisabled }" })
+@Html.ActionLink("«", "Index", "Users", new { pageNumber = 1 }, new { @class = $"btn btn-light { prevDisabled }" })
+@Html.ActionLink("<", "Index", "Users", new { pageNumber = Model.PageIndex - 1 }, new { @class = $"btn btn-light { prevDisabled }" })
+@Html.ActionLink(">", "Index", "Users", new { pageNumber = Model.PageIndex + 1 }, new { @class = $"btn btn-light { nextDisabled }" })
+@Html.ActionLink("»", "Index", "Users", new { pageNumber = Model.PagesTotal }, new { @class = $"btn btn-light { nextDisabled }" })
 
 @section Scripts
 {

@@ -91,7 +91,7 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
                     break;
             }
 
-            int itemsOnPage = 10;
+            int itemsOnPage = 15;
 
             return View(PaginatedList<UserDisplayViewModel>.CreateAsync(users, pageNumber ?? 1, itemsOnPage));
         }
