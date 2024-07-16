@@ -23,7 +23,7 @@
         <p>
             Find by name: <input type="text" name="SearchString" value=@ViewBag.CurrentFilter />
             <input type="submit" value="Search" class="btn btn-light" /> |
-            @Html.ActionLink("Back to Full List", "Index", "Users")
+            @Html.ActionLink("Reset filters", "Index", "Users")
         </p>
     </div>
 }
@@ -36,35 +36,65 @@
                     ViewBag.SortingField == UserSort.Nickname
                     ? $"Nickname {(ViewBag.SortDescending ? "▾" : "▴")}"
                     : "Nickname",
-                    "Index", new { sortingField = UserSort.Nickname, isSortDescending = (ViewBag.SortingField == UserSort.Nickname && !ViewBag.SortDescending) })
+                    "Index",
+                    new
+                        {
+                         sortingField = UserSort.Nickname,
+                         isSortDescending = (ViewBag.SortingField == UserSort.Nickname && !ViewBag.SortDescending),
+                         searchString = ViewBag.CurrentFilter
+                        })
             </th>
             <th>
                 @Html.ActionLink(
                     ViewBag.SortingField == UserSort.FirstName
                     ? $"First name {(ViewBag.SortDescending ? "▾" : "▴")}"
                     : "First name",
-                    "Index", new { sortingField = UserSort.FirstName, isSortDescending = (ViewBag.SortingField == UserSort.FirstName && !ViewBag.SortDescending) })
+                    "Index",
+                    new
+                        {
+                         sortingField = UserSort.FirstName,
+                         isSortDescending = (ViewBag.SortingField == UserSort.FirstName && !ViewBag.SortDescending),
+                         searchString = ViewBag.CurrentFilter
+                        })
             </th>
             <th>
                 @Html.ActionLink(
                     ViewBag.SortingField == UserSort.LastName
                     ? $"Last name {(ViewBag.SortDescending ? "▾" : "▴")}"
                     : "Last name",
-                    "Index", new { sortingField = UserSort.LastName, isSortDescending = (ViewBag.SortingField == UserSort.LastName && !ViewBag.SortDescending) })
+                    "Index",
+                    new
+                         {
+                          sortingField = UserSort.LastName,
+                          isSortDescending = (ViewBag.SortingField == UserSort.LastName && !ViewBag.SortDescending),
+                          searchString = ViewBag.CurrentFilter
+                         })
             </th>
             <th>
                 @Html.ActionLink(
                     ViewBag.SortingField == UserSort.BirthDate
                     ? $"Birth date {(ViewBag.SortDescending ? "▾" : "▴")}"
                     : "Birth date",
-                    "Index", new { sortingField = UserSort.BirthDate, isSortDescending = (ViewBag.SortingField == UserSort.BirthDate && !ViewBag.SortDescending) })
+                    "Index",
+                    new
+                         {
+                          sortingField = UserSort.BirthDate,
+                          isSortDescending = (ViewBag.SortingField == UserSort.BirthDate && !ViewBag.SortDescending),
+                          searchString = ViewBag.CurrentFilter
+                         })
             </th>
             <th>
                 @Html.ActionLink(
                     ViewBag.SortingField == UserSort.Email
                     ? $"Email {(ViewBag.SortDescending ? "▾" : "▴")}"
                     : "Email",
-                    "Index", new { sortingField = UserSort.Email, isSortDescending = (ViewBag.SortingField == UserSort.Email && !ViewBag.SortDescending) })
+                    "Index",
+                    new
+                         {
+                          sortingField = UserSort.Email,
+                          isSortDescending = (ViewBag.SortingField == UserSort.Email && !ViewBag.SortDescending),
+                          searchString = ViewBag.CurrentFilter
+                         })
             </th>
             @if (User.Identity.IsAuthenticated)
             {
@@ -111,10 +141,41 @@
     var nextDisabled = !Model.HasNextPage() ? "disabled" : "";
 }
 
-@Html.ActionLink("«", "Index", "Users", new { pageNumber = 1 }, new { @class = $"btn btn-light { prevDisabled }" })
-@Html.ActionLink("<", "Index", "Users", new { pageNumber = Model.PageIndex - 1 }, new { @class = $"btn btn-light { prevDisabled }" })
-@Html.ActionLink(">", "Index", "Users", new { pageNumber = Model.PageIndex + 1 }, new { @class = $"btn btn-light { nextDisabled }" })
-@Html.ActionLink("»", "Index", "Users", new { pageNumber = Model.PagesTotal }, new { @class = $"btn btn-light { nextDisabled }" })
+@Html.ActionLink("«", "Index", "Users",
+                new
+                {
+                    pageNumber = 1,
+                    searchString = ViewBag.CurrentFilter,
+                    sortingField = ViewBag.SortingField
+                },
+                new { @class = $"btn btn-light { prevDisabled }" })
+
+@Html.ActionLink("<", "Index", "Users",
+                 new
+                 {
+                     pageNumber = Model.PageIndex - 1,
+                     searchString = ViewBag.CurrentFilter,
+                     sortingField = ViewBag.SortingField
+                 },
+                 new { @class = $"btn btn-light { prevDisabled }" })
+
+@Html.ActionLink(">", "Index", "Users",
+                 new
+                 {
+                     pageNumber = Model.PageIndex + 1,
+                     searchString = ViewBag.CurrentFilter,
+                     sortingField = ViewBag.SortingField
+                 },
+                 new { @class = $"btn btn-light { nextDisabled }" })
+
+@Html.ActionLink("»", "Index", "Users",
+                 new
+                 {
+                     pageNumber = Model.PagesTotal,
+                     searchString = ViewBag.CurrentFilter,
+                     sortingField = ViewBag.SortingField
+                 },
+                 new { @class = $"btn btn-light { nextDisabled }" })
 
 @section Scripts
 {
