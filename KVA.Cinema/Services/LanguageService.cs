@@ -58,7 +58,7 @@ namespace KVA.Cinema.Services
             }).ToList();
         }
 
-        public void CreateAsync(LanguageCreateViewModel languageData)
+        public void Create(LanguageCreateViewModel languageData)
         {
             if (CheckUtilities.ContainsNullOrEmptyValue(languageData.Name))
             {

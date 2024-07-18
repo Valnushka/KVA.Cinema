@@ -58,7 +58,7 @@ namespace KVA.Cinema.Services
             }).ToList();
         }
 
-        public void CreateAsync(CountryCreateViewModel countryData)
+        public void Create(CountryCreateViewModel countryData)
         {
             if (CheckUtilities.ContainsNullOrEmptyValue(countryData.Name))
             {

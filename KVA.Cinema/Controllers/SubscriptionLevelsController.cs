@@ -118,7 +118,7 @@ namespace KVA.Cinema.Controllers
             {
                 try
                 {
-                    SubscriptionLevelService.CreateAsync(subscriptionLevelData);
+                    SubscriptionLevelService.Create(subscriptionLevelData);
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)

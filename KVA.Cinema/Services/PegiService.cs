@@ -52,7 +52,7 @@ namespace KVA.Cinema.Services
             }).ToList();
         }
 
-        public void CreateAsync(PegiCreateViewModel pegiData)
+        public void Create(PegiCreateViewModel pegiData)
         {
             if (pegiData.Type is > AGE_MAX or < AGE_MIN)
             {

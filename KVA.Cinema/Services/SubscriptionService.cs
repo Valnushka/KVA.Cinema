@@ -66,7 +66,7 @@ namespace KVA.Cinema.Services
             }).ToList();
         }
 
-        public void CreateAsync(SubscriptionCreateViewModel subscriptionData)
+        public void Create(SubscriptionCreateViewModel subscriptionData)
         {
             if (CheckUtilities.ContainsNullOrEmptyValue(subscriptionData.Title,
                                                         subscriptionData.Description,

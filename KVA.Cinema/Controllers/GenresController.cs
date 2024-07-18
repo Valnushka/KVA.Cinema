@@ -118,7 +118,7 @@ namespace KVA.Cinema.Controllers
             {
                 try
                 {
-                    GenreService.CreateAsync(genreData);
+                    GenreService.Create(genreData);
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)

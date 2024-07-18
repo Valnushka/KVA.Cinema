@@ -60,7 +60,7 @@ namespace KVA.Cinema.Services
             }).ToList();
         }
 
-        public void CreateAsync(DirectorCreateViewModel directorData)
+        public void Create(DirectorCreateViewModel directorData)
         {
             if (CheckUtilities.ContainsNullOrEmptyValue(directorData.Name))
             {

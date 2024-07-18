@@ -246,7 +246,7 @@ namespace KVA.Cinema.Services
         }
 
         [Obsolete("This method is obsolete. Call async Task CreateAsync instead.", true)]
-        void IService<UserCreateViewModel, UserDisplayViewModel, UserEditViewModel>.CreateAsync(UserCreateViewModel entityData)
+        void IService<UserCreateViewModel, UserDisplayViewModel, UserEditViewModel>.Create(UserCreateViewModel entityData)
         {
             return;
         }

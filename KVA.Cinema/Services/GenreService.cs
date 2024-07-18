@@ -59,7 +59,7 @@ namespace KVA.Cinema.Services
             });
         }
 
-        public void CreateAsync(GenreCreateViewModel genreData)
+        public void Create(GenreCreateViewModel genreData)
         {
             if (CheckUtilities.ContainsNullOrEmptyValue(genreData.Title))
             {

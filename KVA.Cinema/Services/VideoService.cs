@@ -91,11 +91,11 @@ namespace KVA.Cinema.Services
                 DirectorName = x.Director.Name,
                 Genres = x.Genres,
                 Tags = x.Tags,
-                TagViewModels = x.Tags.Select(x => new ViewModels.TagDisplayViewModel() { Text = x.Text, Color = x.Color })
+                TagViewModels = x.Tags.Select(x => new TagDisplayViewModel() { Text = x.Text, Color = x.Color })
             }).ToList();
         }
 
-        public void CreateAsync(VideoCreateViewModel videoData)
+        public void Create(VideoCreateViewModel videoData)
         {
             if (CheckUtilities.ContainsNullOrEmptyValue(videoData,
                                                         videoData.Name,
@@ -366,7 +366,7 @@ namespace KVA.Cinema.Services
                 DirectorName = video.Director.Name,
                 Genres = video.Genres,
                 Tags = video.Tags,
-                TagViewModels = video.Tags.Select(x => new ViewModels.TagDisplayViewModel() { Text = x.Text, Color = x.Color })
+                TagViewModels = video.Tags.Select(x => new TagDisplayViewModel() { Text = x.Text, Color = x.Color })
             };
         }
     }

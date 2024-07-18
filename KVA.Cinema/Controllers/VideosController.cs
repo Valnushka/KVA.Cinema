@@ -156,7 +156,7 @@ namespace KVA.Cinema.Controllers
             {
                 try
                 {
-                    VideoService.CreateAsync(videoData);
+                    VideoService.Create(videoData);
                     return RedirectToAction(nameof(Index));
 
                 }

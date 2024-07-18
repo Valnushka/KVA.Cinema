@@ -118,7 +118,7 @@ namespace KVA.Cinema.Controllers
             {
                 try
                 {
-                    CountryService.CreateAsync(countryData);
+                    CountryService.Create(countryData);
                     return RedirectToAction(nameof(Index));
 
                 }

@@ -118,7 +118,7 @@ namespace KVA.Cinema.Controllers
             {
                 try
                 {
-                    PegiService.CreateAsync(pegiData);
+                    PegiService.Create(pegiData);
                     return RedirectToAction(nameof(Index));
 
                 }

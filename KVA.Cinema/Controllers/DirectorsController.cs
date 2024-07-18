@@ -118,7 +118,7 @@ namespace KVA.Cinema.Controllers
             {
                 try
                 {
-                    DirectorService.CreateAsync(directorData);
+                    DirectorService.Create(directorData);
                     return RedirectToAction(nameof(Index));
 
                 }

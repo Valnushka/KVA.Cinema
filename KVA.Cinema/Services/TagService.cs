@@ -59,7 +59,7 @@ namespace KVA.Cinema.Services
             }).ToList();
         }
 
-        public void CreateAsync(TagCreateViewModel tagData)
+        public void Create(TagCreateViewModel tagData)
         {
             if (CheckUtilities.ContainsNullOrEmptyValue(tagData.Text, tagData.Color))
             {

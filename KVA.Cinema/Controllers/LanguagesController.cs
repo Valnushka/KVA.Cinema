@@ -118,7 +118,7 @@ namespace KVA.Cinema.Controllers
             {
                 try
                 {
-                    LanguageService.CreateAsync(languageData);
+                    LanguageService.Create(languageData);
                     return RedirectToAction(nameof(Index));
 
                 }

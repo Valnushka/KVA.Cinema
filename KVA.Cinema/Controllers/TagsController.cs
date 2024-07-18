@@ -118,7 +118,7 @@ namespace KVA.Cinema.Controllers
             {
                 try
                 {
-                    TagService.CreateAsync(tagData);
+                    TagService.Create(tagData);
                     return RedirectToAction(nameof(Index));
 
                 }
