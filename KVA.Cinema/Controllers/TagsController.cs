@@ -141,7 +141,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var tag = TagService.Read(id.Value);
+            TagDisplayViewModel tag = null;
+
+            try
+            {
+                tag = TagService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (tag == null)
             {

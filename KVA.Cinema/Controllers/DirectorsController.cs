@@ -141,8 +141,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var director = DirectorService.Read()
-                .FirstOrDefault(m => m.Id == id);
+            DirectorDisplayViewModel director = null;
+
+            try
+            {
+                director = DirectorService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (director == null)
             {

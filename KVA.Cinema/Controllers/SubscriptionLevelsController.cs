@@ -140,8 +140,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var subscriptionLevel = SubscriptionLevelService.Read()
-                .FirstOrDefault(m => m.Id == id);
+            SubscriptionLevelDisplayViewModel subscriptionLevel = null;
+
+            try
+            {
+                subscriptionLevel = SubscriptionLevelService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (subscriptionLevel == null)
             {

@@ -140,8 +140,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var genre = GenreService.Read()
-                .FirstOrDefault(m => m.Id == id);
+            GenreDisplayViewModel genre = null;
+
+            try
+            {
+                genre = GenreService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (genre == null)
             {

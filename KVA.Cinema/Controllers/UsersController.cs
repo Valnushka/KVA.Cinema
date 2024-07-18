@@ -231,12 +231,15 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
                 return NotFound();
             }
 
-            var user = UserService.Read()
-                .FirstOrDefault(m => m.Id == id);
+            UserDisplayViewModel user = null;
 
-            if (user == null)
+            try
             {
-                return NotFound();
+                user = UserService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
             }
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);

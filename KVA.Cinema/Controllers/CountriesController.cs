@@ -141,8 +141,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var country = CountryService.Read()
-                    .FirstOrDefault(x => x.Id == id);
+            CountryDisplayViewModel country = null;
+
+            try
+            {
+                country = CountryService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (country == null)
             {

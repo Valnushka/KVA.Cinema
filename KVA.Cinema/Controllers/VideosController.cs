@@ -183,8 +183,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var video = VideoService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
+            VideoDisplayViewModel video = null;
+
+            try
+            {
+                video = VideoService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (video == null)
             {

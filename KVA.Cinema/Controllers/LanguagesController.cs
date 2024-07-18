@@ -141,8 +141,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var language = LanguageService.Read()
-                .FirstOrDefault(m => m.Id == id);
+            LanguageDisplayViewModel language = null;
+
+            try
+            {
+                language = LanguageService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (language == null)
             {

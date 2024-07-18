@@ -153,7 +153,7 @@ namespace KVA.Cinema.Controllers
             {
                 try
                 {
-                    SubscriptionService.CreateAsync(subscriptionData);
+                    SubscriptionService.Create(subscriptionData);
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
@@ -177,8 +177,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var subscription = SubscriptionService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
+            SubscriptionDisplayViewModel subscription = null;
+
+            try
+            {
+                subscription = SubscriptionService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (subscription == null)
             {

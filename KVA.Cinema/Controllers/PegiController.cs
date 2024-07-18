@@ -141,8 +141,16 @@ namespace KVA.Cinema.Controllers
                 return NotFound();
             }
 
-            var pegi = PegiService.Read()
-                .FirstOrDefault(m => m.Id == id);
+            PegiDisplayViewModel pegi = null;
+
+            try
+            {
+                pegi = PegiService.Read(id.Value);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             if (pegi == null)
             {
