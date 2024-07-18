@@ -28,15 +28,6 @@ namespace KVA.Cinema.Services
             Context = db;
         }
 
-        public IEnumerable<CountryCreateViewModel> Read()
-        {
-            return Context.Countries.Select(x => new CountryCreateViewModel()
-            {
-                Id = x.Id,
-                Name = x.Name
-            }).ToList();
-        }
-
         public CountryDisplayViewModel Read(Guid countryId)
         {
             var country = Context.Countries.FirstOrDefault(x => x.Id == countryId);

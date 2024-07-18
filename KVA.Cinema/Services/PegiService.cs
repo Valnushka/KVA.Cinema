@@ -22,15 +22,6 @@ namespace KVA.Cinema.Services
             Context = db;
         }
 
-        public IEnumerable<PegiCreateViewModel> Read()
-        {
-            return Context.Pegis.Select(x => new PegiCreateViewModel()
-            {
-                Id = x.Id,
-                Type = x.Type
-            }).ToList();
-        }
-
         public PegiDisplayViewModel Read(Guid pegiId)
         {
             var pegi = Context.Pegis.FirstOrDefault(x => x.Id == pegiId);

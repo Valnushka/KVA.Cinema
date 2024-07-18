@@ -37,27 +37,6 @@ namespace KVA.Cinema.Services
             HostEnvironment = hostEnvironment;
         }
 
-        public IEnumerable<VideoCreateViewModel> Read()
-        {
-            List<Video> videos = Context.Videos.ToList();
-
-            return videos.Select(x => new VideoCreateViewModel()
-            {
-                Name = x.Title,
-                Description = x.Description,
-                Length = x.Length,
-                CountryId = x.CountryId,
-                ReleasedIn = x.ReleasedIn,
-                Views = x.Views,
-                PegiId = x.PegiId,
-                LanguageId = x.LanguageId,
-                DirectorId = x.DirectorId,
-                GenreIds = x.Genres.Select(x => x.Id),
-                TagIds = x.Tags.Select(x => x.Id),
-                TagsViewModels = x.Tags.Select(x => new ViewModels.TagDisplayViewModel() { Text = x.Text, Color = x.Color })
-            });
-        }
-
         public VideoDisplayViewModel Read(Guid videoId)
         {
             var video = Context.Videos.FirstOrDefault(x => x.Id == videoId);

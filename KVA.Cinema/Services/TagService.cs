@@ -28,15 +28,6 @@ namespace KVA.Cinema.Services
             Context = db;
         }
 
-        public IEnumerable<TagCreateViewModel> Read()
-        {
-            return Context.Tags.Select(x => new TagCreateViewModel()
-            {
-                Text = x.Text,
-                Color = x.Color
-            }).ToList();
-        }
-
         public TagDisplayViewModel Read(Guid tagId)
         {
             var tag = Context.Tags.FirstOrDefault(x => x.Id == tagId);

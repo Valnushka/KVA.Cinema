@@ -103,19 +103,6 @@ namespace KVA.Cinema.Services
                     SubscriptionIds = x.UserSubscriptions.Select(x => x.SubscriptionId)
                 }).ToList();
         }
-
-        public IEnumerable<UserCreateViewModel> Read()
-        {
-            return Context.Users.Select(x => new UserCreateViewModel()
-            {
-                Id = x.Id,
-                FirstName = x.FirstName,
-                LastName = x.LastName,
-                Nickname = x.Nickname,
-                BirthDate = x.BirthDate,
-                Email = x.Email
-            }).ToList();
-        }
         
         public UserDisplayViewModel Read(string nickname)
         {

@@ -28,15 +28,6 @@ namespace KVA.Cinema.Services
             Context = db;
         }
 
-        public IEnumerable<SubscriptionLevelCreateViewModel> Read()
-        {
-            return Context.SubscriptionLevels.Select(x => new SubscriptionLevelCreateViewModel()
-            {
-                Id = x.Id,
-                Title = x.Title
-            }).ToList();
-        }
-
         public SubscriptionLevelDisplayViewModel Read(Guid subscriptionLevelId)
         {
             var subscriptionLevel = Context.SubscriptionLevels.FirstOrDefault(x => x.Id == subscriptionLevelId);

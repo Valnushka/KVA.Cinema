@@ -27,14 +27,6 @@ namespace KVA.Cinema.Services
         {
             Context = db;
         }
-        public IEnumerable<GenreCreateViewModel> Read()
-        {
-            return Context.Genres.Select(x => new GenreCreateViewModel()
-            {
-                Id = x.Id,
-                Title = x.Title
-            }).ToList();
-        }
 
         public GenreDisplayViewModel Read(Guid genreId)
         {

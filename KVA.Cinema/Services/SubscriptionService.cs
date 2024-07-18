@@ -21,21 +21,6 @@ namespace KVA.Cinema.Services
             Context = db;
         }
 
-        public IEnumerable<SubscriptionCreateViewModel> Read()
-        {
-            return Context.Subscriptions.Select(x => new SubscriptionCreateViewModel()
-            {
-                Id = x.Id,
-                Title = x.Title,
-                Description = x.Description,
-                Cost = x.Cost,
-                LevelId = x.LevelId,
-                ReleasedIn = x.ReleasedIn,
-                Duration = x.Duration,
-                AvailableUntil = x.AvailableUntil,
-            }).ToList();
-        } //TODO: remove
-
         public SubscriptionDisplayViewModel Read(Guid subscriptionId)
         {
             var subscription = Context.Subscriptions.FirstOrDefault(x => x.Id == subscriptionId);

@@ -28,15 +28,6 @@ namespace KVA.Cinema.Services
             Context = db;
         }
 
-        public IEnumerable<DirectorCreateViewModel> Read()
-        {
-            return Context.Directors.Select(x => new DirectorCreateViewModel()
-            {
-                Id = x.Id,
-                Name = x.Name
-            }).ToList();
-        }
-
         public DirectorDisplayViewModel Read(Guid directorId)
         {
             var director = Context.Directors.FirstOrDefault(x => x.Id == directorId);

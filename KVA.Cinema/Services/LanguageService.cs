@@ -28,15 +28,6 @@ namespace KVA.Cinema.Services
             Context = db;
         }
 
-        public IEnumerable<LanguageCreateViewModel> Read()
-        {
-            return Context.Languages.Select(x => new LanguageCreateViewModel()
-            {
-                Id = x.Id,
-                Name = x.Name
-            }).ToList();
-        }
-
         public LanguageDisplayViewModel Read(Guid languageId)
         {
             var language = Context.Languages.FirstOrDefault(x => x.Id == languageId);
