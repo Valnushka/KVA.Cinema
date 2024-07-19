@@ -24,6 +24,11 @@ namespace KVA.Cinema.Services
 
         public virtual TEntityDisplayViewModel Read(Guid entityId)
         {
+            if (entityId == default)
+            {
+                throw new ArgumentNullException(nameof(entityId), "No value");
+            }
+
             TEntity entity = Context.Set<TEntity>().FirstOrDefault(x => x.Id == entityId);
 
             if (entity == default)
@@ -36,11 +41,19 @@ namespace KVA.Cinema.Services
 
         public virtual IEnumerable<TEntityDisplayViewModel> ReadAll()
         {
-            return Context.Set<TEntity>().Select(x => MapToDisplayViewModel(x)).ToList();
+            return Context.Set<TEntity>()
+                .ToList()
+                .Select(x => MapToDisplayViewModel(x))
+                ;
         }
 
         public virtual void Create(TEntityCreateViewModel entityData)
         {
+            if (entityData == default)
+            {
+                throw new ArgumentNullException(nameof(entityData), "No value");
+            }
+
             ValidateInput(entityData);
             ValidateEntity(entityData);
 
@@ -54,7 +67,12 @@ namespace KVA.Cinema.Services
         {
             if (entityId == default)
             {
-                throw new ArgumentNullException("Id has no value");
+                throw new ArgumentNullException(nameof(entityId), "No value");
+            }
+
+            if (entityNewData == default)
+            {
+                throw new ArgumentNullException(nameof(entityNewData), "No value");
             }
 
             ValidateInput(entityNewData);
@@ -90,8 +108,6 @@ namespace KVA.Cinema.Services
             Context.SaveChanges();
         }
 
-        protected abstract TEntityDisplayViewModel MapToDisplayViewModel(TEntity entity);
-
         protected abstract void ValidateInput(TEntityCreateViewModel entityData);
 
         protected abstract void ValidateInput(TEntityEditViewModel entityNewData);
@@ -101,6 +117,8 @@ namespace KVA.Cinema.Services
         protected abstract void ValidateEntity(TEntityEditViewModel entityNewData);
 
         protected abstract TEntity MapToEntity(TEntityCreateViewModel entityData);
+
+        protected abstract TEntityDisplayViewModel MapToDisplayViewModel(TEntity entity);
 
         protected abstract void UpdateFieldValues(TEntity entity, TEntityEditViewModel entityNewData);
     }

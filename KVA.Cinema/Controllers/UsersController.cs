@@ -428,18 +428,15 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
             {
                 var user = UserService.Read(User.Identity.Name);
                 UserService.AddSubscription(user.Nickname, subscriptionId);
-                return RedirectToAction(nameof(Index), "Users");
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
             }
 
-            var subscription = SubscriptionService.Read(subscriptionId);
-
             AddBreadcrumbs(homeBreadcrumb, subscriptionsBreadcrumb, buySubscriptionBreadcrumb);
 
-            return View(subscription);
+            return RedirectToAction("Index", "Subscriptions");
         }
 
         [HttpGet]
@@ -470,18 +467,15 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
             {
                 var user = UserService.Read(User.Identity.Name);
                 UserService.RemoveSubscription(user.Nickname, subscriptionId);
-                return RedirectToAction(nameof(Index), "Users");
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
             }
 
-            var subscription = SubscriptionService.Read(subscriptionId);
-
             AddBreadcrumbs(homeBreadcrumb, subscriptionsBreadcrumb, cancelSubscriptionBreadcrumb);
 
-            return View(subscription);
+            return RedirectToAction("Index", "Subscriptions");
         }
 
         private void AddBreadcrumbs(params Breadcrumb[] breadcrumbs)

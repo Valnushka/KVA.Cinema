@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using KVA.Cinema.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace KVA.Cinema.Entities
 {
-    public class User : IdentityUser<Guid>
+    public class User : IdentityUser<Guid>, IEntity
     {
         public override Guid Id { get; set; }
 

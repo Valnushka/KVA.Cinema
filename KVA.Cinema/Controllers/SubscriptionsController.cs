@@ -68,6 +68,21 @@ namespace KVA.Cinema.Controllers
 
             var subscriptions = SubscriptionService.ReadAll();
 
+            if (User.Identity.IsAuthenticated)
+            {
+                var user = UserService.ReadAll().FirstOrDefault(m => m.Nickname == User.Identity.Name);
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                foreach (var subscription in subscriptions)
+                {
+                    subscription.IsPurchasedByCurrentUser = user.UserSubscriptions.Any(m => m.SubscriptionId == subscription.Id);
+                }
+            }
+
             if (!string.IsNullOrEmpty(searchString))
             {
                 subscriptions = subscriptions.Where(x => x.Title.Contains(searchString));
