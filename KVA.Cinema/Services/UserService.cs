@@ -100,9 +100,14 @@ namespace KVA.Cinema.Services
         //            SubscriptionIds = x.UserSubscriptions.Select(x => x.SubscriptionId)
         //        }).ToList();
         //}
-        
+
         public UserDisplayViewModel Read(string nickname)
         {
+            if (string.IsNullOrWhiteSpace(nickname))
+            {
+                throw new ArgumentNullException(nameof(nickname), "No value");
+            }
+
             var user = Context.Users.FirstOrDefault(x => x.Nickname == nickname);
 
             if (user == default)
@@ -122,6 +127,11 @@ namespace KVA.Cinema.Services
         /// <returns></returns>
         public async Task CreateAsync(UserCreateViewModel userData)
         {
+            if (userData == default)
+            {
+                throw new ArgumentNullException(nameof(userData), "No value");
+            }
+
             ValidateInput(userData);
             ValidateEntity(userData);
 
@@ -144,9 +154,14 @@ namespace KVA.Cinema.Services
 
         public async Task<IdentityResult> ActivateAccountAsync(string userId, string token)
         {
-            if (CheckUtilities.ContainsNullOrEmptyValue(userId, token))
+            if (string.IsNullOrWhiteSpace(userId))
             {
-                throw new ArgumentNullException("One or more required fields have no value");
+                throw new ArgumentNullException(nameof(userId), "No value");
+            }
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                throw new ArgumentNullException(nameof(token), "No value");
             }
 
             if (!Guid.TryParse(userId, out Guid userGuidId))
@@ -203,9 +218,14 @@ namespace KVA.Cinema.Services
 
         public void AddSubscription(string nickname, Guid subscriptionId)
         {
-            if (CheckUtilities.ContainsNullOrEmptyValue(nickname, subscriptionId))
+            if (string.IsNullOrWhiteSpace(nickname))
             {
-                throw new ArgumentNullException("Id has no value");
+                throw new ArgumentNullException("No value", nameof(nickname));
+            }
+
+            if (subscriptionId == default)
+            {
+                throw new ArgumentNullException("Invalid argument", nameof(subscriptionId));
             }
 
             User user = Context.Users.FirstOrDefault(x => x.UserName == nickname);
@@ -244,9 +264,14 @@ namespace KVA.Cinema.Services
 
         public void RemoveSubscription(string nickname, Guid subscriptionId)
         {
-            if (CheckUtilities.ContainsNullOrEmptyValue(nickname, subscriptionId))
+            if (string.IsNullOrWhiteSpace(nickname))
             {
-                throw new ArgumentNullException("One or more required fields have no value");
+                throw new ArgumentNullException("No value", nameof(nickname));
+            }
+
+            if (subscriptionId == default)
+            {
+                throw new ArgumentNullException("Invalid argument", nameof(subscriptionId));
             }
 
             User user = Context.Users.FirstOrDefault(x => x.UserName == nickname);
@@ -272,32 +297,56 @@ namespace KVA.Cinema.Services
 
             Context.UserSubscriptions.Remove(entity);
 
-            Context.SaveChanges();// TODO
+            Context.SaveChanges();
         }
 
         protected override void ValidateInput(UserCreateViewModel userData)
         {
-            if (CheckUtilities.ContainsNullOrEmptyValue(userData.FirstName,
-                                            userData.LastName,
-                                            userData.Nickname,
-                                            userData.BirthDate,
-                                            userData.Email,
-                                            userData.Password,
-                                            userData.PasswordConfirm))
+            string[] stringFields = new string[]
             {
-                throw new ArgumentNullException("One or more required fields have no value");
+                userData.LastName,
+                userData.FirstName,
+                userData.Nickname,
+                userData.Email,
+                userData.Password,
+                userData.PasswordConfirm
+            };
+
+            foreach (var field in stringFields)
+            {
+                if (string.IsNullOrWhiteSpace(field))
+                {
+                    throw new ArgumentException("Argument has no value");
+                }
+            }
+
+            if (userData.BirthDate == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(userData.BirthDate));
             }
         }
 
         protected override void ValidateInput(UserEditViewModel userNewData)
         {
-            if (CheckUtilities.ContainsNullOrEmptyValue(userNewData.LastName,
-                                                        userNewData.FirstName,
-                                                        userNewData.Nickname,
-                                                        userNewData.BirthDate,
-                                                        userNewData.Email))
+            string[] stringFields = new string[] 
             {
-                throw new ArgumentNullException("One or more user's parameters have no value");
+                userNewData.LastName,
+                userNewData.FirstName,
+                userNewData.Nickname,
+                userNewData.Email
+            };
+
+            foreach (var field in stringFields)
+            {
+                if (string.IsNullOrWhiteSpace(field))
+                {
+                    throw new ArgumentException("Argument has no value");
+                }
+            }
+
+            if (userNewData.BirthDate == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(userNewData.BirthDate));
             }
         }
 
@@ -404,7 +453,7 @@ namespace KVA.Cinema.Services
                 throw new ArgumentException("Incorrect format", nameof(email));
             }
         }
-        
+
         private void ValidateNames(string firstName, string lastName, string nickname)
         {
             names = new string[] { firstName, lastName };
