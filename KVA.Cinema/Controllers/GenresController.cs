@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using KVA.Cinema.Services;
 using KVA.Cinema.ViewModels;
 using Microsoft.AspNetCore.Mvc.Filters;
+using KVA.Cinema.Utilities;
 
 namespace KVA.Cinema.Controllers
 {
@@ -19,9 +20,12 @@ namespace KVA.Cinema.Controllers
 
         private GenreService GenreService { get; }
 
-        public GenresController(GenreService genreService)
+        private CacheManager CacheManager { get; }
+
+        public GenresController(GenreService genreService, CacheManager cacheManager)
         {
             GenreService = genreService;
+            CacheManager = cacheManager;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -129,6 +133,8 @@ namespace KVA.Cinema.Controllers
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
 
+            CacheManager.RemoveFromCache("GenresSelectedList");
+
             return View(genreData);
         }
 
@@ -194,6 +200,8 @@ namespace KVA.Cinema.Controllers
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
 
+            CacheManager.RemoveFromCache("GenresSelectedList");
+
             return View(genreNewData);
         }
 
@@ -242,6 +250,8 @@ namespace KVA.Cinema.Controllers
             }
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
+
+            CacheManager.RemoveFromCache("GenresSelectedList");
 
             return RedirectToAction(nameof(Index));
         }

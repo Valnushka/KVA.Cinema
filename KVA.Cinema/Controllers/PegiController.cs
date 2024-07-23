@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using KVA.Cinema.Services;
 using KVA.Cinema.ViewModels;
 using Microsoft.AspNetCore.Mvc.Filters;
+using KVA.Cinema.Utilities;
 
 namespace KVA.Cinema.Controllers
 {
@@ -19,9 +20,12 @@ namespace KVA.Cinema.Controllers
 
         private PegiService PegiService { get; }
 
-        public PegiController(PegiService pegiService)
+        private CacheManager CacheManager { get; }
+
+        public PegiController(PegiService pegiService, CacheManager cacheManager)
         {
             PegiService = pegiService;
+            CacheManager = cacheManager;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -130,6 +134,8 @@ namespace KVA.Cinema.Controllers
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
 
+            CacheManager.RemoveFromCache("PegisSelectedList");
+
             return View(pegiData);
         }
 
@@ -195,6 +201,8 @@ namespace KVA.Cinema.Controllers
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
 
+            CacheManager.RemoveFromCache("PegisSelectedList");
+
             return View(pegiNewData);
         }
 
@@ -243,6 +251,8 @@ namespace KVA.Cinema.Controllers
             }
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
+
+            CacheManager.RemoveFromCache("PegisSelectedList");
 
             return RedirectToAction(nameof(Index));
         }

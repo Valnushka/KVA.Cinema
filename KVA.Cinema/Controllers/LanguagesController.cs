@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using KVA.Cinema.Services;
 using KVA.Cinema.ViewModels;
 using Microsoft.AspNetCore.Mvc.Filters;
+using KVA.Cinema.Utilities;
 
 namespace KVA.Cinema.Controllers
 {
@@ -19,9 +20,12 @@ namespace KVA.Cinema.Controllers
 
         private LanguageService LanguageService { get; }
 
-        public LanguagesController(LanguageService languageService)
+        private CacheManager CacheManager { get; }
+
+        public LanguagesController(LanguageService languageService, CacheManager cacheManager)
         {
             LanguageService = languageService;
+            CacheManager = cacheManager;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -130,6 +134,8 @@ namespace KVA.Cinema.Controllers
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
 
+            CacheManager.RemoveFromCache("LanguagesSelectedList");
+
             return View(languageData);
         }
 
@@ -195,6 +201,8 @@ namespace KVA.Cinema.Controllers
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
 
+            CacheManager.RemoveFromCache("LanguagesSelectedList");
+
             return View(languageNewData);
         }
 
@@ -244,6 +252,8 @@ namespace KVA.Cinema.Controllers
             }
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
+
+            CacheManager.RemoveFromCache("LanguagesSelectedList");
 
             return RedirectToAction(nameof(Index));
         }

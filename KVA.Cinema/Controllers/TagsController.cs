@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using KVA.Cinema.Services;
 using KVA.Cinema.ViewModels;
 using Microsoft.AspNetCore.Mvc.Filters;
+using KVA.Cinema.Utilities;
 
 namespace KVA.Cinema.Controllers
 {
@@ -19,9 +20,12 @@ namespace KVA.Cinema.Controllers
 
         private TagService TagService { get; }
 
-        public TagsController(TagService tagService)
+        private CacheManager CacheManager { get; }
+
+        public TagsController(TagService tagService, CacheManager cacheManager)
         {
             TagService = tagService;
+            CacheManager = cacheManager;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -130,6 +134,8 @@ namespace KVA.Cinema.Controllers
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
 
+            CacheManager.RemoveFromCache("TagsSelectedList");
+
             return View(tagData);
         }
 
@@ -196,6 +202,8 @@ namespace KVA.Cinema.Controllers
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
 
+            CacheManager.RemoveFromCache("TagsSelectedList");
+
             return View(tagNewData);
         }
 
@@ -238,6 +246,8 @@ namespace KVA.Cinema.Controllers
             }
 
             AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
+
+            CacheManager.RemoveFromCache("TagsSelectedList");
 
             return RedirectToAction(nameof(Index));
         }
