@@ -3,13 +3,11 @@ using KVA.Cinema.Exceptions;
 using KVA.Cinema.Models;
 using KVA.Cinema.Entities;
 using KVA.Cinema.ViewModels;
-using KVA.Cinema.Utilities;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace KVA.Cinema.Services
 {
-    public class DirectorService : IService<DirectorCreateViewModel, DirectorDisplayViewModel, DirectorEditViewModel>
+    public class DirectorService : BaseService<Director, DirectorCreateViewModel, DirectorDisplayViewModel, DirectorEditViewModel>
     {
         /// <summary>
         /// Minimum length allowed for Name
@@ -21,43 +19,35 @@ namespace KVA.Cinema.Services
         /// </summary>
         private const int NAME_LENGHT_MAX = 128;
 
-        public CinemaContext Context { get; }
+        public DirectorService(CinemaContext context) : base(context) { }
 
-        public DirectorService(CinemaContext db)
+        protected override DirectorDisplayViewModel MapToDisplayViewModel(Director director)
         {
-            Context = db;
+            return new DirectorDisplayViewModel()
+            {
+                Id = director.Id,
+                Name = director.Name
+            };
         }
 
-        public DirectorDisplayViewModel Read(Guid directorId)
+        protected override void ValidateInput(DirectorCreateViewModel directorData)
         {
-            var director = Context.Directors.FirstOrDefault(x => x.Id == directorId);
-
-            if (director == default)
+            if (string.IsNullOrWhiteSpace(directorData.Name))
             {
-                throw new EntityNotFoundException($"Director with id \"{directorId}\" not found");
+                throw new ArgumentException("No value", nameof(directorData.Name));
             }
-
-            return MapToDisplayViewModel(director);
         }
 
-        public IEnumerable<DirectorDisplayViewModel> ReadAll()
+        protected override void ValidateInput(DirectorEditViewModel directorData)
         {
-            List<Director> directors = Context.Directors.ToList();
-
-            return Context.Directors.Select(x => new DirectorDisplayViewModel()
+            if (string.IsNullOrWhiteSpace(directorData.Name))
             {
-                Id = x.Id,
-                Name = x.Name
-            }).ToList();
-        }
-
-        public void Create(DirectorCreateViewModel directorData)
-        {
-            if (CheckUtilities.ContainsNullOrEmptyValue(directorData.Name))
-            {
-                throw new ArgumentNullException("Name has no value");
+                throw new ArgumentException("No value", nameof(directorData.Name));
             }
+        }
 
+        protected override void ValidateEntity(DirectorCreateViewModel directorData)
+        {
             if (directorData.Name.Length < NAME_LENGHT_MIN)
             {
                 throw new ArgumentException($"Length cannot be less than {NAME_LENGHT_MIN} symbols");
@@ -72,49 +62,10 @@ namespace KVA.Cinema.Services
             {
                 throw new DuplicatedEntityException($"Director with name \"{directorData.Name}\" is already exist");
             }
-
-            Director newDirector = new Director()
-            {
-                Id = Guid.NewGuid(),
-                Name = directorData.Name
-            };
-
-            Context.Directors.Add(newDirector);
-            Context.SaveChanges();
         }
 
-        public void Delete(Guid directorId)
+        protected override void ValidateEntity(DirectorEditViewModel directorNewData)
         {
-            if (CheckUtilities.ContainsNullOrEmptyValue(directorId))
-            {
-                throw new ArgumentNullException("Director Id has no value");
-            }
-
-            Director director = Context.Directors.FirstOrDefault(x => x.Id == directorId);
-
-            if (director == default)
-            {
-                throw new EntityNotFoundException($"Director with Id \"{directorId}\" not found");
-            }
-
-            Context.Directors.Remove(director);
-            Context.SaveChanges();
-        }
-
-        public void Update(Guid directorId, DirectorEditViewModel directorNewData)
-        {
-            if (CheckUtilities.ContainsNullOrEmptyValue(directorId, directorNewData.Name))
-            {
-                throw new ArgumentNullException("Director name or id has no value");
-            }
-
-            Director director = Context.Directors.FirstOrDefault(x => x.Id == directorId);
-
-            if (director == default)
-            {
-                throw new EntityNotFoundException($"Director with id \"{directorId}\" not found");
-            }
-
             if (directorNewData.Name.Length < NAME_LENGHT_MIN)
             {
                 throw new ArgumentException($"Length cannot be less than {NAME_LENGHT_MIN} symbols");
@@ -129,19 +80,20 @@ namespace KVA.Cinema.Services
             {
                 throw new DuplicatedEntityException($"Director with name \"{directorNewData.Name}\" is already exist");
             }
-
-            director.Name = directorNewData.Name;
-
-            Context.SaveChanges();
         }
 
-        private DirectorDisplayViewModel MapToDisplayViewModel(Director director)
+        protected override Director MapToEntity(DirectorCreateViewModel directorData)
         {
-            return new DirectorDisplayViewModel()
+            return new Director()
             {
-                Id = director.Id,
-                Name = director.Name
+                Id = Guid.NewGuid(),
+                Name = directorData.Name
             };
+        }
+
+        protected override void UpdateFieldValues(Director director, DirectorEditViewModel directorNewData)
+        {
+            director.Name = directorNewData.Name;
         }
     }
 }
