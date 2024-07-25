@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KVA.Cinema.Models.Entities;
+using System;
 using System.Collections.Generic;
 
 namespace KVA.Cinema.Entities
@@ -6,7 +7,7 @@ namespace KVA.Cinema.Entities
     /// <summary>
     /// Language of video and its subtitles
     /// </summary>
-    public class Language
+    public class Language : IEntity
     {
         public Guid Id { get; set; }
 
