@@ -2,10 +2,8 @@
 using KVA.Cinema.Models;
 using KVA.Cinema.Entities;
 using KVA.Cinema.ViewModels;
-using KVA.Cinema.Utilities;
 using Microsoft.AspNetCore.Identity;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;

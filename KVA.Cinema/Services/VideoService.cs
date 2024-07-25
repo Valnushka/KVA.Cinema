@@ -2,7 +2,6 @@
 using KVA.Cinema.Models;
 using KVA.Cinema.Entities;
 using KVA.Cinema.ViewModels;
-using KVA.Cinema.Utilities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;

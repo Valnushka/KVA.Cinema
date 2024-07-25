@@ -2,9 +2,7 @@
 using KVA.Cinema.Models;
 using KVA.Cinema.Entities;
 using KVA.Cinema.ViewModels;
-using KVA.Cinema.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace KVA.Cinema.Services
@@ -68,7 +66,7 @@ namespace KVA.Cinema.Services
 
         protected override void ValidateInput(CountryCreateViewModel countryData)
         {
-            if (CheckUtilities.ContainsNullOrEmptyValue(countryData.Name))
+            if (string.IsNullOrWhiteSpace(countryData.Name))
             {
                 throw new ArgumentNullException(nameof(countryData.Name), "No value");
             }
@@ -76,7 +74,7 @@ namespace KVA.Cinema.Services
 
         protected override void ValidateInput(CountryEditViewModel countryNewData)
         {
-            if (CheckUtilities.ContainsNullOrEmptyValue(countryNewData.Name))
+            if (string.IsNullOrWhiteSpace(countryNewData.Name))
             {
                 throw new ArgumentNullException(nameof(countryNewData.Name), "No value");
             }
