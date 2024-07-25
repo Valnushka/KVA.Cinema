@@ -2,7 +2,6 @@
 using KVA.Cinema.Models;
 using KVA.Cinema.Entities;
 using KVA.Cinema.ViewModels;
-using KVA.Cinema.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -89,29 +88,77 @@ namespace KVA.Cinema.Services
 
         protected override void ValidateInput(SubscriptionCreateViewModel subscriptionData)
         {
-            if (CheckUtilities.ContainsNullOrEmptyValue(subscriptionData.Title,
-                                                        subscriptionData.Description,
-                                                        subscriptionData.Cost,
-                                                        subscriptionData.LevelId,
-                                                        subscriptionData.ReleasedIn,
-                                                        subscriptionData.Duration,
-                                                        subscriptionData.AvailableUntil))
+            if (string.IsNullOrWhiteSpace(subscriptionData.Title))
             {
-                throw new ArgumentException("One or more parameters have no value");
+                throw new ArgumentException("Invalid argument", nameof(subscriptionData.Title));
+            }
+
+            if (string.IsNullOrWhiteSpace(subscriptionData.Description))
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionData.Description));
+            }
+
+            if (subscriptionData.Cost == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionData.Cost));
+            }
+
+            if (subscriptionData.Duration == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionData.Duration));
+            }
+
+            if (subscriptionData.LevelId == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionData.LevelId));
+            }
+
+            if (subscriptionData.ReleasedIn == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionData.ReleasedIn));
+            }
+
+            if (subscriptionData.AvailableUntil == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionData.AvailableUntil));
             }
         }
 
-        protected override void ValidateInput(SubscriptionEditViewModel subscriptionData)
+        protected override void ValidateInput(SubscriptionEditViewModel subscriptionNewData)
         {
-            if (CheckUtilities.ContainsNullOrEmptyValue(subscriptionData.Title,
-                                                        subscriptionData.Description,
-                                                        subscriptionData.Cost,
-                                                        subscriptionData.LevelId,
-                                                        subscriptionData.ReleasedIn,
-                                                        subscriptionData.Duration,
-                                                        subscriptionData.AvailableUntil))
+            if(string.IsNullOrWhiteSpace(subscriptionNewData.Title))
             {
-                throw new ArgumentException("One or more parameters have no value");
+                throw new ArgumentException("Invalid argument", nameof(subscriptionNewData.Title));
+            }
+
+            if (string.IsNullOrWhiteSpace(subscriptionNewData.Description))
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionNewData.Description));
+            }
+
+            if (subscriptionNewData.Cost == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionNewData.Cost));
+            }
+
+            if (subscriptionNewData.Duration == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionNewData.Duration));
+            }
+
+            if (subscriptionNewData.LevelId == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionNewData.LevelId));
+            }
+
+            if (subscriptionNewData.ReleasedIn == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionNewData.ReleasedIn));
+            }
+
+            if (subscriptionNewData.AvailableUntil == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionNewData.AvailableUntil));
             }
         }
 
