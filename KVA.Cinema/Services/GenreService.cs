@@ -1,15 +1,13 @@
 ﻿using KVA.Cinema.Exceptions;
 using KVA.Cinema.Entities;
-using KVA.Cinema.Utilities;
 using KVA.Cinema.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using KVA.Cinema.Models;
 
 namespace KVA.Cinema.Services
 {
-    public class GenreService : IService<GenreCreateViewModel, GenreDisplayViewModel, GenreEditViewModel>
+    public class GenreService : BaseService<Genre, GenreCreateViewModel, GenreDisplayViewModel, GenreEditViewModel>
     {
         /// <summary>
         /// Minimum length allowed for Title
@@ -21,43 +19,35 @@ namespace KVA.Cinema.Services
         /// </summary>
         private const int TITLE_LENGHT_MAX = 50;
 
-        public CinemaContext Context { get; }
+        public GenreService(CinemaContext context) : base(context) { }
 
-        public GenreService(CinemaContext db)
+        protected override GenreDisplayViewModel MapToDisplayViewModel(Genre genre)
         {
-            Context = db;
+            return new GenreDisplayViewModel()
+            {
+                Id = genre.Id,
+                Title = genre.Title
+            };
         }
 
-        public GenreDisplayViewModel Read(Guid genreId)
+        protected override void ValidateInput(GenreCreateViewModel genreData)
         {
-            var genre = Context.Genres.FirstOrDefault(x => x.Id == genreId);
-
-            if (genre == default)
+            if (string.IsNullOrWhiteSpace(genreData.Title))
             {
-                throw new EntityNotFoundException($"Genre with id \"{genreId}\" not found");
+                throw new ArgumentException("No value", nameof(genreData.Title));
             }
-
-            return MapToDisplayViewModel(genre);
         }
 
-        public IEnumerable<GenreDisplayViewModel> ReadAll()
+        protected override void ValidateInput(GenreEditViewModel genreNewData)
         {
-            List<Genre> genres = Context.Genres.ToList();
-
-            return genres.Select(x => new GenreDisplayViewModel()
+            if (string.IsNullOrWhiteSpace(genreNewData.Title))
             {
-                Id = x.Id,
-                Title = x.Title
-            });
-        }
-
-        public void Create(GenreCreateViewModel genreData)
-        {
-            if (CheckUtilities.ContainsNullOrEmptyValue(genreData.Title))
-            {
-                throw new ArgumentNullException("Title has no value");
+                throw new ArgumentException("No value", nameof(genreNewData.Title));
             }
+        }
 
+        protected override void ValidateEntity(GenreCreateViewModel genreData)
+        {
             if (genreData.Title.Length < TITLE_LENGHT_MIN)
             {
                 throw new ArgumentException($"Length cannot be less than {TITLE_LENGHT_MIN} symbols");
@@ -72,49 +62,10 @@ namespace KVA.Cinema.Services
             {
                 throw new DuplicatedEntityException($"Genre with title \"{genreData.Title}\" is already exist");
             }
-
-            Genre newGenre = new Genre()
-            {
-                Id = Guid.NewGuid(),
-                Title = genreData.Title
-            };
-
-            Context.Genres.Add(newGenre);
-            Context.SaveChanges();
         }
 
-        public void Delete(Guid genreId)
+        protected override void ValidateEntity(GenreEditViewModel genreNewData)
         {
-            if (CheckUtilities.ContainsNullOrEmptyValue(genreId))
-            {
-                throw new ArgumentNullException("Genre Id has no value");
-            }
-
-            Genre genre = Context.Genres.FirstOrDefault(x => x.Id == genreId);
-
-            if (genre == default)
-            {
-                throw new EntityNotFoundException($"Genre with Id \"{genreId}\" not found");
-            }
-
-            Context.Genres.Remove(genre);
-            Context.SaveChanges();
-        }
-
-        public void Update(Guid genreId, GenreEditViewModel genreNewData)
-        {
-            if (CheckUtilities.ContainsNullOrEmptyValue(genreId, genreNewData.Title))
-            {
-                throw new ArgumentNullException("Genre title or id has no value");
-            }
-
-            Genre genre = Context.Genres.FirstOrDefault(x => x.Id == genreId);
-
-            if (genre == default)
-            {
-                throw new EntityNotFoundException($"Genre with id \"{genreId}\" not found");
-            }
-
             if (genreNewData.Title.Length < TITLE_LENGHT_MIN)
             {
                 throw new ArgumentException($"Length cannot be less than {TITLE_LENGHT_MIN} symbols");
@@ -129,19 +80,20 @@ namespace KVA.Cinema.Services
             {
                 throw new DuplicatedEntityException($"Genre with title \"{genreNewData.Title}\" is already exist");
             }
-
-            genre.Title = genreNewData.Title;
-
-            Context.SaveChanges();
         }
 
-        private GenreDisplayViewModel MapToDisplayViewModel(Genre genre)
+        protected override Genre MapToEntity(GenreCreateViewModel genreData)
         {
-            return new GenreDisplayViewModel()
+            return new Genre()
             {
-                Id = genre.Id,
-                Title = genre.Title
+                Id = Guid.NewGuid(),
+                Title = genreData.Title
             };
+        }
+
+        protected override void UpdateFieldValues(Genre genre, GenreEditViewModel genreNewData)
+        {
+            genre.Title = genreNewData.Title;
         }
     }
 }
