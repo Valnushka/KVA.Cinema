@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -10,30 +9,25 @@ using Microsoft.AspNetCore.Identity;
 using KVA.Cinema.ViewModels;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Web;
+using KVA.Cinema.Utilities;
+using System.Collections.Generic;
 
 namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
 {
-    public class UsersController : Controller
+    public class UsersController : BaseController<User, UserCreateViewModel, UserDisplayViewModel, UserEditViewModel, UserService>
     {
-        private static Breadcrumb homeBreadcrumb;
-        private static Breadcrumb indexBreadcrumb;
-        private static Breadcrumb detailsBreadcrumb;
-        private static Breadcrumb createBreadcrumb;
-        private static Breadcrumb editBreadcrumb;
-        private static Breadcrumb deleteBreadcrumb;
         private static Breadcrumb loginBreadcrumb;
         private static Breadcrumb logoutBreadcrumb;
         private static Breadcrumb buySubscriptionBreadcrumb;
         private static Breadcrumb cancelSubscriptionBreadcrumb;
         private static Breadcrumb subscriptionsBreadcrumb;
 
-        private UserService UserService { get; }
+        protected override string ModuleCaption { get { return "Users"; } }
 
         private SubscriptionService SubscriptionService { get; }
 
-        public UsersController(UserService userService, SubscriptionService subscriptionService)
+        public UsersController(UserService userService, SubscriptionService subscriptionService, CacheManager cacheManager) : base(userService, cacheManager)
         {
-            UserService = userService;
             SubscriptionService = subscriptionService;
         }
 
@@ -41,122 +35,27 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
         {
             base.OnActionExecuting(context);
 
-            homeBreadcrumb = new Breadcrumb { Title = "Home", Url = Url.Action("Index", "Home") };
-            indexBreadcrumb = new Breadcrumb { Title = "Users", Url = Url.Action("Index", "Users") };
-            detailsBreadcrumb = new Breadcrumb { Title = "Details", Url = Url.Action("Details", "Users") };
-            createBreadcrumb = new Breadcrumb { Title = "Create", Url = Url.Action("Create", "Users") };
-            editBreadcrumb = new Breadcrumb { Title = "Edit", Url = Url.Action("Edit", "Users") };
-            deleteBreadcrumb = new Breadcrumb { Title = "Delete", Url = Url.Action("Delete", "Users") };
-            loginBreadcrumb = new Breadcrumb { Title = "Login", Url = Url.Action("Login", "Users") }; ;
-            logoutBreadcrumb = new Breadcrumb { Title = "Logout", Url = Url.Action("Logout", "Users") };
-            buySubscriptionBreadcrumb = new Breadcrumb { Title = "Buy subscription", Url = Url.Action("BuySubscription", "Users") };
-            cancelSubscriptionBreadcrumb = new Breadcrumb { Title = "Cancel subscription", Url = Url.Action("CancelSubscription", "Users") };
+            loginBreadcrumb = new Breadcrumb { Title = "Login", Url = Url.Action("Login", ModuleCaption) };
+            logoutBreadcrumb = new Breadcrumb { Title = "Logout", Url = Url.Action("Logout", ModuleCaption) };
+            buySubscriptionBreadcrumb = new Breadcrumb { Title = "Buy subscription", Url = Url.Action("BuySubscription", ModuleCaption) };
+            cancelSubscriptionBreadcrumb = new Breadcrumb { Title = "Cancel subscription", Url = Url.Action("CancelSubscription", ModuleCaption) };
             subscriptionsBreadcrumb = new Breadcrumb { Title = "Subscriptions", Url = Url.Action("Index", "Subscriptions") };
         }
 
-        // GET: Users
-        [Route("Users")]
-        public IActionResult Index(int? pageNumber,
-                                   string searchString,
-                                   UserSort sortingField = UserSort.Nickname,
-                                   bool isSortDescending = false)
-        {
-            ViewBag.SortingField = sortingField;
-            ViewBag.SortDescending = isSortDescending;
-            ViewBag.CurrentFilter = searchString;
+        //TODO: add to details page:
+        //user.SubscriptionNamesAndDates = user.Subscriptions.Count() == 0
+        //     ? Enumerable.Empty<string>()
+        //     : user.UserSubscriptions.Select(x => $"{x.Subscription.Title}: {x.LastUntil}").ToList();
 
-            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb);
-
-            var users = UserService.ReadAll();
-
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                users = users.Where(x => x.Nickname.Contains(searchString)
-                                       || x.FirstName.Contains(searchString)
-                                       || x.LastName.Contains(searchString));
-            }
-
-            switch (sortingField)
-            {
-                case UserSort.Nickname:
-                    users = isSortDescending ? users.OrderByDescending(s => s.Nickname) : users.OrderBy(s => s.Nickname);
-                    break;
-                case UserSort.FirstName:
-                    users = isSortDescending ? users.OrderByDescending(s => s.FirstName) : users.OrderBy(s => s.FirstName);
-                    break;
-                case UserSort.LastName:
-                    users = isSortDescending ? users.OrderByDescending(s => s.LastName) : users.OrderBy(s => s.LastName);
-                    break;
-                case UserSort.BirthDate:
-                    users = isSortDescending ? users.OrderByDescending(s => s.BirthDate) : users.OrderBy(s => s.BirthDate);
-                    break;
-                case UserSort.Email:
-                    users = isSortDescending ? users.OrderByDescending(s => s.Email) : users.OrderBy(s => s.Email);
-                    break;
-                default:
-                    users = users.OrderBy(s => s.Nickname);
-                    break;
-            }
-
-            int itemsOnPage = 15;
-
-            return View(PaginatedList<UserDisplayViewModel>.CreateAsync(users, pageNumber ?? 1, itemsOnPage));
-        }
-
-        // GET: Users/Details/5
-        public IActionResult Details(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            UserDisplayViewModel user = null;
-
-            try
-            {
-                user = UserService.Read(id.Value);
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-            }
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            //user.SubscriptionNamesAndDates = user.Subscriptions.Count() == 0
-            //     ? Enumerable.Empty<string>()
-            //     : user.UserSubscriptions.Select(x => $"{x.Subscription.Title}: {x.LastUntil}").ToList();
-
-            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, detailsBreadcrumb);
-
-            return View(user);
-        }
-
-        // GET: Users/Create
-        [HttpGet]
-        public IActionResult Create()
-        {
-            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
-
-            return View();
-        }
-
-        // POST: Users/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(UserCreateViewModel userData)
+        public async Task<IActionResult> Create(UserCreateViewModel userData, string arg)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    await UserService.CreateAsync(userData);
+                    await EntityService.CreateAsync(userData);
                     return RedirectToAction(nameof(AccountCreated), new { email = userData.Email });
                 }
                 catch (FailedToCreateEntityException ex)
@@ -174,9 +73,15 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
                 }
             }
 
-            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
+            AddCreateCrumbs();
 
             return View(userData);
+        }
+
+        [Obsolete("This method is obsolete, use async version instead", true)]
+        public override IActionResult Create(UserCreateViewModel entityData)
+        {
+            throw new Exception("This method is obsolete");
         }
 
         public IActionResult AccountCreated(string email)
@@ -199,12 +104,12 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
 
             try
             {
-                IdentityResult result = await UserService.ActivateAccountAsync(userIdDecoded, userTokenDecoded);
+                IdentityResult result = await EntityService.ActivateAccountAsync(userIdDecoded, userTokenDecoded);
 
                 if (result.Succeeded)
                 {
-                    User user = await UserService.UserManager.FindByIdAsync(userId);
-                    await UserService.SignInManager.SignInAsync(user, true);
+                    User user = await EntityService.UserManager.FindByIdAsync(userId);
+                    await EntityService.SignInManager.SignInAsync(user, true);
 
                     ViewBag.IsActivationSucceeded = true;
 
@@ -222,124 +127,10 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
             return View();
         }
 
-        // GET: Users/Edit/5
-        [HttpGet]
-        public IActionResult Edit(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            UserDisplayViewModel user = null;
-
-            try
-            {
-                user = UserService.Read(id.Value);
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-            }
-
-            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
-
-            var userEditModel = new UserEditViewModel()
-            {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Nickname = user.Nickname,
-                BirthDate = user.BirthDate,
-                Email = user.Email
-            };
-
-            return View(userEditModel);
-        }
-
-        // POST: Users/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(Guid id, UserEditViewModel userNewData)
-        {
-            if (id != userNewData.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    UserService.Update(id, userNewData);
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError(string.Empty, ex.Message);
-                }
-            }
-
-            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
-
-            return View(userNewData);
-        }
-
-        // GET: Users/Delete/5
-        public IActionResult Delete(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            UserDisplayViewModel user = null;
-
-            try
-            {
-                user = UserService.Read(id.Value);
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-            }
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
-
-            return View(user);
-        }
-
-        // POST: Users/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(Guid id)
-        {
-            try
-            {
-                var user = UserService.Read(id);
-                UserService.Delete(user.Id);
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-            }
-
-            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
-
-            return RedirectToAction(nameof(Index));
-        }
-
         [HttpGet]
         public IActionResult Login(string returnUrl)
         {
-            AddBreadcrumbs(homeBreadcrumb, loginBreadcrumb);
+            AddLoginCrumbs();
 
             return View(new LoginViewModel { ReturnUrl = returnUrl });
         }
@@ -350,46 +141,49 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
         {
             if (!ModelState.IsValid)
             {
-                AddBreadcrumbs(homeBreadcrumb, loginBreadcrumb);
+                AddLoginCrumbs();
                 return View(model);
             }
 
-            User user = await UserService.UserManager.FindByNameAsync(model.Nickname);
+            User user = await EntityService.UserManager.FindByNameAsync(model.Nickname);
 
             if (user == null)
             {
                 ModelState.AddModelError(string.Empty, "User with this nickname is not found");
-                AddBreadcrumbs(homeBreadcrumb, loginBreadcrumb);
+                AddLoginCrumbs();
                 return View(model);
             }
 
-            if (!user.IsActive || !await UserService.UserManager.IsEmailConfirmedAsync(user))
+            if (!user.IsActive || !await EntityService.UserManager.IsEmailConfirmedAsync(user))
             {
                 ModelState.AddModelError(string.Empty, "Your account is not active. Please confirm your email to access");
-                AddBreadcrumbs(homeBreadcrumb, loginBreadcrumb);
+                AddLoginCrumbs();
                 return View(model);
             }
 
-            var result = await UserService.SignInManager.PasswordSignInAsync(model.Nickname, model.Password, model.RememberMe, false);
+            var result = await EntityService.SignInManager.PasswordSignInAsync(model.Nickname, model.Password, model.RememberMe, false);
 
             if (result.Succeeded)
             {
-                AddBreadcrumbs(homeBreadcrumb, loginBreadcrumb);
+                AddLoginCrumbs();
                 return !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) ? Redirect(returnUrl) : RedirectToAction("Index", "Home");
             }
 
             ModelState.AddModelError(string.Empty, "Incorrect login or/and password");
-            AddBreadcrumbs(homeBreadcrumb, loginBreadcrumb);
+            AddLoginCrumbs();
             return View(model);
         }
 
+        /// <summary>
+        /// Logs out user with authentication cookies removing 
+        /// </summary>
+        /// <returns>Index action of Home controller</returns>
         [HttpGet, HttpPost]
         public async Task<IActionResult> Logout()
         {
-            // удаляем аутентификационные куки
-            await UserService.SignInManager.SignOutAsync();
+            await EntityService.SignInManager.SignOutAsync();
 
-            AddBreadcrumbs(homeBreadcrumb, logoutBreadcrumb);
+            AddLogoutCrumbs();
 
             return RedirectToAction("Index", "Home");
         }
@@ -410,12 +204,12 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
                 return NotFound();
             }
 
-            var activatedOn = DateTime.UtcNow; //TODO: использовать часовой пояс пользователя
+            var activatedOn = DateTime.UtcNow; //TODO: use User's time zone
             var lastUntil = activatedOn.Date.AddDays(subscription.Duration + 1);
 
             subscription.LastUntil = lastUntil;
 
-            AddBreadcrumbs(homeBreadcrumb, subscriptionsBreadcrumb, buySubscriptionBreadcrumb);
+            AddBuySubscriptionCrumbs();
 
             return View(subscription);
         }
@@ -426,15 +220,15 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
         {
             try
             {
-                var user = UserService.Read(User.Identity.Name);
-                UserService.AddSubscription(user.Nickname, subscriptionId);
+                var user = EntityService.Read(User.Identity.Name);
+                EntityService.AddSubscription(user.Nickname, subscriptionId);
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
             }
 
-            AddBreadcrumbs(homeBreadcrumb, subscriptionsBreadcrumb, buySubscriptionBreadcrumb);
+            AddBuySubscriptionCrumbs();
 
             return RedirectToAction("Index", "Subscriptions");
         }
@@ -454,7 +248,7 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
                 return NotFound();
             }
 
-            AddBreadcrumbs(homeBreadcrumb, subscriptionsBreadcrumb, cancelSubscriptionBreadcrumb);
+            AddCancelSubscriptionCrumbs();
 
             return View(subscription);
         }
@@ -465,22 +259,84 @@ namespace KVA.Cinema.Controllers    //TODO: replace NotFound()
         {
             try
             {
-                var user = UserService.Read(User.Identity.Name);
-                UserService.RemoveSubscription(user.Nickname, subscriptionId);
+                var user = EntityService.Read(User.Identity.Name);
+                EntityService.RemoveSubscription(user.Nickname, subscriptionId);
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
             }
 
-            AddBreadcrumbs(homeBreadcrumb, subscriptionsBreadcrumb, cancelSubscriptionBreadcrumb);
+            AddCancelSubscriptionCrumbs();
 
             return RedirectToAction("Index", "Subscriptions");
         }
 
-        private void AddBreadcrumbs(params Breadcrumb[] breadcrumbs)
+        protected override UserEditViewModel MapToEditViewModel(UserDisplayViewModel displayViewModel)
         {
-            ViewBag.Breadcrumbs = new List<Breadcrumb>(breadcrumbs);
+            return new UserEditViewModel()
+            {
+                Id = displayViewModel.Id,
+                FirstName = displayViewModel.FirstName,
+                LastName = displayViewModel.LastName,
+                Nickname = displayViewModel.Nickname,
+                BirthDate = displayViewModel.BirthDate,
+                Email = displayViewModel.Email
+            };
+        }
+
+        protected override IEnumerable<UserDisplayViewModel> GetFilterResult(IEnumerable<UserDisplayViewModel> users, string query)
+        {
+            query = query.ToLower();
+
+            return users.Where(x => x.Nickname.ToLower().Contains(query)
+                                                   || x.FirstName.ToLower().Contains(query)
+                                                   || x.LastName.ToLower().Contains(query));
+        }
+
+        protected override IEnumerable<UserDisplayViewModel> Sort(IEnumerable<UserDisplayViewModel> users, string sortColumn, bool isSortDescending)
+        {
+            if (string.IsNullOrWhiteSpace(sortColumn)
+                || !Enum.TryParse(sortColumn, out UserSort parsedSortColumn))
+            {
+                parsedSortColumn = UserSort.Nickname;
+            }
+
+            switch (parsedSortColumn)
+            {
+                case UserSort.Nickname:
+                    return isSortDescending ? users.OrderByDescending(s => s.Nickname) : users.OrderBy(s => s.Nickname);
+                case UserSort.FirstName:
+                    return isSortDescending ? users.OrderByDescending(s => s.FirstName) : users.OrderBy(s => s.FirstName);
+                case UserSort.LastName:
+                    return isSortDescending ? users.OrderByDescending(s => s.LastName) : users.OrderBy(s => s.LastName);
+                case UserSort.BirthDate:
+                    return isSortDescending ? users.OrderByDescending(s => s.BirthDate) : users.OrderBy(s => s.BirthDate);
+                case UserSort.Email:
+                    return isSortDescending ? users.OrderByDescending(s => s.Email) : users.OrderBy(s => s.Email);
+                default:
+                    return users.OrderBy(s => s.Nickname);
+            }
+        }
+
+        protected void AddLoginCrumbs()
+        {
+            AddBreadcrumbs(homeBreadcrumb, loginBreadcrumb);
+        }
+
+        protected void AddLogoutCrumbs()
+        {
+            AddBreadcrumbs(homeBreadcrumb, logoutBreadcrumb);
+        }
+
+        protected void AddBuySubscriptionCrumbs()
+        {
+            AddBreadcrumbs(homeBreadcrumb, subscriptionsBreadcrumb, buySubscriptionBreadcrumb);
+        }
+
+        protected void AddCancelSubscriptionCrumbs()
+        {
+            AddBreadcrumbs(homeBreadcrumb, subscriptionsBreadcrumb, buySubscriptionBreadcrumb);
         }
     }
 }

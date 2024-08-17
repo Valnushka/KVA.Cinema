@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace KVA.Cinema.ViewModels
 {
-    public class GenreEditViewModel
+    public class GenreEditViewModel : IViewModel
     {
         public Guid Id { get; set; }
 

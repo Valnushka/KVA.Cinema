@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace KVA.Cinema.ViewModels
 {
-    public class TagDisplayViewModel
+    public class TagDisplayViewModel : IViewModel
     {
         public Guid Id { get; set; }
 

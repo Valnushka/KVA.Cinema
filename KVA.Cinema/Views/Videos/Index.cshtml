@@ -20,7 +20,9 @@
 {
     <div>
         <p>
-            Find by name: <input type="text" name="SearchString" value=@ViewBag.CurrentFilter />
+            Find by name:
+            <input type="text" name="SearchString" value=@ViewBag.CurrentFilter />
+            <input type="hidden" name="pageNumber" value="1" />
             <input type="submit" value="Search" class="btn btn-light" /> |
             @Html.ActionLink("Reset filters", "Index", "Videos")
         </p>
@@ -35,40 +37,40 @@
             </th>
             <th>
                 @Html.ActionLink(
-                    ViewBag.SortingField == VideoSort.Name
-                    ? $"Title {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    ViewBag.SortColumn == VideoSort.Name.ToString()
+                    ? $"Title {(ViewBag.IsSortDescending ? "▾" : "▴")}"
                     : "Title",
                     "Index",
                     new
                     {
-                        sortingField = VideoSort.Name,
-                        isSortDescending = (ViewBag.SortingField == VideoSort.Name && !ViewBag.SortDescending),
+                        sortColumn = VideoSort.Name.ToString(),
+                        isSortDescending = (ViewBag.SortColumn == VideoSort.Name.ToString() && !ViewBag.IsSortDescending),
                         searchString = ViewBag.CurrentFilter
                     })
             </th>
             <th>
                 @Html.ActionLink(
-                    ViewBag.SortingField == VideoSort.ReleasedIn
-                    ? $"Released in {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    ViewBag.SortColumn == VideoSort.ReleasedIn.ToString()
+                    ? $"Released in {(ViewBag.IsSortDescending ? "▾" : "▴")}"
                     : "Released in",
                     "Index",
                     new
                     {
-                        sortingField = VideoSort.ReleasedIn,
-                        isSortDescending = (ViewBag.SortingField == VideoSort.ReleasedIn && !ViewBag.SortDescending),
+                        sortColumn = VideoSort.ReleasedIn.ToString(),
+                        isSortDescending = (ViewBag.SortColumn == VideoSort.ReleasedIn.ToString() && !ViewBag.IsSortDescending),
                         searchString = ViewBag.CurrentFilter
                     })
             </th>
             <th>
                 @Html.ActionLink(
-                    ViewBag.SortingField == VideoSort.Language
-                    ? $"Language {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    ViewBag.SortColumn == VideoSort.Language.ToString()
+                    ? $"Language {(ViewBag.IsSortDescending ? "▾" : "▴")}"
                     : "Language",
                     "Index",
                     new
                     {
-                        sortingField = VideoSort.Language,
-                        isSortDescending = (ViewBag.SortingField == VideoSort.Language && !ViewBag.SortDescending),
+                        sortColumn = VideoSort.Language.ToString(),
+                        isSortDescending = (ViewBag.SortColumn == VideoSort.Language.ToString() && !ViewBag.IsSortDescending),
                         searchString = ViewBag.CurrentFilter
                     })
             </th>
@@ -140,7 +142,8 @@
                 {
                     pageNumber = 1,
                     searchString = ViewBag.CurrentFilter,
-                    sortingField = ViewBag.SortingField
+                    sortColumn = ViewBag.SortColumn,
+                    isSortDescending = ViewBag.IsSortDescending
                 },
                 new { @class = $"btn btn-light { prevDisabled }" })
 
@@ -149,7 +152,8 @@
                  {
                      pageNumber = Model.PageIndex - 1,
                      searchString = ViewBag.CurrentFilter,
-                     sortingField = ViewBag.SortingField
+                     sortColumn = ViewBag.SortColumn,
+                     isSortDescending = ViewBag.IsSortDescending
                  },
                  new { @class = $"btn btn-light { prevDisabled }" })
 
@@ -158,7 +162,8 @@
                  {
                      pageNumber = Model.PageIndex + 1,
                      searchString = ViewBag.CurrentFilter,
-                     sortingField = ViewBag.SortingField
+                     sortColumn = ViewBag.SortColumn,
+                     isSortDescending = ViewBag.IsSortDescending
                  },
                  new { @class = $"btn btn-light { nextDisabled }" })
 
@@ -167,7 +172,8 @@
                  {
                      pageNumber = Model.PagesTotal,
                      searchString = ViewBag.CurrentFilter,
-                     sortingField = ViewBag.SortingField
+                     sortColumn = ViewBag.SortColumn,
+                     isSortDescending = ViewBag.IsSortDescending
                  },
                  new { @class = $"btn btn-light { nextDisabled }" })
 

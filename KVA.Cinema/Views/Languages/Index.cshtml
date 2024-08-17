@@ -20,7 +20,9 @@
 {
     <div>
         <p>
-            Find by name: <input type="text" name="SearchString" value=@ViewBag.CurrentFilter />
+            Find by name:
+            <input type="text" name="SearchString" value=@ViewBag.CurrentFilter />
+            <input type="hidden" name="pageNumber" value="1" />
             <input type="submit" value="Search" class="btn btn-light" /> |
             @Html.ActionLink("Reset filters", "Index", "Languages")
         </p>
@@ -32,8 +34,8 @@
         <tr>
             <th>
                 @Html.ActionLink(
-                    ViewBag.SortingField == LanguageSort.Name
-                    ? $"Name {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    ViewBag.SortColumn == LanguageSort.Name.ToString()
+                    ? $"Name {(ViewBag.IsSortDescending ? "▾" : "▴")}"
                     : "Name",
                     "Index",
                     new
@@ -81,7 +83,8 @@
                 {
                     pageNumber = 1,
                     searchString = ViewBag.CurrentFilter,
-                    sortingField = ViewBag.SortingField
+                    sortColumn = ViewBag.SortColumn,
+                    isSortDescending = ViewBag.IsSortDescending
                 },
                 new { @class = $"btn btn-light { prevDisabled }" })
 
@@ -90,7 +93,8 @@
                  {
                      pageNumber = Model.PageIndex - 1,
                      searchString = ViewBag.CurrentFilter,
-                     sortingField = ViewBag.SortingField
+                     sortColumn = ViewBag.SortColumn,
+                     isSortDescending = ViewBag.IsSortDescending
                  },
                  new { @class = $"btn btn-light { prevDisabled }" })
 
@@ -99,7 +103,8 @@
                  {
                      pageNumber = Model.PageIndex + 1,
                      searchString = ViewBag.CurrentFilter,
-                     sortingField = ViewBag.SortingField
+                     sortColumn = ViewBag.SortColumn,
+                     isSortDescending = ViewBag.IsSortDescending
                  },
                  new { @class = $"btn btn-light { nextDisabled }" })
 
@@ -108,7 +113,8 @@
                  {
                      pageNumber = Model.PagesTotal,
                      searchString = ViewBag.CurrentFilter,
-                     sortingField = ViewBag.SortingField
+                     sortColumn = ViewBag.SortColumn,
+                     isSortDescending = ViewBag.IsSortDescending
                  },
                  new { @class = $"btn btn-light { nextDisabled }" })
 

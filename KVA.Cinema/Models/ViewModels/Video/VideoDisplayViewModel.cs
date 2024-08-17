@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace KVA.Cinema.ViewModels
 {
-    public class VideoDisplayViewModel
+    public class VideoDisplayViewModel : IViewModel
     {
         public Guid Id { get; set; }
 
