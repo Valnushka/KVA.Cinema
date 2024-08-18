@@ -60,8 +60,8 @@
                     "Index",
                     new
                     {
-                        sortColumn = SubscriptionSort.Title.ToString(),
-                        isSortDescending = (ViewBag.SortColumn == SubscriptionSort.Title.ToString() && !ViewBag.IsSortDescending),
+                        sortColumn = SubscriptionSort.Cost.ToString(),
+                        isSortDescending = (ViewBag.SortColumn == SubscriptionSort.Cost.ToString() && !ViewBag.IsSortDescending),
                         searchString = ViewBag.CurrentFilter
                     })
             </th>
@@ -73,8 +73,8 @@
                     "Index",
                     new
                     {
-                        sortColumn = SubscriptionSort.Title.ToString(),
-                        isSortDescending = (ViewBag.SortColumn == SubscriptionSort.Title.ToString() && !ViewBag.IsSortDescending),
+                        sortColumn = SubscriptionSort.ReleasedIn.ToString(),
+                        isSortDescending = (ViewBag.SortColumn == SubscriptionSort.ReleasedIn.ToString() && !ViewBag.IsSortDescending),
                         searchString = ViewBag.CurrentFilter
                     })
             </th>
@@ -86,8 +86,8 @@
                     "Index",
                     new
                     {
-                        sortColumn = SubscriptionSort.Title.ToString(),
-                        isSortDescending = (ViewBag.SortColumn == SubscriptionSort.Title.ToString() && !ViewBag.IsSortDescending),
+                        sortColumn = SubscriptionSort.Duration.ToString(),
+                        isSortDescending = (ViewBag.SortColumn == SubscriptionSort.Duration.ToString() && !ViewBag.IsSortDescending),
                         searchString = ViewBag.CurrentFilter
                     })
             </th>
@@ -99,8 +99,8 @@
                     "Index",
                     new
                     {
-                        sortColumn = SubscriptionSort.Title.ToString(),
-                        isSortDescending = (ViewBag.SortColumn == SubscriptionSort.Title.ToString() && !ViewBag.IsSortDescending),
+                        sortColumn = SubscriptionSort.AvailableUntil.ToString(),
+                        isSortDescending = (ViewBag.SortColumn == SubscriptionSort.AvailableUntil.ToString() && !ViewBag.IsSortDescending),
                         searchString = ViewBag.CurrentFilter
                     })
             </th>
@@ -112,8 +112,8 @@
                     "Index",
                     new
                     {
-                        sortColumn = SubscriptionSort.Title.ToString(),
-                        isSortDescending = (ViewBag.SortColumn == SubscriptionSort.Title.ToString() && !ViewBag.IsSortDescending),
+                        sortColumn = SubscriptionSort.Level.ToString(),
+                        isSortDescending = (ViewBag.SortColumn == SubscriptionSort.Level.ToString() && !ViewBag.IsSortDescending),
                         searchString = ViewBag.CurrentFilter
                     })
             </th>
@@ -178,50 +178,7 @@
     </tbody>
 </table>
 
-@{
-    var prevDisabled = !Model.HasPreviousPage() ? "disabled" : "";
-    var nextDisabled = !Model.HasNextPage() ? "disabled" : "";
-}
-
-@Html.ActionLink("«", "Index", "Subscriptions",
-                new
-                {
-                    pageNumber = 1,
-                    searchString = ViewBag.CurrentFilter,
-                    sortColumn = ViewBag.SortColumn,
-                    isSortDescending = ViewBag.IsSortDescending
-                },
-                new { @class = $"btn btn-light { prevDisabled }" })
-
-@Html.ActionLink("<", "Index", "Subscriptions",
-                 new
-                 {
-                     pageNumber = Model.PageIndex - 1,
-                     searchString = ViewBag.CurrentFilter,
-                     sortColumn = ViewBag.SortColumn,
-                     isSortDescending = ViewBag.IsSortDescending
-                 },
-                 new { @class = $"btn btn-light { prevDisabled }" })
-
-@Html.ActionLink(">", "Index", "Subscriptions",
-                 new
-                 {
-                     pageNumber = Model.PageIndex + 1,
-                     searchString = ViewBag.CurrentFilter,
-                     sortColumn = ViewBag.SortColumn,
-                     isSortDescending = ViewBag.IsSortDescending
-                 },
-                 new { @class = $"btn btn-light { nextDisabled }" })
-
-@Html.ActionLink("»", "Index", "Subscriptions",
-                 new
-                 {
-                     pageNumber = Model.PagesTotal,
-                     searchString = ViewBag.CurrentFilter,
-                     sortColumn = ViewBag.SortColumn,
-                     isSortDescending = ViewBag.IsSortDescending
-                 },
-                 new { @class = $"btn btn-light { nextDisabled }" })
+@await Html.PartialAsync("_Pagination");
 
 @section Scripts
 {

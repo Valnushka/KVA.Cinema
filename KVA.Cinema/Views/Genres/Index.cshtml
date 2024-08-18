@@ -72,50 +72,7 @@
     </tbody>
 </table>
 
-@{
-    var prevDisabled = !Model.HasPreviousPage() ? "disabled" : "";
-    var nextDisabled = !Model.HasNextPage() ? "disabled" : "";
-}
-
-@Html.ActionLink("«", "Index", "Genres",
-                new
-                {
-                    pageNumber = 1,
-                    searchString = ViewBag.CurrentFilter,
-                    sortColumn = ViewBag.SortColumn,
-                    isSortDescending = ViewBag.IsSortDescending
-                },
-                new { @class = $"btn btn-light { prevDisabled }" })
-
-@Html.ActionLink("<", "Index", "Genres",
-                 new
-                 {
-                     pageNumber = Model.PageIndex - 1,
-                     searchString = ViewBag.CurrentFilter,
-                     sortColumn = ViewBag.SortColumn,
-                     isSortDescending = ViewBag.IsSortDescending
-                 },
-                 new { @class = $"btn btn-light { prevDisabled }" })
-
-@Html.ActionLink(">", "Index", "Genres",
-                 new
-                 {
-                     pageNumber = Model.PageIndex + 1,
-                     searchString = ViewBag.CurrentFilter,
-                     sortColumn = ViewBag.SortColumn,
-                     isSortDescending = ViewBag.IsSortDescending
-                 },
-                 new { @class = $"btn btn-light { nextDisabled }" })
-
-@Html.ActionLink("»", "Index", "Genres",
-                 new
-                 {
-                     pageNumber = Model.PagesTotal,
-                     searchString = ViewBag.CurrentFilter,
-                     sortColumn = ViewBag.SortColumn,
-                     isSortDescending = ViewBag.IsSortDescending
-                 },
-                 new { @class = $"btn btn-light { nextDisabled }" })
+@await Html.PartialAsync("_Pagination");
 
 @section Scripts
 {
