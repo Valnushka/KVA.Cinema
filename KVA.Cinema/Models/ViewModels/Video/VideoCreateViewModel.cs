@@ -5,8 +5,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace KVA.Cinema.ViewModels
 {
-    public class VideoCreateViewModel
+    public class VideoCreateViewModel : IViewModel
     {
+        public Guid Id { get; set; }
+
         [Required(ErrorMessage = "Required field")]
         [StringLength(128, ErrorMessage = "Title length cannot be more than 128 symbols")]
         [Display(Name = "Title")]

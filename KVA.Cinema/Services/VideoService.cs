@@ -2,7 +2,6 @@
 using KVA.Cinema.Models;
 using KVA.Cinema.Entities;
 using KVA.Cinema.ViewModels;
-using KVA.Cinema.Utilities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +12,7 @@ using System.Linq;
 
 namespace KVA.Cinema.Services
 {
-    public class VideoService : IService<VideoCreateViewModel, VideoDisplayViewModel, VideoEditViewModel>
+    public class VideoService : BaseService<Video, VideoCreateViewModel, VideoDisplayViewModel, VideoEditViewModel>
     {
         /// <summary>
         /// Maximum length allowed for title
@@ -27,104 +26,22 @@ namespace KVA.Cinema.Services
         /// </summary>
         private const int MAX_PREVIEW_SIZE = 25_000_000; // 25 MB
 
-        private CinemaContext Context { get; }
-
         private IWebHostEnvironment HostEnvironment { get; }
 
-        public VideoService(CinemaContext db, IWebHostEnvironment hostEnvironment)
+        public VideoService(CinemaContext context, IWebHostEnvironment hostEnvironment) : base(context)
         {
-            Context = db;
             HostEnvironment = hostEnvironment;
         }
 
-        public IEnumerable<VideoCreateViewModel> Read()
+        public override void Create(VideoCreateViewModel videoData)
         {
-            List<Video> videos = Context.Videos.ToList();
-
-            return videos.Select(x => new VideoCreateViewModel()
+            if (videoData == default)
             {
-                Name = x.Title,
-                Description = x.Description,
-                Length = x.Length,
-                CountryId = x.CountryId,
-                ReleasedIn = x.ReleasedIn,
-                Views = x.Views,
-                PegiId = x.PegiId,
-                LanguageId = x.LanguageId,
-                DirectorId = x.DirectorId,
-                GenreIds = x.Genres.Select(x => x.Id),
-                TagIds = x.Tags.Select(x => x.Id),
-                TagsViewModels = x.Tags.Select(x => new ViewModels.TagDisplayViewModel() { Text = x.Text, Color = x.Color })
-            });
-        }
-
-        public VideoDisplayViewModel Read(Guid videoId)
-        {
-            var video = Context.Videos.FirstOrDefault(x => x.Id == videoId);
-
-            if (video == default)
-            {
-                throw new EntityNotFoundException($"Video with id \"{videoId}\" not found");
+                throw new ArgumentNullException(nameof(videoData), "No value");
             }
 
-            return MapToDisplayViewModel(video);
-        }
-
-        public IEnumerable<VideoDisplayViewModel> ReadAll()
-        {
-            return Context.Videos.Select(x => new VideoDisplayViewModel()
-            {
-                Id = x.Id,
-                Name = x.Title,
-                Description = x.Description,
-                Length = x.Length,
-                CountryId = x.CountryId,
-                ReleasedIn = x.ReleasedIn,
-                Views = x.Views,
-                PreviewFileName = x.Preview,
-                PegiId = x.PegiId,
-                LanguageId = x.LanguageId,
-                DirectorId = x.DirectorId,
-                CountryName = x.Country.Name,
-                PegiName = x.Pegi.Type.ToString() + "+",
-                LanguageName = x.Language.Name,
-                DirectorName = x.Director.Name,
-                Genres = x.Genres,
-                Tags = x.Tags,
-                TagViewModels = x.Tags.Select(x => new ViewModels.TagDisplayViewModel() { Text = x.Text, Color = x.Color })
-            }).ToList();
-        }
-
-        public void CreateAsync(VideoCreateViewModel videoData)
-        {
-            if (CheckUtilities.ContainsNullOrEmptyValue(videoData,
-                                                        videoData.Name,
-                                                        videoData.CountryId,
-                                                        videoData.ReleasedIn,
-                                                        videoData.PegiId,
-                                                        videoData.LanguageId,
-                                                        videoData.DirectorId,
-                                                        videoData.GenreIds))
-            {
-                throw new ArgumentNullException("One or more required fields have no value");
-            }
-
-            if (videoData.Name.Length > TITLE_LENGHT_MAX)
-            {
-                throw new ArgumentException($"Title length cannot be more than {TITLE_LENGHT_MAX} symbols");
-            }
-
-            if (videoData.ReleasedIn.ToUniversalTime() > DateTime.UtcNow)
-            {
-                throw new ArgumentException($"Only released video can be uploaded");
-            }
-
-            if (Context.Videos.FirstOrDefault(x => x.Title == videoData.Name && x.DirectorId == videoData.DirectorId) != default)
-            {
-                throw new DuplicatedEntityException($"Video with title \"{videoData.Name}\" by this director is already exist");
-            }
-
-            Guid videoId = Guid.NewGuid();
+            ValidateInput(videoData);
+            ValidateEntity(videoData);
 
             string previewNewName = null;
 
@@ -140,41 +57,19 @@ namespace KVA.Cinema.Services
                 previewNewName = SaveFile(videoData.Preview, uploadsFolder);
             }
 
-            var genres = Context.Genres.Where(x => videoData.GenreIds.Contains(x.Id)).ToList();
+            Video newVideo = MapToEntity(videoData);
 
-            var tags = new List<Tag>();
-
-            if (videoData.TagIds != null)
-            {
-                tags = Context.Tags.Where(x => videoData.TagIds.Contains(x.Id)).ToList();
-            }
-
-            Video newVideo = new Video()
-            {
-                Id = videoId,
-                Title = videoData.Name,
-                Description = videoData.Description,
-                Length = 1,
-                CountryId = videoData.CountryId,
-                ReleasedIn = videoData.ReleasedIn.ToUniversalTime(),
-                Views = 0,
-                Preview = previewNewName,
-                PegiId = videoData.PegiId,
-                LanguageId = videoData.LanguageId,
-                DirectorId = videoData.DirectorId,
-                Genres = genres,
-                Tags = tags
-            };
+            newVideo.Preview = previewNewName;
 
             Context.Videos.Add(newVideo);
             Context.SaveChanges();
         }
 
-        public void Delete(Guid videoId)
+        public override void Delete(Guid videoId)
         {
-            if (CheckUtilities.ContainsNullOrEmptyValue(videoId))
+            if (videoId == default)
             {
-                throw new ArgumentNullException("Video Id has no value");
+                throw new ArgumentException("No value", nameof(videoId));
             }
 
             Video video = Context.Videos.FirstOrDefault(x => x.Id == videoId);
@@ -191,52 +86,29 @@ namespace KVA.Cinema.Services
 
             if (preview != null)
             {
-                var previewFolderPath = Path.Combine(HostEnvironment.WebRootPath, POSTER_UPLOAD_PATH);
-                var previewFullPath = previewFolderPath + "\\" + preview;
-
-                File.Delete(previewFullPath);
+                DeletePreview(preview);
             }
         }
 
-        public void Update(Guid videoId, VideoEditViewModel newVideoData)
+        public override void Update(Guid videoId, VideoEditViewModel newVideoData)
         {
-            if (CheckUtilities.ContainsNullOrEmptyValue(videoId,
-                                                        newVideoData,
-                                                        newVideoData.Name,
-                                                        newVideoData.CountryId,
-                                                        newVideoData.ReleasedIn,
-                                                        newVideoData.PegiId,
-                                                        newVideoData.LanguageId,
-                                                        newVideoData.DirectorId,
-                                                        newVideoData.GenreIds))
+            if (videoId == default)
             {
-                throw new ArgumentNullException("One or more required fields have no value");
+                throw new ArgumentException("No value", nameof(videoId));
             }
+
+            if (newVideoData == default)
+            {
+                throw new ArgumentException("No value", nameof(newVideoData));
+            }
+
+            ValidateInput(newVideoData);
 
             Video video = Context.Videos.FirstOrDefault(x => x.Id == videoId);
 
             if (video == default)
             {
                 throw new EntityNotFoundException($"Video with id \"{videoId}\" not found");
-            }
-
-            if (newVideoData.Name.Length > TITLE_LENGHT_MAX)
-            {
-                throw new ArgumentException($"Title length cannot be more than {TITLE_LENGHT_MAX} symbols");
-            }
-
-            if (newVideoData.ReleasedIn.ToUniversalTime() > DateTime.UtcNow)
-            {
-                throw new ArgumentException($"Only released video can be uploaded");
-            }
-
-            Video duplicate = Context.Videos.FirstOrDefault(x =>
-                                                               x.Title == newVideoData.Name &&
-                                                               x.DirectorId == newVideoData.DirectorId &&
-                                                               x.Id != newVideoData.Id);
-            if (duplicate != default)
-            {
-                throw new DuplicatedEntityException($"Video with title \"{newVideoData.Name}\" by this director is already exist");
             }
 
             string newPreviewName = null;
@@ -255,35 +127,249 @@ namespace KVA.Cinema.Services
 
             var oldPreview = video.Preview;
 
-            if (oldPreview == null || newVideoData.IsResetPreviewButtonClicked || newPreviewName != null)
+            video.Preview = oldPreview == null || newVideoData.IsResetPreviewButtonClicked || newPreviewName != null ? newPreviewName : oldPreview;
+
+
+            UpdateFieldValues(video, newVideoData);
+
+            Context.SaveChanges();
+
+            if ((newVideoData.IsResetPreviewButtonClicked || newPreviewName != null) && oldPreview != null)
             {
-                video.Preview = newPreviewName;
+                DeletePreview(oldPreview);
             }
-            else
+        }
+
+        private string SaveFile(IFormFile file, string destinationFolderName)
+        {
+            if (file == null || string.IsNullOrWhiteSpace(destinationFolderName))
             {
-                video.Preview = oldPreview;
+                throw new ArgumentException("Null or empty argument");
             }
 
+            DirectoryInfo directoryInfo = new DirectoryInfo(destinationFolderName);
+
+            if (!directoryInfo.Exists)
+            {
+                directoryInfo.Create();
+            }
+
+            string fileNewName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+
+            string pathToFile = Path.Combine(destinationFolderName, fileNewName);
+
+            using (var stream = new FileStream(pathToFile, FileMode.Create))
+            {
+                file.CopyTo(stream);
+            }
+
+            return fileNewName;
+        }
+
+        protected override void ValidateInput(VideoCreateViewModel videoData)
+        {
+            if (string.IsNullOrWhiteSpace(videoData.Name))
+            {
+                throw new ArgumentException("Invalid argument", nameof(videoData.Name));
+            }
+
+            Guid[] guidFields = new Guid[]
+            {
+                videoData.CountryId,
+                videoData.PegiId,
+                videoData.LanguageId,
+                videoData.DirectorId,
+
+            };
+
+            foreach (var id in guidFields)
+            {
+                if (id == default)
+                {
+                    throw new ArgumentException("Argument has no value");
+                }
+            }
+
+            foreach (var id in videoData.GenreIds)
+            {
+                if (id == default)
+                {
+                    throw new ArgumentException("Argument has no value");
+                }
+            }
+
+            if (videoData.ReleasedIn == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(videoData.ReleasedIn));
+            }
+        }
+
+        protected override void ValidateInput(VideoEditViewModel videoNewData)
+        {
+            if (string.IsNullOrWhiteSpace(videoNewData.Name))
+            {
+                throw new ArgumentException("Invalid argument", nameof(videoNewData.Name));
+            }
+
+            Guid[] guidFields = new Guid[]
+            {
+                videoNewData.CountryId,
+                videoNewData.PegiId,
+                videoNewData.LanguageId,
+                videoNewData.DirectorId,
+
+            };
+
+            foreach (var id in guidFields)
+            {
+                if (id == default)
+                {
+                    throw new ArgumentException("Argument has no value");
+                }
+            }
+
+            foreach (var id in videoNewData.GenreIds)
+            {
+                if (id == default)
+                {
+                    throw new ArgumentException("Argument has no value");
+                }
+            }
+
+            if (videoNewData.ReleasedIn == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(videoNewData.ReleasedIn));
+            }
+        }
+
+        protected override void ValidateEntity(VideoCreateViewModel videoData)
+        {
+            if (videoData.Name.Length > TITLE_LENGHT_MAX)
+            {
+                throw new ArgumentException($"Title length cannot be more than {TITLE_LENGHT_MAX} symbols");
+            }
+
+            if (videoData.ReleasedIn.ToUniversalTime() > DateTime.UtcNow)
+            {
+                throw new ArgumentException($"Only released video can be uploaded");
+            }
+
+            if (Context.Videos.FirstOrDefault(x => x.Title == videoData.Name && x.DirectorId == videoData.DirectorId) != default)
+            {
+                throw new DuplicatedEntityException($"Video with title \"{videoData.Name}\" by this director is already exist");
+            }
+        }
+
+        protected override void ValidateEntity(VideoEditViewModel newVideoData)
+        {
+            if (newVideoData.Name.Length > TITLE_LENGHT_MAX)
+            {
+                throw new ArgumentException($"Title length cannot be more than {TITLE_LENGHT_MAX} symbols");
+            }
+
+            if (newVideoData.ReleasedIn.ToUniversalTime() > DateTime.UtcNow)
+            {
+                throw new ArgumentException($"Only released video can be uploaded");
+            }
+
+            Video duplicate = Context.Videos.FirstOrDefault(x =>
+                                                               x.Title == newVideoData.Name &&
+                                                               x.DirectorId == newVideoData.DirectorId &&
+                                                               x.Id != newVideoData.Id);
+            if (duplicate != default)
+            {
+                throw new DuplicatedEntityException($"Video with title \"{newVideoData.Name}\" by this director is already exist");
+            }
+        }
+
+        protected override Video MapToEntity(VideoCreateViewModel videoData)
+        {
+            return new Video()
+            {
+                Id = Guid.NewGuid(),
+                Title = videoData.Name,
+                Description = videoData.Description,
+                Length = 1,
+                CountryId = videoData.CountryId,
+                ReleasedIn = videoData.ReleasedIn.ToUniversalTime(),
+                Views = 0,
+                PegiId = videoData.PegiId,
+                LanguageId = videoData.LanguageId,
+                DirectorId = videoData.DirectorId,
+                Genres = Context.Genres.Where(x => videoData.GenreIds.Contains(x.Id)).ToList(),
+                Tags = videoData.TagIds != null ? Context.Tags.Where(x => videoData.TagIds.Contains(x.Id)).ToList() : null
+            };
+        }
+
+        protected override VideoDisplayViewModel MapToDisplayViewModel(Video video)
+        {
+            return new VideoDisplayViewModel()
+            {
+                Id = video.Id,
+                Name = video.Title,
+                Description = video.Description,
+                Length = video.Length,
+                CountryId = video.CountryId,
+                ReleasedIn = video.ReleasedIn,
+                Views = video.Views,
+                PreviewFileName = video.Preview,
+                PegiId = video.PegiId,
+                LanguageId = video.LanguageId,
+                DirectorId = video.DirectorId,
+                CountryName = video.Country.Name,
+                PegiName = video.Pegi.Type.ToString() + "+",
+                LanguageName = video.Language.Name,
+                DirectorName = video.Director.Name,
+                Genres = video.Genres,
+                Tags = video.Tags,
+                TagViewModels = video.Tags.Select(x => new TagDisplayViewModel() { Text = x.Text, Color = x.Color })
+            };
+        }
+
+        protected override void UpdateFieldValues(Video video, VideoEditViewModel newVideoData)
+        {
+            video.Title = newVideoData.Name;
+            video.Description = newVideoData.Description;
+            video.Length = 1;
+            video.CountryId = newVideoData.CountryId;
+            video.ReleasedIn = newVideoData.ReleasedIn.ToUniversalTime();
+            video.Views = video.Views;
+            video.PegiId = newVideoData.PegiId;
+            video.LanguageId = newVideoData.LanguageId;
+            video.DirectorId = newVideoData.DirectorId;
+
+            UpdateRelatedGenres(video, newVideoData);
+            UpdateRelatedTags(video, newVideoData);
+        }
+
+        private void UpdateRelatedGenres(Video video, VideoEditViewModel newVideoData)
+        {
             newVideoData.GenreIds ??= Enumerable.Empty<Guid>();
-            newVideoData.TagIds ??= Enumerable.Empty<Guid>();
 
             List<Genre> genresOldList = video.Genres.ToList();
 
-            var contextGenreIds = genresOldList.Select(x => x.Id);
             var genreRecordsToDelete = genresOldList.Where(x => !newVideoData.GenreIds.Contains(x.Id));
-            var genreIdsToAdd = newVideoData.GenreIds.Where(x => !contextGenreIds.Contains(x));
-
-            IEnumerable<Genre> genresToAdd = Context.Genres.Where(x => genreIdsToAdd.Contains(x.Id));
 
             foreach (var record in genreRecordsToDelete)
             {
                 video.Genres.Remove(record);
             }
 
+            var contextGenreIds = genresOldList.Select(x => x.Id);
+
+            var genreIdsToAdd = newVideoData.GenreIds.Where(x => !contextGenreIds.Contains(x));
+
+            IEnumerable<Genre> genresToAdd = Context.Genres.Where(x => genreIdsToAdd.Contains(x.Id));
+
             foreach (var genre in genresToAdd)
             {
                 video.Genres.Add(genre);
             }
+        }
+
+        private void UpdateRelatedTags(Video video, VideoEditViewModel newVideoData)
+        {
+            newVideoData.TagIds ??= Enumerable.Empty<Guid>();
 
             List<Tag> tagsOldList = video.Tags.ToList();
 
@@ -302,72 +388,14 @@ namespace KVA.Cinema.Services
             {
                 video.Tags.Add(tag);
             }
-
-            video.Title = newVideoData.Name;
-            video.Description = newVideoData.Description;
-            video.Length = 1;
-            video.CountryId = newVideoData.CountryId;
-            video.ReleasedIn = newVideoData.ReleasedIn.ToUniversalTime();
-            video.Views = video.Views;
-            video.PegiId = newVideoData.PegiId;
-            video.LanguageId = newVideoData.LanguageId;
-            video.DirectorId = newVideoData.DirectorId;
-
-            Context.SaveChanges();
-
-            if ((newVideoData.IsResetPreviewButtonClicked || newPreviewName != null) && oldPreview != null)
-            {
-                var previewFolderPath = Path.Combine(HostEnvironment.WebRootPath, POSTER_UPLOAD_PATH);
-                var oldPreviewFullPath = previewFolderPath + "\\" + oldPreview;
-
-                File.Delete(oldPreviewFullPath);
-            }
         }
 
-        private string SaveFile(IFormFile file, string destinationFolderName)
+        private void DeletePreview(string preview)
         {
-            if (file == null || string.IsNullOrWhiteSpace(destinationFolderName))
-            {
-                throw new ArgumentNullException("Invalid argument");
-            }
+            var previewFolderPath = Path.Combine(HostEnvironment.WebRootPath, POSTER_UPLOAD_PATH);
+            var previewFullPath = previewFolderPath + "\\" + preview;
 
-            DirectoryInfo drInfo = new DirectoryInfo(destinationFolderName);
-
-            if (!drInfo.Exists)
-            {
-                drInfo.Create();
-            }
-
-            string fileNewName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-
-            string pathToFile = Path.Combine(destinationFolderName, fileNewName);
-
-            using (var stream = new FileStream(pathToFile, FileMode.Create))
-            {
-                file.CopyTo(stream);
-            }
-
-            return fileNewName;
-        }
-
-        private VideoDisplayViewModel MapToDisplayViewModel(Video video)
-        {
-            return new VideoDisplayViewModel()
-            {
-                Id = video.Id,
-                Name = video.Title,
-                Description = video.Description,
-                Length = video.Length,
-                CountryName = video.Country.Name,
-                ReleasedIn = video.ReleasedIn,
-                Views = video.Views,
-                PegiName = video.Pegi.Type.ToString() + "+",
-                LanguageName = video.Language.Name,
-                DirectorName = video.Director.Name,
-                Genres = video.Genres,
-                Tags = video.Tags,
-                TagViewModels = video.Tags.Select(x => new ViewModels.TagDisplayViewModel() { Text = x.Text, Color = x.Color })
-            };
+            File.Delete(previewFullPath);
         }
     }
 }

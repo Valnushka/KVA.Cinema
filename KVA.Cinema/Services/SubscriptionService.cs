@@ -2,109 +2,25 @@
 using KVA.Cinema.Models;
 using KVA.Cinema.Entities;
 using KVA.Cinema.ViewModels;
-using KVA.Cinema.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace KVA.Cinema.Services
 {
-    public class SubscriptionService : IService<SubscriptionCreateViewModel, SubscriptionDisplayViewModel, SubscriptionEditViewModel>
+    public class SubscriptionService : BaseService<Subscription, SubscriptionCreateViewModel, SubscriptionDisplayViewModel, SubscriptionEditViewModel>
     {
         private const int DURATION_DAYS_MIN = 1;
         private const int DURATION_DAYS_MAX = 366;
 
-        public CinemaContext Context { get; }
+        public SubscriptionService(CinemaContext context) : base(context) { }
 
-        public SubscriptionService(CinemaContext db)
+        public override void Create(SubscriptionCreateViewModel subscriptionData)
         {
-            Context = db;
-        }
+            ValidateInput(subscriptionData);
+            ValidateEntity(subscriptionData);
 
-        public IEnumerable<SubscriptionCreateViewModel> Read()
-        {
-            return Context.Subscriptions.Select(x => new SubscriptionCreateViewModel()
-            {
-                Id = x.Id,
-                Title = x.Title,
-                Description = x.Description,
-                Cost = x.Cost,
-                LevelId = x.LevelId,
-                ReleasedIn = x.ReleasedIn,
-                Duration = x.Duration,
-                AvailableUntil = x.AvailableUntil,
-            }).ToList();
-        } //TODO: remove
-
-        public SubscriptionDisplayViewModel Read(Guid subscriptionId)
-        {
-            var subscription = Context.Subscriptions.FirstOrDefault(x => x.Id == subscriptionId);
-
-            if (subscription == default)
-            {
-                throw new EntityNotFoundException($"Subscription with id \"{subscriptionId}\" not found");
-            }
-
-            return MapToDisplayViewModel(subscription);
-        }
-
-        public IEnumerable<SubscriptionDisplayViewModel> ReadAll()
-        {
-            return Context.Subscriptions.Select(x => new SubscriptionDisplayViewModel()  //AutoMapper
-            {
-                Id = x.Id,
-                Title = x.Title,
-                Description = x.Description,
-                Cost = x.Cost,
-                LevelId = x.LevelId,
-                LevelName = x.Level.Title,
-                ReleasedIn = x.ReleasedIn,
-                Duration = x.Duration,
-                AvailableUntil = x.AvailableUntil,
-                VideosInSubscription = x.VideoInSubscriptions,
-                VideoNames = x.VideoInSubscriptions.Select(y => y.Video.Title)
-            }).ToList();
-        }
-
-        public void CreateAsync(SubscriptionCreateViewModel subscriptionData)
-        {
-            if (CheckUtilities.ContainsNullOrEmptyValue(subscriptionData.Title,
-                                                        subscriptionData.Description,
-                                                        subscriptionData.Cost,
-                                                        subscriptionData.LevelId,
-                                                        subscriptionData.ReleasedIn,
-                                                        subscriptionData.Duration,
-                                                        subscriptionData.AvailableUntil))
-            {
-                throw new ArgumentNullException("One or more parameters have no value");
-            }
-
-            if (subscriptionData.Duration < DURATION_DAYS_MIN)
-            {
-                throw new ArgumentException($"Duration cannot be less than {DURATION_DAYS_MIN} day(s)");
-            }
-
-            if (subscriptionData.Duration > DURATION_DAYS_MAX)
-            {
-                throw new ArgumentException($"Duration cannot be more than {DURATION_DAYS_MAX} day(s)");
-            }
-
-            if (Context.Subscriptions.FirstOrDefault(x => x.Title == subscriptionData.Title) != default)
-            {
-                throw new DuplicatedEntityException($"Subscription with title \"{subscriptionData.Title}\" is already exist");
-            }
-
-            Subscription newSubscription = new Subscription()
-            {
-                Id = Guid.NewGuid(),
-                Title = subscriptionData.Title,
-                Description = subscriptionData.Description,
-                Cost = subscriptionData.Cost,
-                LevelId = subscriptionData.LevelId,
-                ReleasedIn = subscriptionData.ReleasedIn,
-                Duration = subscriptionData.Duration,
-                AvailableUntil = subscriptionData.AvailableUntil
-            };
+            Subscription newSubscription = MapToEntity(subscriptionData);
 
             if (subscriptionData.VideoIds != null)
             {
@@ -128,59 +44,20 @@ namespace KVA.Cinema.Services
             Context.SaveChanges();
         }
 
-        public void Delete(Guid subscriptionId)
+        public override void Update(Guid subscriptionId, SubscriptionEditViewModel subscriptionNewData)
         {
-            if (CheckUtilities.ContainsNullOrEmptyValue(subscriptionId))
+            if (subscriptionId == default)
             {
-                throw new ArgumentNullException("Id has no value");
+                throw new ArgumentException($"Subscription with id \"{subscriptionId}\" not found");
             }
 
-            Subscription subscription = Context.Subscriptions.FirstOrDefault(x => x.Id == subscriptionId);
-
-            if (subscription == default)
-            {
-                throw new EntityNotFoundException($"Subscription with Id \"{subscriptionId}\" not found");
-            }
-
-            Context.Subscriptions.Remove(subscription);
-            Context.SaveChanges();
-        }
-
-        public void Update(Guid subscriptionId, SubscriptionEditViewModel subscriptionNewData)
-        {
-            if (CheckUtilities.ContainsNullOrEmptyValue(subscriptionId,
-                                                        subscriptionNewData.Title,
-                                                        subscriptionNewData.Description,
-                                                        subscriptionNewData.Cost,
-                                                        subscriptionNewData.LevelId,
-                                                        subscriptionNewData.ReleasedIn,
-                                                        subscriptionNewData.Duration,
-                                                        subscriptionNewData.AvailableUntil))
-            {
-
-                throw new ArgumentNullException("One or more parameters have no value");
-            }
+            ValidateInput(subscriptionNewData);
 
             Subscription subscription = Context.Subscriptions.FirstOrDefault(x => x.Id == subscriptionId);
 
             if (subscription == default)
             {
                 throw new EntityNotFoundException($"Subscription with id \"{subscriptionId}\" not found");
-            }
-
-            if (subscriptionNewData.Duration < DURATION_DAYS_MIN)
-            {
-                throw new ArgumentException($"Duration cannot be less than {DURATION_DAYS_MIN} day(s)");
-            }
-
-            if (subscriptionNewData.Duration > DURATION_DAYS_MAX)
-            {
-                throw new ArgumentException($"Duration cannot be more than {DURATION_DAYS_MAX} day(s)");
-            }
-
-            if (Context.Subscriptions.FirstOrDefault(x => x.Title == subscriptionNewData.Title && x.Id != subscriptionNewData.Id) != default)
-            {
-                throw new DuplicatedEntityException($"Subscription with title \"{subscriptionNewData.Title}\" is already exist");
             }
 
             List<VideoInSubscription> videoInSubscriptionList = Context.VideoInSubscriptions.Where(x => x.SubscriptionId == subscriptionNewData.Id).ToList();
@@ -206,18 +83,121 @@ namespace KVA.Cinema.Services
                 });
             }
 
-            subscription.Title = subscriptionNewData.Title;
-            subscription.Description = subscriptionNewData.Description;
-            subscription.Cost = subscriptionNewData.Cost;
-            subscription.LevelId = subscriptionNewData.LevelId;
-            subscription.ReleasedIn = subscriptionNewData.ReleasedIn;
-            subscription.Duration = subscriptionNewData.Duration;
-            subscription.AvailableUntil = subscriptionNewData.AvailableUntil;
-
             Context.SaveChanges();
         }
 
-        private SubscriptionDisplayViewModel MapToDisplayViewModel(Subscription subscription)
+        protected override void ValidateInput(SubscriptionCreateViewModel subscriptionData)
+        {
+            if (string.IsNullOrWhiteSpace(subscriptionData.Title))
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionData.Title));
+            }
+
+            if (string.IsNullOrWhiteSpace(subscriptionData.Description))
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionData.Description));
+            }
+
+            if (subscriptionData.Cost == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionData.Cost));
+            }
+
+            if (subscriptionData.Duration == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionData.Duration));
+            }
+
+            if (subscriptionData.LevelId == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionData.LevelId));
+            }
+
+            if (subscriptionData.ReleasedIn == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionData.ReleasedIn));
+            }
+
+            if (subscriptionData.AvailableUntil == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionData.AvailableUntil));
+            }
+        }
+
+        protected override void ValidateInput(SubscriptionEditViewModel subscriptionNewData)
+        {
+            if(string.IsNullOrWhiteSpace(subscriptionNewData.Title))
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionNewData.Title));
+            }
+
+            if (string.IsNullOrWhiteSpace(subscriptionNewData.Description))
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionNewData.Description));
+            }
+
+            if (subscriptionNewData.Cost == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionNewData.Cost));
+            }
+
+            if (subscriptionNewData.Duration == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionNewData.Duration));
+            }
+
+            if (subscriptionNewData.LevelId == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionNewData.LevelId));
+            }
+
+            if (subscriptionNewData.ReleasedIn == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionNewData.ReleasedIn));
+            }
+
+            if (subscriptionNewData.AvailableUntil == default)
+            {
+                throw new ArgumentException("Invalid argument", nameof(subscriptionNewData.AvailableUntil));
+            }
+        }
+
+        protected override void ValidateEntity(SubscriptionCreateViewModel subscriptionData)
+        {
+            ValidateDuration(subscriptionData.Duration);
+
+            if (Context.Subscriptions.FirstOrDefault(x => x.Title == subscriptionData.Title) != default)
+            {
+                throw new DuplicatedEntityException($"Subscription with title \"{subscriptionData.Title}\" is already exist");
+            }
+        }
+
+        protected override void ValidateEntity(SubscriptionEditViewModel subscriptionNewData)
+        {
+            ValidateDuration(subscriptionNewData.Duration);
+
+            if (Context.Subscriptions.FirstOrDefault(x => x.Title == subscriptionNewData.Title && x.Id != subscriptionNewData.Id) != default)
+            {
+                throw new DuplicatedEntityException($"Subscription with title \"{subscriptionNewData.Title}\" is already exist");
+            }
+        }
+
+        protected override Subscription MapToEntity(SubscriptionCreateViewModel subscriptionData)
+        {
+            return new Subscription()
+            {
+                Id = Guid.NewGuid(),
+                Title = subscriptionData.Title,
+                Description = subscriptionData.Description,
+                Cost = subscriptionData.Cost,
+                LevelId = subscriptionData.LevelId,
+                ReleasedIn = subscriptionData.ReleasedIn,
+                Duration = subscriptionData.Duration,
+                AvailableUntil = subscriptionData.AvailableUntil
+            };
+        }
+
+        protected override SubscriptionDisplayViewModel MapToDisplayViewModel(Subscription subscription)
         {
             return new SubscriptionDisplayViewModel()
             {
@@ -233,6 +213,30 @@ namespace KVA.Cinema.Services
                 VideosInSubscription = subscription.VideoInSubscriptions,
                 VideoNames = subscription.VideoInSubscriptions.Select(y => y.Video.Title)
             };
+        }
+
+        protected override void UpdateFieldValues(Subscription subscription, SubscriptionEditViewModel subscriptionNewData)
+        {
+            subscription.Title = subscriptionNewData.Title;
+            subscription.Description = subscriptionNewData.Description;
+            subscription.Cost = subscriptionNewData.Cost;
+            subscription.LevelId = subscriptionNewData.LevelId;
+            subscription.ReleasedIn = subscriptionNewData.ReleasedIn;
+            subscription.Duration = subscriptionNewData.Duration;
+            subscription.AvailableUntil = subscriptionNewData.AvailableUntil;
+        }
+
+        private void ValidateDuration(int durationInDays)
+        {
+            if (durationInDays < DURATION_DAYS_MIN)
+            {
+                throw new ArgumentException($"Duration cannot be less than {DURATION_DAYS_MIN} day(s)");
+            }
+
+            if (durationInDays > DURATION_DAYS_MAX)
+            {
+                throw new ArgumentException($"Duration cannot be more than {DURATION_DAYS_MAX} day(s)");
+            }
         }
     }
 }

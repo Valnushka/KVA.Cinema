@@ -1,9 +1,10 @@
-﻿using System;
+﻿using KVA.Cinema.Models.Entities;
+using System;
 using System.Collections.Generic;
 
 namespace KVA.Cinema.Entities
 {
-    public class Director
+    public class Director : IEntity
     {
         public Guid Id { get; set; }
 

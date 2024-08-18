@@ -5,7 +5,7 @@ using KVA.Cinema.Entities;
 
 namespace KVA.Cinema.ViewModels
 {
-    public class SubscriptionDisplayViewModel
+    public class SubscriptionDisplayViewModel : IViewModel
     {
         public Guid Id { get; set; }
 

@@ -8,11 +8,11 @@ namespace KVA.Cinema.Services
         where TEntityDisplayViewModel : class
         where TEntityEditViewModel : class
     {
-        IEnumerable<TEntityCreateViewModel> Read();
+        void Create(TEntityCreateViewModel entityData);
+
+        TEntityDisplayViewModel Read(Guid entityId);
 
         IEnumerable<TEntityDisplayViewModel> ReadAll();
-
-        void CreateAsync(TEntityCreateViewModel entityData);
 
         void Update(Guid id, TEntityEditViewModel newEntityData);
 

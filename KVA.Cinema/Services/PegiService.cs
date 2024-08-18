@@ -2,57 +2,45 @@
 using KVA.Cinema.Models;
 using KVA.Cinema.Entities;
 using KVA.Cinema.ViewModels;
-using KVA.Cinema.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace KVA.Cinema.Services
 {
-    public class PegiService : IService<PegiCreateViewModel, PegiDisplayViewModel, PegiEditViewModel>
+    public class PegiService : BaseService<Pegi, PegiCreateViewModel, PegiDisplayViewModel, PegiEditViewModel>
     {
         private const int AGE_MIN = 0;
 
         private const int AGE_MAX = 99;
 
-        private CinemaContext Context { get; }
+        public PegiService(CinemaContext context) : base(context) { }
 
-        public PegiService(CinemaContext db)
+        protected override PegiDisplayViewModel MapToDisplayViewModel(Pegi pegi)
         {
-            Context = db;
+            return new PegiDisplayViewModel()
+            {
+                Id = pegi.Id,
+                Type = pegi.Type
+            };
         }
 
-        public IEnumerable<PegiCreateViewModel> Read()
+        protected override void ValidateInput(PegiCreateViewModel pegiData)
         {
-            return Context.Pegis.Select(x => new PegiCreateViewModel()
+            if (pegiData.Type == default)
             {
-                Id = x.Id,
-                Type = x.Type
-            }).ToList();
-        }
-
-        public PegiDisplayViewModel Read(Guid pegiId)
-        {
-            var pegi = Context.Pegis.FirstOrDefault(x => x.Id == pegiId);
-
-            if (pegi == default)
-            {
-                throw new EntityNotFoundException($"Pegi with id \"{pegiId}\" not found");
+                throw new ArgumentException("No value", nameof(pegiData.Type));
             }
-
-            return MapToDisplayViewModel(pegi);
         }
 
-        public IEnumerable<PegiDisplayViewModel> ReadAll()
+        protected override void ValidateInput(PegiEditViewModel pegiNewData)
         {
-            return Context.Pegis.Select(x => new PegiDisplayViewModel()
+            if (pegiNewData.Type == default)
             {
-                Id = x.Id,
-                Type = x.Type
-            }).ToList();
+                throw new ArgumentException("No value", nameof(pegiNewData.Type));
+            }
         }
 
-        public void CreateAsync(PegiCreateViewModel pegiData)
+        protected override void ValidateEntity(PegiCreateViewModel pegiData)
         {
             if (pegiData.Type is > AGE_MAX or < AGE_MIN)
             {
@@ -63,49 +51,10 @@ namespace KVA.Cinema.Services
             {
                 throw new DuplicatedEntityException($"PEGI \"{pegiData.Type}+\" is already exist");
             }
-
-            Pegi newPegi = new Pegi()
-            {
-                Id = Guid.NewGuid(),
-                Type = pegiData.Type
-            };
-
-            Context.Pegis.Add(newPegi);
-            Context.SaveChanges();
         }
 
-        public void Delete(Guid pegiId)
+        protected override void ValidateEntity(PegiEditViewModel pegiNewData)
         {
-            if (CheckUtilities.ContainsNullOrEmptyValue(pegiId))
-            {
-                throw new ArgumentNullException("PEGI Id has no value");
-            }
-
-            Pegi pegi = Context.Pegis.FirstOrDefault(x => x.Id == pegiId);
-
-            if (pegi == default)
-            {
-                throw new EntityNotFoundException($"PEGI with Id \"{pegiId}\" not found");
-            }
-
-            Context.Pegis.Remove(pegi);
-            Context.SaveChanges();
-        }
-
-        public void Update(Guid pegiId, PegiEditViewModel pegiNewData)
-        {
-            if (CheckUtilities.ContainsNullOrEmptyValue(pegiId))
-            {
-                throw new ArgumentNullException("PEGI id has no value");
-            }
-
-            Pegi pegi = Context.Pegis.FirstOrDefault(x => x.Id == pegiId);
-
-            if (pegi == default)
-            {
-                throw new EntityNotFoundException($"PEGI with id \"{pegiId}\" not found");
-            }
-
             if (pegiNewData.Type is > AGE_MAX or < AGE_MIN)
             {
                 throw new ArgumentException($"Value is not valid for age restriction");
@@ -115,19 +64,20 @@ namespace KVA.Cinema.Services
             {
                 throw new DuplicatedEntityException($"PEGI \"{pegiNewData.Type}+\" is already exist");
             }
-
-            pegi.Type = pegiNewData.Type;
-
-            Context.SaveChanges();
         }
 
-        private PegiDisplayViewModel MapToDisplayViewModel(Pegi pegi)
+        protected override Pegi MapToEntity(PegiCreateViewModel pegiData)
         {
-            return new PegiDisplayViewModel()
+            return new Pegi()
             {
-                Id = pegi.Id,
-                Type = pegi.Type
+                Id = Guid.NewGuid(),
+                Type = pegiData.Type
             };
+        }
+
+        protected override void UpdateFieldValues(Pegi pegi, PegiEditViewModel pegiNewData)
+        {
+            pegi.Type = pegiNewData.Type;
         }
     }
 }

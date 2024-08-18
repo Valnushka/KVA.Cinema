@@ -20,7 +20,9 @@
 {
     <div>
         <p>
-            Find by title: <input type="text" name="SearchString" value=@ViewBag.CurrentFilter />
+            Find by title:
+            <input type="text" name="SearchString" value=@ViewBag.CurrentFilter />
+            <input type="hidden" name="pageNumber" value="1" />
             <input type="submit" value="Search" class="btn btn-light" /> |
             @Html.ActionLink("Reset filters", "Index", "Subscriptions")
         </p>
@@ -36,14 +38,14 @@
             }
             <th>
                 @Html.ActionLink(
-                    ViewBag.SortingField == SubscriptionSort.Title
-                    ? $"Title {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    ViewBag.SortColumn == SubscriptionSort.Title.ToString()
+                    ? $"Title {(ViewBag.IsSortDescending ? "▾" : "▴")}"
                     : "Title",
                     "Index",
                     new
                     {
-                        sortingField = SubscriptionSort.Title,
-                        isSortDescending = (ViewBag.SortingField == SubscriptionSort.Title && !ViewBag.SortDescending),
+                        sortColumn = SubscriptionSort.Title.ToString(),
+                        isSortDescending = (ViewBag.SortColumn == SubscriptionSort.Title.ToString() && !ViewBag.IsSortDescending),
                         searchString = ViewBag.CurrentFilter
                     })
             </th>
@@ -52,66 +54,66 @@
             </th>
             <th>
                 @Html.ActionLink(
-                    ViewBag.SortingField == SubscriptionSort.Cost
-                    ? $"Cost ($) {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    ViewBag.SortColumn == SubscriptionSort.Cost.ToString()
+                    ? $"Cost ($) {(ViewBag.IsSortDescending ? "▾" : "▴")}"
                     : "Cost ($)",
                     "Index",
                     new
                     {
-                        sortingField = SubscriptionSort.Cost,
-                        isSortDescending = (ViewBag.SortingField == SubscriptionSort.Cost && !ViewBag.SortDescending),
+                        sortColumn = SubscriptionSort.Title.ToString(),
+                        isSortDescending = (ViewBag.SortColumn == SubscriptionSort.Title.ToString() && !ViewBag.IsSortDescending),
                         searchString = ViewBag.CurrentFilter
                     })
             </th>
             <th>
                 @Html.ActionLink(
-                    ViewBag.SortingField == SubscriptionSort.ReleasedIn
-                    ? $"Released in {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    ViewBag.SortColumn == SubscriptionSort.ReleasedIn.ToString()
+                    ? $"Released in {(ViewBag.IsSortDescending ? "▾" : "▴")}"
                     : "Released in",
                     "Index",
                     new
                     {
-                        sortingField = SubscriptionSort.ReleasedIn,
-                        isSortDescending = (ViewBag.SortingField == SubscriptionSort.ReleasedIn && !ViewBag.SortDescending),
+                        sortColumn = SubscriptionSort.Title.ToString(),
+                        isSortDescending = (ViewBag.SortColumn == SubscriptionSort.Title.ToString() && !ViewBag.IsSortDescending),
                         searchString = ViewBag.CurrentFilter
                     })
             </th>
             <th>
                 @Html.ActionLink(
-                    ViewBag.SortingField == SubscriptionSort.Duration
-                    ? $"Duration (days) {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    ViewBag.SortColumn == SubscriptionSort.Duration.ToString()
+                    ? $"Duration (days) {(ViewBag.IsSortDescending ? "▾" : "▴")}"
                     : "Duration (days)",
                     "Index",
                     new
                     {
-                        sortingField = SubscriptionSort.Duration,
-                        isSortDescending = (ViewBag.SortingField == SubscriptionSort.Duration && !ViewBag.SortDescending),
+                        sortColumn = SubscriptionSort.Title.ToString(),
+                        isSortDescending = (ViewBag.SortColumn == SubscriptionSort.Title.ToString() && !ViewBag.IsSortDescending),
                         searchString = ViewBag.CurrentFilter
                     })
             </th>
             <th>
                 @Html.ActionLink(
-                    ViewBag.SortingField == SubscriptionSort.AvailableUntil
-                    ? $"Available to buy until {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    ViewBag.SortColumn == SubscriptionSort.AvailableUntil.ToString()
+                    ? $"Available to buy until {(ViewBag.IsSortDescending ? "▾" : "▴")}"
                     : "Available to buy until",
                     "Index",
                     new
-                    { 
-                        sortingField = SubscriptionSort.AvailableUntil,
-                        isSortDescending = (ViewBag.SortingField == SubscriptionSort.AvailableUntil && !ViewBag.SortDescending),
+                    {
+                        sortColumn = SubscriptionSort.Title.ToString(),
+                        isSortDescending = (ViewBag.SortColumn == SubscriptionSort.Title.ToString() && !ViewBag.IsSortDescending),
                         searchString = ViewBag.CurrentFilter
                     })
             </th>
             <th>
                 @Html.ActionLink(
-                    ViewBag.SortingField == SubscriptionSort.Level
-                    ? $"Level {(ViewBag.SortDescending ? "▾" : "▴")}"
+                    ViewBag.SortColumn == SubscriptionSort.Level.ToString()
+                    ? $"Level {(ViewBag.IsSortDescending ? "▾" : "▴")}"
                     : "Level",
                     "Index",
                     new
                     {
-                        sortingField = SubscriptionSort.Level,
-                        isSortDescending = (ViewBag.SortingField == SubscriptionSort.Level && !ViewBag.SortDescending),
+                        sortColumn = SubscriptionSort.Title.ToString(),
+                        isSortDescending = (ViewBag.SortColumn == SubscriptionSort.Title.ToString() && !ViewBag.IsSortDescending),
                         searchString = ViewBag.CurrentFilter
                     })
             </th>
@@ -186,7 +188,8 @@
                 {
                     pageNumber = 1,
                     searchString = ViewBag.CurrentFilter,
-                    sortingField = ViewBag.SortingField
+                    sortColumn = ViewBag.SortColumn,
+                    isSortDescending = ViewBag.IsSortDescending
                 },
                 new { @class = $"btn btn-light { prevDisabled }" })
 
@@ -195,7 +198,8 @@
                  {
                      pageNumber = Model.PageIndex - 1,
                      searchString = ViewBag.CurrentFilter,
-                     sortingField = ViewBag.SortingField
+                     sortColumn = ViewBag.SortColumn,
+                     isSortDescending = ViewBag.IsSortDescending
                  },
                  new { @class = $"btn btn-light { prevDisabled }" })
 
@@ -204,7 +208,8 @@
                  {
                      pageNumber = Model.PageIndex + 1,
                      searchString = ViewBag.CurrentFilter,
-                     sortingField = ViewBag.SortingField
+                     sortColumn = ViewBag.SortColumn,
+                     isSortDescending = ViewBag.IsSortDescending
                  },
                  new { @class = $"btn btn-light { nextDisabled }" })
 
@@ -213,7 +218,8 @@
                  {
                      pageNumber = Model.PagesTotal,
                      searchString = ViewBag.CurrentFilter,
-                     sortingField = ViewBag.SortingField
+                     sortColumn = ViewBag.SortColumn,
+                     isSortDescending = ViewBag.IsSortDescending
                  },
                  new { @class = $"btn btn-light { nextDisabled }" })
 

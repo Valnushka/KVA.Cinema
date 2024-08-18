@@ -2,14 +2,12 @@
 using KVA.Cinema.Models;
 using KVA.Cinema.Entities;
 using KVA.Cinema.ViewModels;
-using KVA.Cinema.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace KVA.Cinema.Services
 {
-    public class LanguageService : IService<LanguageCreateViewModel, LanguageDisplayViewModel, LanguageEditViewModel>
+    public class LanguageService : BaseService<Language, LanguageCreateViewModel, LanguageDisplayViewModel, LanguageEditViewModel>
     {
         /// <summary>
         /// Minimum length allowed for Name
@@ -21,50 +19,26 @@ namespace KVA.Cinema.Services
         /// </summary>
         private const int NAME_LENGHT_MAX = 128;
 
-        private CinemaContext Context { get; }
+        public LanguageService(CinemaContext context) : base(context) { }
 
-        public LanguageService(CinemaContext db)
+        protected override void ValidateInput(LanguageCreateViewModel languageData)
         {
-            Context = db;
-        }
-
-        public IEnumerable<LanguageCreateViewModel> Read()
-        {
-            return Context.Languages.Select(x => new LanguageCreateViewModel()
+            if (string.IsNullOrWhiteSpace(languageData.Name))
             {
-                Id = x.Id,
-                Name = x.Name
-            }).ToList();
-        }
-
-        public LanguageDisplayViewModel Read(Guid languageId)
-        {
-            var language = Context.Languages.FirstOrDefault(x => x.Id == languageId);
-
-            if (language == default)
-            {
-                throw new EntityNotFoundException($"Language with id \"{languageId}\" not found");
+                throw new ArgumentException("No value", nameof(languageData.Name));
             }
-
-            return MapToDisplayViewModel(language);
         }
 
-        public IEnumerable<LanguageDisplayViewModel> ReadAll()
+        protected override void ValidateInput(LanguageEditViewModel languageNewData)
         {
-            return Context.Languages.Select(x => new LanguageDisplayViewModel()
+            if (string.IsNullOrWhiteSpace(languageNewData.Name))
             {
-                Id = x.Id,
-                Name = x.Name
-            }).ToList();
-        }
-
-        public void CreateAsync(LanguageCreateViewModel languageData)
-        {
-            if (CheckUtilities.ContainsNullOrEmptyValue(languageData.Name))
-            {
-                throw new ArgumentNullException("Name has no value");
+                throw new ArgumentException("No value", nameof(languageNewData.Name));
             }
+        }
 
+        protected override void ValidateEntity(LanguageCreateViewModel languageData)
+        {
             if (languageData.Name.Length < NAME_LENGHT_MIN)
             {
                 throw new ArgumentException($"Length cannot be less than {NAME_LENGHT_MIN} symbols");
@@ -79,49 +53,10 @@ namespace KVA.Cinema.Services
             {
                 throw new DuplicatedEntityException($"Language \"{languageData.Name}\" is already exist");
             }
-
-            Language newLanguage = new Language()
-            {
-                Id = Guid.NewGuid(),
-                Name = languageData.Name
-            };
-
-            Context.Languages.Add(newLanguage);
-            Context.SaveChanges();
         }
 
-        public void Delete(Guid languageId)
+        protected override void ValidateEntity(LanguageEditViewModel languageNewData)
         {
-            if (CheckUtilities.ContainsNullOrEmptyValue(languageId))
-            {
-                throw new ArgumentNullException("Language Id has no value");
-            }
-
-            Language language = Context.Languages.FirstOrDefault(x => x.Id == languageId);
-
-            if (language == default)
-            {
-                throw new EntityNotFoundException($"Language with Id \"{languageId}\" not found");
-            }
-
-            Context.Languages.Remove(language);
-            Context.SaveChanges();
-        }
-
-        public void Update(Guid languageId, LanguageEditViewModel languageNewData)
-        {
-            if (CheckUtilities.ContainsNullOrEmptyValue(languageId, languageNewData.Name))
-            {
-                throw new ArgumentNullException("Language name or id has no value");
-            }
-
-            Language language = Context.Languages.FirstOrDefault(x => x.Id == languageId);
-
-            if (language == default)
-            {
-                throw new EntityNotFoundException($"Language with id \"{languageId}\" not found");
-            }
-
             if (languageNewData.Name.Length < NAME_LENGHT_MIN)
             {
                 throw new ArgumentException($"Length cannot be less than {NAME_LENGHT_MIN} symbols");
@@ -136,19 +71,29 @@ namespace KVA.Cinema.Services
             {
                 throw new DuplicatedEntityException($"Language \"{languageNewData.Name}\" is already exist");
             }
-
-            language.Name = languageNewData.Name;
-
-            Context.SaveChanges();
         }
 
-        private LanguageDisplayViewModel MapToDisplayViewModel(Language language)
+        protected override Language MapToEntity(LanguageCreateViewModel languageData)
+        {
+            return new Language()
+            {
+                Id = Guid.NewGuid(),
+                Name = languageData.Name
+            };
+        }
+
+        protected override LanguageDisplayViewModel MapToDisplayViewModel(Language language)
         {
             return new LanguageDisplayViewModel()
             {
                 Id = language.Id,
                 Name = language.Name
             };
+        }
+
+        protected override void UpdateFieldValues(Language language, LanguageEditViewModel languageNewData)
+        {
+            language.Name = languageNewData.Name;
         }
     }
 }

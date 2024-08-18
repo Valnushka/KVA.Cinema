@@ -2,14 +2,12 @@
 using KVA.Cinema.Models;
 using KVA.Cinema.Entities;
 using KVA.Cinema.ViewModels;
-using KVA.Cinema.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace KVA.Cinema.Services
 {
-    public class SubscriptionLevelService : IService<SubscriptionLevelCreateViewModel, SubscriptionLevelDisplayViewModel, SubscriptionLevelEditViewModel>
+    public class SubscriptionLevelService : BaseService<SubscriptionLevel, SubscriptionLevelCreateViewModel, SubscriptionLevelDisplayViewModel, SubscriptionLevelEditViewModel>
     {
         /// <summary>
         /// Minimum length allowed for Title
@@ -21,50 +19,35 @@ namespace KVA.Cinema.Services
         /// </summary>
         private const int TITLE_LENGHT_MAX = 50;
 
-        public CinemaContext Context { get; }
+        public SubscriptionLevelService(CinemaContext context) : base(context) { }
 
-        public SubscriptionLevelService(CinemaContext db)
+        protected override SubscriptionLevelDisplayViewModel MapToDisplayViewModel(SubscriptionLevel subscriptionLevel)
         {
-            Context = db;
+            return new SubscriptionLevelDisplayViewModel()
+            {
+                Id = subscriptionLevel.Id,
+                Title = subscriptionLevel.Title
+            };
         }
 
-        public IEnumerable<SubscriptionLevelCreateViewModel> Read()
+        protected override void ValidateInput(SubscriptionLevelCreateViewModel subscriptionLevelData)
         {
-            return Context.SubscriptionLevels.Select(x => new SubscriptionLevelCreateViewModel()
+            if (string.IsNullOrWhiteSpace(subscriptionLevelData.Title))
             {
-                Id = x.Id,
-                Title = x.Title
-            }).ToList();
-        }
-
-        public SubscriptionLevelDisplayViewModel Read(Guid subscriptionLevelId)
-        {
-            var subscriptionLevel = Context.SubscriptionLevels.FirstOrDefault(x => x.Id == subscriptionLevelId);
-
-            if (subscriptionLevel == default)
-            {
-                throw new EntityNotFoundException($"Subscription level with id \"{subscriptionLevelId}\" not found");
+                throw new ArgumentException("No value", nameof(subscriptionLevelData.Title));
             }
-
-            return MapToDisplayViewModel(subscriptionLevel);
         }
 
-        public IEnumerable<SubscriptionLevelDisplayViewModel> ReadAll()
+        protected override void ValidateInput(SubscriptionLevelEditViewModel subscriptionLevelNewData)
         {
-            return Context.SubscriptionLevels.Select(x => new SubscriptionLevelDisplayViewModel()
+            if (string.IsNullOrWhiteSpace(subscriptionLevelNewData.Title))
             {
-                Id = x.Id,
-                Title = x.Title
-            }).ToList();
-        }
-
-        public void CreateAsync(SubscriptionLevelCreateViewModel subscriptionLevelData)
-        {
-            if (CheckUtilities.ContainsNullOrEmptyValue(subscriptionLevelData.Title))
-            {
-                throw new ArgumentNullException("Title has no value");
+                throw new ArgumentException("No value", nameof(subscriptionLevelNewData.Title));
             }
+        }
 
+        protected override void ValidateEntity(SubscriptionLevelCreateViewModel subscriptionLevelData)
+        {
             if (subscriptionLevelData.Title.Length < TITLE_LENGHT_MIN)
             {
                 throw new ArgumentException($"Length cannot be less than {TITLE_LENGHT_MIN} symbols");
@@ -79,49 +62,10 @@ namespace KVA.Cinema.Services
             {
                 throw new DuplicatedEntityException($"Subscription level with title \"{subscriptionLevelData.Title}\" is already exist");
             }
-
-            SubscriptionLevel newSubscriptionLevel = new SubscriptionLevel()
-            {
-                Id = Guid.NewGuid(),
-                Title = subscriptionLevelData.Title
-            };
-
-            Context.SubscriptionLevels.Add(newSubscriptionLevel);
-            Context.SaveChanges();
         }
 
-        public void Delete(Guid subscriptionLevelId)
+        protected override void ValidateEntity(SubscriptionLevelEditViewModel subscriptionLevelNewData)
         {
-            if (CheckUtilities.ContainsNullOrEmptyValue(subscriptionLevelId))
-            {
-                throw new ArgumentNullException("Id has no value");
-            }
-
-            SubscriptionLevel subscriptionLevel = Context.SubscriptionLevels.FirstOrDefault(x => x.Id == subscriptionLevelId);
-
-            if (subscriptionLevel == default)
-            {
-                throw new EntityNotFoundException($"Subscription level with Id \"{subscriptionLevelId}\" not found");
-            }
-
-            Context.SubscriptionLevels.Remove(subscriptionLevel);
-            Context.SaveChanges();
-        }
-
-        public void Update(Guid subscriptionLevelId, SubscriptionLevelEditViewModel subscriptionLevelNewData)
-        {
-            if (CheckUtilities.ContainsNullOrEmptyValue(subscriptionLevelId, subscriptionLevelNewData.Title))
-            {
-                throw new ArgumentNullException("One or more parameters have no value");
-            }
-
-            SubscriptionLevel subscriptionLevel = Context.SubscriptionLevels.FirstOrDefault(x => x.Id == subscriptionLevelId);
-
-            if (subscriptionLevel == default)
-            {
-                throw new EntityNotFoundException($"Subscription level with id \"{subscriptionLevelId}\" not found");
-            }
-
             if (subscriptionLevelNewData.Title.Length < TITLE_LENGHT_MIN)
             {
                 throw new ArgumentException($"Length cannot be less than {TITLE_LENGHT_MIN} symbols");
@@ -136,19 +80,20 @@ namespace KVA.Cinema.Services
             {
                 throw new DuplicatedEntityException($"Subscription level with title \"{subscriptionLevelNewData.Title}\" is already exist");
             }
-
-            subscriptionLevel.Title = subscriptionLevelNewData.Title;
-
-            Context.SaveChanges();
         }
 
-        private SubscriptionLevelDisplayViewModel MapToDisplayViewModel(SubscriptionLevel subscriptionLevel)
+        protected override SubscriptionLevel MapToEntity(SubscriptionLevelCreateViewModel subscriptionLevelData)
         {
-            return new SubscriptionLevelDisplayViewModel()
+            return new SubscriptionLevel()
             {
-                Id = subscriptionLevel.Id,
-                Title = subscriptionLevel.Title
+                Id = Guid.NewGuid(),
+                Title = subscriptionLevelData.Title
             };
+        }
+
+        protected override void UpdateFieldValues(SubscriptionLevel subscriptionLevel, SubscriptionLevelEditViewModel subscriptionLevelNewData)
+        {
+            subscriptionLevel.Title = subscriptionLevelNewData.Title;
         }
     }
 }

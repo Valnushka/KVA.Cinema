@@ -8,7 +8,7 @@ namespace KVA.Cinema.ViewModels
     /// <summary>
     /// Essential data to create person (written by user)
     /// </summary>
-    public class UserCreateViewModel
+    public class UserCreateViewModel : IViewModel
     {
         public Guid Id { get; set; }
 

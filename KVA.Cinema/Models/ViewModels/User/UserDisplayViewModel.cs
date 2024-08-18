@@ -9,7 +9,7 @@ namespace KVA.Cinema.ViewModels
     /// <summary>
     /// Person's data to display
     /// </summary>
-    public class UserDisplayViewModel
+    public class UserDisplayViewModel : IViewModel
     {
         [Display(Name = "Id")]
         public Guid Id { get; set; }

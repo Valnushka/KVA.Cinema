@@ -1,25 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using KVA.Cinema.Services;
 using KVA.Cinema.ViewModels;
-using Microsoft.AspNetCore.Mvc.Filters;
 using KVA.Cinema.Utilities;
+using KVA.Cinema.Entities;
+using System.Collections.Generic;
 
 namespace KVA.Cinema.Controllers
 {
-    public class SubscriptionsController : Controller
+    public class SubscriptionsController : BaseController<Subscription, SubscriptionCreateViewModel, SubscriptionDisplayViewModel, SubscriptionEditViewModel, SubscriptionService>
     {
-        private static Breadcrumb homeBreadcrumb;
-        private static Breadcrumb indexBreadcrumb;
-        private static Breadcrumb detailsBreadcrumb;
-        private static Breadcrumb createBreadcrumb;
-        private static Breadcrumb editBreadcrumb;
-        private static Breadcrumb deleteBreadcrumb;
-
-        private SubscriptionService SubscriptionService { get; }
+        protected override string ModuleCaption { get { return "Subscriptions"; } }
 
         private SubscriptionLevelService SubscriptionLevelService { get; }
 
@@ -27,271 +19,112 @@ namespace KVA.Cinema.Controllers
 
         private VideoService VideoService { get; }
 
-        private CacheManager CacheManager { get; }
-
         public SubscriptionsController(SubscriptionService subscriptionService,
                                        SubscriptionLevelService subscriptionLevelService,
                                        UserService userService,
                                        VideoService videoService,
-                                       CacheManager memoryCache)
+                                       CacheManager memoryCache) : base(subscriptionService, memoryCache)
         {
-            SubscriptionService = subscriptionService;
             SubscriptionLevelService = subscriptionLevelService;
             UserService = userService;
             VideoService = videoService;
-            CacheManager = memoryCache;
-        }
-
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            base.OnActionExecuting(context);
-
-            homeBreadcrumb = new Breadcrumb { Title = "Home", Url = Url.Action("Index", "Home") };
-            indexBreadcrumb = new Breadcrumb { Title = "Subscriptions", Url = Url.Action("Index", "Subscriptions") };
-            detailsBreadcrumb = new Breadcrumb { Title = "Details", Url = Url.Action("Details", "Subscriptions") };
-            createBreadcrumb = new Breadcrumb { Title = "Create", Url = Url.Action("Create", "Subscriptions") };
-            editBreadcrumb = new Breadcrumb { Title = "Edit", Url = Url.Action("Edit", "Subscriptions") };
-            deleteBreadcrumb = new Breadcrumb { Title = "Delete", Url = Url.Action("Delete", "Subscriptions") };
         }
 
         // GET: Subscriptions
         [Route("Subscriptions")]
-        public IActionResult Index(int? pageNumber,
-                                   string searchString,
-                                   SubscriptionSort sortingField = SubscriptionSort.Title,
-                                   bool isSortDescending = false)
+        protected override IActionResult Index(PaginationConfig paginationConfig, SortConfig sortConfig, FilterConfig filterConfig)
         {
-            ViewBag.SortingField = sortingField;
-            ViewBag.SortDescending = isSortDescending;
-            ViewBag.CurrentFilter = searchString;
+            FillViewBag(sortConfig, filterConfig);
 
-            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb);
+            AddIndexCrumbs();
 
-            var subscriptions = SubscriptionService.ReadAll();
+            var subscriptions = EntityService.ReadAll();
 
-            if (!string.IsNullOrEmpty(searchString))
+            if (User.Identity.IsAuthenticated)
             {
-                subscriptions = subscriptions.Where(x => x.Title.Contains(searchString));
-            }
+                var user = UserService.ReadAll().FirstOrDefault(m => m.Nickname == User.Identity.Name);
 
-            switch (sortingField)
-            {
-                case SubscriptionSort.Title:
-                    subscriptions = isSortDescending ? subscriptions.OrderByDescending(s => s.Title) : subscriptions.OrderBy(s => s.Title);
-                    break;
-                case SubscriptionSort.Cost:
-                    subscriptions = isSortDescending ? subscriptions.OrderByDescending(s => s.Cost) : subscriptions.OrderBy(s => s.Cost);
-                    break;
-                case SubscriptionSort.ReleasedIn:
-                    subscriptions = isSortDescending ? subscriptions.OrderByDescending(s => s.ReleasedIn) : subscriptions.OrderBy(s => s.ReleasedIn);
-                    break;
-                case SubscriptionSort.Duration:
-                    subscriptions = isSortDescending ? subscriptions.OrderByDescending(s => s.Duration) : subscriptions.OrderBy(s => s.Duration);
-                    break;
-                case SubscriptionSort.AvailableUntil:
-                    subscriptions = isSortDescending ? subscriptions.OrderByDescending(s => s.AvailableUntil) : subscriptions.OrderBy(s => s.AvailableUntil);
-                    break;
-                case SubscriptionSort.Level:
-                    subscriptions = isSortDescending ? subscriptions.OrderByDescending(s => s.LevelName) : subscriptions.OrderBy(s => s.LevelName);
-                    break;
-                default:
-                    subscriptions = subscriptions.OrderBy(s => s.Title);
-                    break;
-            }
-
-            int itemsOnPage = 15;
-
-            return View(PaginatedList<SubscriptionDisplayViewModel>.CreateAsync(subscriptions, pageNumber ?? 1, itemsOnPage));
-        }
-
-        // GET: Subscriptions/Details/5
-        public IActionResult Details(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            SubscriptionDisplayViewModel subscription = null;
-
-            try
-            {
-                subscription = SubscriptionService.Read(id.Value);
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-            }
-
-            if (subscription == null)
-            {
-                return NotFound();
-            }
-
-            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, detailsBreadcrumb);
-
-            return View(subscription);
-        }
-
-        // GET: Subscriptions/Create
-        public IActionResult Create()
-        {
-            GetCachedEntities();
-
-            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
-
-            return View();
-        }
-
-        // POST: Subscriptions/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(SubscriptionCreateViewModel subscriptionData)
-        {
-            if (ModelState.IsValid)
-            {
-                try
+                if (user == null) //TODO: add kicking out of account after user deleting 
                 {
-                    SubscriptionService.CreateAsync(subscriptionData);
-                    return RedirectToAction(nameof(Index));
+                    return NotFound();
                 }
-                catch (Exception ex)
+
+                foreach (var subscription in subscriptions)
                 {
-                    ModelState.AddModelError(string.Empty, ex.Message);
+                    subscription.IsPurchasedByCurrentUser = user.UserSubscriptions.Any(m => m.SubscriptionId == subscription.Id);
                 }
             }
 
-            GetCachedEntities();
+            if (!string.IsNullOrEmpty(filterConfig.Query))
+            {
+                subscriptions = GetFilterResult(subscriptions, filterConfig?.Query);
+            }
 
-            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, createBreadcrumb);
+            subscriptions = Sort(subscriptions, sortConfig.SortColumn, sortConfig.IsDescending);
 
-            return View(subscriptionData);
+            return View(
+                PaginatedList<SubscriptionDisplayViewModel>.CreateAsync(
+                    subscriptions,
+                    paginationConfig?.Page ?? 1,
+                    paginationConfig?.ItemsOnPage ?? 15
+                    )
+                );
         }
 
-        // GET: Subscriptions/Edit/5
-        public IActionResult Edit(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var subscription = SubscriptionService.ReadAll()
-                .FirstOrDefault(m => m.Id == id);
-
-            if (subscription == null)
-            {
-                return NotFound();
-            }
-
-            GetCachedEntities();
-
-            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
-
-            var subscriptionEditModel = new SubscriptionEditViewModel()
-            {
-                Id = subscription.Id,
-                Title = subscription.Title,
-                Description = subscription.Description,
-                Cost = subscription.Cost,
-                LevelId = subscription.LevelId,
-                ReleasedIn = subscription.ReleasedIn,
-                Duration = subscription.Duration,
-                AvailableUntil = subscription.AvailableUntil,
-                VideoIds = subscription.VideosInSubscription.Select(x => x.VideoId)
-            };
-
-            return View(subscriptionEditModel);
-        }
-
-        // POST: Subscriptions/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(Guid id, SubscriptionEditViewModel subscriptionNewData)
-        {
-            if (id != subscriptionNewData.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    SubscriptionService.Update(id, subscriptionNewData);
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError(string.Empty, ex.Message);
-                }
-            }
-
-            GetCachedEntities();
-
-            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, editBreadcrumb);
-
-            return View(subscriptionNewData);
-        }
-
-        // GET: Subscriptions/Delete/5
-        public IActionResult Delete(Guid? id)
-        {
-            SubscriptionDisplayViewModel subscription = null;
-
-            try
-            {
-                subscription = SubscriptionService.Read(id.Value);
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-            }
-
-
-            if (subscription == null)
-            {
-                return NotFound();
-            }
-
-            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
-
-            return View(subscription);
-        }
-
-        // POST: Subscriptions/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(Guid id)
-        {
-            try
-            {
-                SubscriptionDisplayViewModel subscription = SubscriptionService.Read(id);
-                SubscriptionLevelService.Delete(subscription.Id);
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-            }
-
-            AddBreadcrumbs(homeBreadcrumb, indexBreadcrumb, deleteBreadcrumb);
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        private void AddBreadcrumbs(params Breadcrumb[] breadcrumbs)
-        {
-            ViewBag.Breadcrumbs = new List<Breadcrumb>(breadcrumbs);
-        }
-
-        private void GetCachedEntities()
+        protected override void GetCachedEntities()
         {
             ViewBag.LevelId = CacheManager.GetCachedSelectList("LevelsSelectedList", SubscriptionLevelService.ReadAll, nameof(SubscriptionLevelDisplayViewModel.Id), nameof(SubscriptionLevelDisplayViewModel.Title));
             ViewBag.VideoIds = CacheManager.GetCachedSelectList("VideosSelectedList", VideoService.ReadAll, nameof(VideoDisplayViewModel.Id), nameof(VideoDisplayViewModel.Name));
+        }
+
+        protected override SubscriptionEditViewModel MapToEditViewModel(SubscriptionDisplayViewModel displayViewModel)
+        {
+            return new SubscriptionEditViewModel()
+            {
+                Id = displayViewModel.Id,
+                Title = displayViewModel.Title,
+                Description = displayViewModel.Description,
+                Cost = displayViewModel.Cost,
+                LevelId = displayViewModel.LevelId,
+                ReleasedIn = displayViewModel.ReleasedIn,
+                Duration = displayViewModel.Duration,
+                AvailableUntil = displayViewModel.AvailableUntil,
+                VideoIds = displayViewModel.VideosInSubscription.Select(x => x.VideoId)
+            };
+        }
+
+        protected override IEnumerable<SubscriptionDisplayViewModel> GetFilterResult(IEnumerable<SubscriptionDisplayViewModel> subscriptions, string query)
+        {
+            query = query.ToLower();
+
+            return subscriptions = subscriptions.Where(x => x.Title.Contains(query));
+        }
+
+        protected override IEnumerable<SubscriptionDisplayViewModel> Sort(IEnumerable<SubscriptionDisplayViewModel> subscriptions, string sortColumn, bool isSortDescending)
+        {
+            if (string.IsNullOrWhiteSpace(sortColumn)
+                            || !Enum.TryParse(sortColumn, out SubscriptionSort parsedSortColumn))
+            {
+                parsedSortColumn = SubscriptionSort.Title;
+            }
+
+            switch (parsedSortColumn)
+            {
+                case SubscriptionSort.Title:
+                    return isSortDescending ? subscriptions.OrderByDescending(s => s.Title) : subscriptions.OrderBy(s => s.Title);
+                case SubscriptionSort.Cost:
+                    return isSortDescending ? subscriptions.OrderByDescending(s => s.Cost) : subscriptions.OrderBy(s => s.Cost);
+                case SubscriptionSort.ReleasedIn:
+                    return isSortDescending ? subscriptions.OrderByDescending(s => s.ReleasedIn) : subscriptions.OrderBy(s => s.ReleasedIn);
+                case SubscriptionSort.Duration:
+                    return isSortDescending ? subscriptions.OrderByDescending(s => s.Duration) : subscriptions.OrderBy(s => s.Duration);
+                case SubscriptionSort.AvailableUntil:
+                    return isSortDescending ? subscriptions.OrderByDescending(s => s.AvailableUntil) : subscriptions.OrderBy(s => s.AvailableUntil);
+                case SubscriptionSort.Level:
+                    return isSortDescending ? subscriptions.OrderByDescending(s => s.LevelName) : subscriptions.OrderBy(s => s.LevelName);
+                default:
+                    return subscriptions.OrderBy(s => s.Title);
+            }
         }
     }
 }

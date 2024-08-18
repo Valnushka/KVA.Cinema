@@ -2,14 +2,12 @@
 using KVA.Cinema.Models;
 using KVA.Cinema.Entities;
 using KVA.Cinema.ViewModels;
-using KVA.Cinema.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace KVA.Cinema.Services
 {
-    public class TagService : IService<TagCreateViewModel, TagDisplayViewModel, TagEditViewModel>
+    public class TagService : BaseService<Tag, TagCreateViewModel, TagDisplayViewModel, TagEditViewModel>
     {
         /// <summary>
         /// Minimum length allowed for tag text
@@ -21,51 +19,46 @@ namespace KVA.Cinema.Services
         /// </summary>
         private const int TEXT_LENGHT_MAX = 20;
 
-        private CinemaContext Context { get; }
+        public TagService(CinemaContext context) : base(context) { }
 
-        public TagService(CinemaContext db)
+        protected override TagDisplayViewModel MapToDisplayViewModel(Tag tag)
         {
-            Context = db;
+            return new TagDisplayViewModel()
+            {
+                Id = tag.Id,
+                Text = tag.Text,
+                Color = tag.Color
+            };
         }
 
-        public IEnumerable<TagCreateViewModel> Read()
+        protected override void ValidateInput(TagCreateViewModel tagData)
         {
-            return Context.Tags.Select(x => new TagCreateViewModel()
+            if (string.IsNullOrWhiteSpace(tagData.Text))
             {
-                Text = x.Text,
-                Color = x.Color
-            }).ToList();
-        }
-
-        public TagDisplayViewModel Read(Guid tagId)
-        {
-            var tag = Context.Tags.FirstOrDefault(x => x.Id == tagId);
-
-            if (tag == default)
-            {
-                throw new EntityNotFoundException($"Tag with id \"{tagId}\" not found");
+                throw new ArgumentException("No value", nameof(tagData.Text));
             }
 
-            return MapToDisplayViewModel(tag);
+            if (string.IsNullOrWhiteSpace(tagData.Color))
+            {
+                throw new ArgumentException("No value", nameof(tagData.Color));
+            }
         }
 
-        public IEnumerable<TagDisplayViewModel> ReadAll()
+        protected override void ValidateInput(TagEditViewModel tagNewData)
         {
-            return Context.Tags.Select(x => new TagDisplayViewModel()
+            if (string.IsNullOrWhiteSpace(tagNewData.Text))
             {
-                Id = x.Id,
-                Text = x.Text,
-                Color = x.Color
-            }).ToList();
-        }
-
-        public void CreateAsync(TagCreateViewModel tagData)
-        {
-            if (CheckUtilities.ContainsNullOrEmptyValue(tagData.Text, tagData.Color))
-            {
-                throw new ArgumentNullException("One or more parameter has no value");
+                throw new ArgumentException("No value", nameof(tagNewData.Text));
             }
 
+            if (string.IsNullOrWhiteSpace(tagNewData.Color))
+            {
+                throw new ArgumentException("No value", nameof(tagNewData.Color));
+            }
+        }
+
+        protected override void ValidateEntity(TagCreateViewModel tagData)
+        {
             if (tagData.Text.Length < TEXT_LENGHT_MIN)
             {
                 throw new ArgumentException($"Length cannot be less than {TEXT_LENGHT_MIN} symbols");
@@ -80,50 +73,10 @@ namespace KVA.Cinema.Services
             {
                 throw new DuplicatedEntityException($"Tag \"{tagData.Text}\" is already exist");
             }
-
-            Tag newTag = new Tag()
-            {
-                Id = Guid.NewGuid(),
-                Text = tagData.Text,
-                Color = tagData.Color
-            };
-
-            Context.Tags.Add(newTag);
-            Context.SaveChanges();
         }
 
-        public void Delete(Guid id)
+        protected override void ValidateEntity(TagEditViewModel newTagData)
         {
-            if (CheckUtilities.ContainsNullOrEmptyValue(id))
-            {
-                throw new ArgumentNullException("Tag Id has no value");
-            }
-
-            Tag tag = Context.Tags.FirstOrDefault(x => x.Id == id);
-
-            if (tag == default)
-            {
-                throw new EntityNotFoundException($"Tag with Id \"{id}\" not found");
-            }
-
-            Context.Tags.Remove(tag);
-            Context.SaveChanges();
-        }
-
-        public void Update(Guid id, TagEditViewModel newTagData)
-        {
-            if (CheckUtilities.ContainsNullOrEmptyValue(id, newTagData, newTagData.Text, newTagData.Color))
-            {
-                throw new ArgumentNullException("One or more parameter has no value");
-            }
-
-            Tag tag = Context.Tags.FirstOrDefault(x => x.Id == id);
-
-            if (tag == default)
-            {
-                throw new EntityNotFoundException($"Tag with id \"{id}\" not found");
-            }
-
             if (newTagData.Text.Length < TEXT_LENGHT_MIN)
             {
                 throw new ArgumentException($"Length cannot be less than {TEXT_LENGHT_MIN} symbols");
@@ -138,21 +91,22 @@ namespace KVA.Cinema.Services
             {
                 throw new DuplicatedEntityException($"Tag \"{newTagData.Text}\" is already exist");
             }
-
-            tag.Text = newTagData.Text;
-            tag.Color = newTagData.Color;
-
-            Context.SaveChanges();
         }
 
-        private TagDisplayViewModel MapToDisplayViewModel(Tag tag)
+        protected override Tag MapToEntity(TagCreateViewModel tagData)
         {
-            return new TagDisplayViewModel()
+            return new Tag()
             {
-                Id = tag.Id,
-                Text = tag.Text,
-                Color = tag.Color
+                Id = Guid.NewGuid(),
+                Text = tagData.Text,
+                Color = tagData.Color
             };
+        }
+
+        protected override void UpdateFieldValues(Tag tag, TagEditViewModel newTagData)
+        {
+            tag.Text = newTagData.Text;
+            tag.Color = newTagData.Color;
         }
     }
 }
